@@ -1,0 +1,39 @@
+services:
+  backend:
+    build: ./backend
+    container_name: propertyvista-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - TZ=Europe/Warsaw
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATABASE_URL=jdbc:mysql://database:3306/${DB_NAME:-propertyvista}
+      - SPRING_DATABASE_USERNAME=${DB_USER:-propertyvista}
+      - SPRING_DATABASE_PASSWORD=${DB_PASSWORD:-propertyvista}
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    image: mysql:8
+    container_name: propertyvista-database
+    restart: unless-stopped
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - TZ=Europe/Warsaw
+      - MYSQL_DATABASE=${DB_NAME:-propertyvista}
+      - MYSQL_USER=${DB_USER:-propertyvista}
+      - MYSQL_PASSWORD=${DB_PASSWORD:-propertyvista}
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${DB_USER:-propertyvista}", "-p${DB_PASSWORD:-propertyvista}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
