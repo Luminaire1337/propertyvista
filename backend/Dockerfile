@@ -24,7 +24,6 @@ ARG GROUP_NAME=docker
 ARG GROUP_ID=1000
 RUN addgroup -g ${GROUP_ID} ${GROUP_NAME} && \
     adduser -D -u ${USER_ID} -G ${GROUP_NAME} -s /bin/sh ${USER_NAME} && \
-    mkdir -p /app/logs && \
     chown -R ${USER_NAME}:${GROUP_NAME} /app && \
     chmod -R ${DEFAULT_PERMISSION} /app
 
@@ -35,7 +34,7 @@ COPY --chown=${USER_NAME}:${GROUP_NAME} --chmod=${DEFAULT_PERMISSION} --from=bui
 USER ${USER_NAME}
 
 # Expose the application port
-EXPOSE 8080/tcp
+EXPOSE 8080
 
 # Add a health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
