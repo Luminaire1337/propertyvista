@@ -1,20 +1,55 @@
 services:
+  traefik:
+    image: traefik:latest
+    container_name: propertyvista-traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      - TZ=Europe/Warsaw
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    labels:
+      - "traefik.enable=true"
+      # CORS middleware configuration
+      - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS,PATCH"
+      - "traefik.http.middlewares.cors-headers.headers.accesscontrolalloworiginlist=${CORS_ALLOWED_ORIGINS:-http://localhost}"
+      - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowheaders=Authorization,Content-Type,Accept,X-Requested-With"
+      - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowcredentials=true"
+      - "traefik.http.middlewares.cors-headers.headers.accesscontrolmaxage=3600"
+      # Rate limiting middleware - 100 requests per second average, burst of 50
+      - "traefik.http.middlewares.rate-limit.ratelimit.average=100"
+      - "traefik.http.middlewares.rate-limit.ratelimit.burst=50"
+      - "traefik.http.middlewares.rate-limit.ratelimit.period=1s"
+
   backend:
     build: ./backend
     container_name: propertyvista-backend
     restart: unless-stopped
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     environment:
       - TZ=Europe/Warsaw
       - SPRING_PROFILES_ACTIVE=prod
       - SPRING_DATABASE_URL=jdbc:mysql://database:3306/${DB_NAME:-propertyvista}
       - SPRING_DATABASE_USERNAME=${DB_USER:-propertyvista}
       - SPRING_DATABASE_PASSWORD=${DB_PASSWORD:-propertyvista}
-      - PROPERTYVISTA_CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost}
     depends_on:
       database:
         condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.routers.backend.priority=10"
+      - "traefik.http.services.backend.loadbalancer.server.port=8080"
+      - "traefik.http.middlewares.backend-strip.stripprefix.prefixes=/api"
+      - "traefik.http.middlewares.backend-strip.stripprefix.forceSlash=false"
+      - "traefik.http.routers.backend.middlewares=backend-strip,cors-headers,rate-limit"
 
   database:
     image: mysql:8.0.43-debian
@@ -22,8 +57,8 @@ services:
     restart: unless-stopped
     volumes:
       - db_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
+    expose:
+      - "3306"
     environment:
       - TZ=Europe/Warsaw
       - MYSQL_DATABASE=${DB_NAME:-propertyvista}
@@ -40,14 +75,21 @@ services:
     build: ./frontend
     container_name: propertyvista-frontend
     restart: unless-stopped
-    ports:
-      - "80:80"
+    expose:
+      - "80"
     environment:
       - TZ=Europe/Warsaw
-      - VITE_API_URL=http://localhost:8080
+      - VITE_API_URL=/api
     depends_on:
       backend:
         condition: service_started
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.routers.frontend.priority=1"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+      - "traefik.http.routers.frontend.middlewares=cors-headers"
 
 volumes:
   db_data:
