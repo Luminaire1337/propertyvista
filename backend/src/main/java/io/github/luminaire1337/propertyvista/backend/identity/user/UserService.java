@@ -75,13 +75,18 @@ public class UserService {
     }
 
     @Transactional
-    public User deleteUser(Long id) {
-        User user = getByUserId(id);
+    public User deleteUser(User user) {
         userRepository.delete(user);
-        log.info("Deleted user with ID {}", id);
+        log.info("Deleted user with ID {}", user.getId());
 
         applicationEventPublisher.publishEvent(new UserDeletedEvent(user));
         return user;
+    }
+
+    @Transactional
+    public User deleteUser(Long id) {
+        User user = getByUserId(id);
+        return deleteUser(user);
     }
 
     @Transactional

@@ -27,7 +27,7 @@ public class RemoveUnverifiedUsers {
         for (VerificationToken token : expiredTokens) {
             User user = token.getUser();
             if (user.getStatus() == UserStatus.UNVERIFIED) {
-                userService.deleteUser(user.getId());
+                userService.deleteUser(user);
             } else {
                 log.warn("User {} has an expired verification token but was not unverified", user.getEmail());
             }
