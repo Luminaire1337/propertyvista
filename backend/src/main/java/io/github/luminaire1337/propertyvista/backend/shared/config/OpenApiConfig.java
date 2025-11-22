@@ -1,4 +1,4 @@
-package io.github.luminaire1337.propertyvista.backend.shared.infrastructure.config;
+package io.github.luminaire1337.propertyvista.backend.shared.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;

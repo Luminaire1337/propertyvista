@@ -1,5 +1,5 @@
 -- https://docs.spring.io/spring-modulith/reference/appendix.html#schemas.mysql
-CREATE TABLE IF NOT EXISTS event_publication
+CREATE TABLE event_publication
 (
   id               BINARY(16) NOT NULL, -- https://github.com/spring-projects/spring-modulith/issues/94#issue-1510214757
   listener_id      VARCHAR(512) NOT NULL,

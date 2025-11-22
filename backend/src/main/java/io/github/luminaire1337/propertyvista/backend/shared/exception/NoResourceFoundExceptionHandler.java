@@ -1,4 +1,4 @@
-package io.github.luminaire1337.propertyvista.backend.shared.presentation.exception;
+package io.github.luminaire1337.propertyvista.backend.shared.exception;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;

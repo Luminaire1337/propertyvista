@@ -1,4 +1,4 @@
-package io.github.luminaire1337.propertyvista.backend.shared.infrastructure.config;
+package io.github.luminaire1337.propertyvista.backend.shared.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
