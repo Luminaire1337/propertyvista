@@ -10,6 +10,7 @@ import io.github.luminaire1337.propertyvista.backend.identity.verification.Verif
 import io.github.luminaire1337.propertyvista.backend.shared.EmailAddress;
 import io.github.luminaire1337.propertyvista.backend.shared.ImagePath;
 import io.github.luminaire1337.propertyvista.backend.shared.PhoneNumber;
+import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +56,7 @@ public class UserService {
     }
 
     @Transactional
-    public User createUser(EmailAddress email, String password, Optional<UserRole> role) {
+    public User createUser(EmailAddress email, String password, @Nullable UserRole role) {
         if (existsByEmail(email)) {
             throw new UserAlreadyExistsException("User with email " + email + " already exists");
         }
@@ -63,7 +64,7 @@ public class UserService {
         User user = User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
-                .role(role.orElse(UserRole.USER))
+                .role(role != null ? role : UserRole.USER)
                 .build();
         user = userRepository.save(user);
 
@@ -141,9 +142,9 @@ public class UserService {
     }
 
     @Transactional
-    public User updateAvatarImagePath(Long id, Optional<ImagePath> avatarImagePath) {
+    public User updateAvatarImagePath(Long id, @Nullable ImagePath avatarImagePath) {
         User user = getByUserId(id);
-        user.setAvatarImagePath(avatarImagePath.orElse(null));
+        user.setAvatarImagePath(avatarImagePath);
         user = userRepository.save(user);
         log.info("Updated avatar image path for user with ID {}", id);
 
