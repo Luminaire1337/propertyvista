@@ -52,7 +52,7 @@ services:
       - "traefik.http.routers.backend.middlewares=backend-strip,cors-headers,rate-limit"
 
   database:
-    image: mysql:8.0.43-debian
+    image: mysql:8.0-debian
     container_name: propertyvista-database
     restart: unless-stopped
     volumes:
