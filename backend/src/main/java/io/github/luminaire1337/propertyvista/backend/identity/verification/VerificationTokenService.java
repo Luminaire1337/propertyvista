@@ -1,7 +1,6 @@
 package io.github.luminaire1337.propertyvista.backend.identity.verification;
 
 import io.github.luminaire1337.propertyvista.backend.identity.user.User;
-import io.github.luminaire1337.propertyvista.backend.identity.user.UserService;
 import io.github.luminaire1337.propertyvista.backend.identity.verification.exception.VerificationTokenNotFoundException;
 import io.github.luminaire1337.propertyvista.backend.identity.verification.exception.VerificationTokenVerificationFailedException;
 import jakarta.transaction.Transactional;
@@ -18,13 +17,12 @@ import java.util.UUID;
 @Slf4j
 public class VerificationTokenService {
     private final VerificationTokenRepository verificationTokenRepository;
-    private final UserService userService;
 
     private LocalDateTime getExpiryDate() {
         return LocalDateTime.now().plusHours(24);
     }
 
-    public VerificationToken getByToken(String token) {
+    private VerificationToken getByToken(String token) {
         return verificationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new VerificationTokenNotFoundException("Verification token " + token + " not found"));
     }
@@ -50,12 +48,6 @@ public class VerificationTokenService {
     }
 
     @Transactional
-    public VerificationToken generateToken(Long userId) {
-        User user = userService.getByUserId(userId);
-        return generateToken(user);
-    }
-
-    @Transactional
     public VerificationToken verifyToken(User user, String token) {
         VerificationToken verificationToken = getByToken(token);
 
@@ -72,11 +64,5 @@ public class VerificationTokenService {
         verificationTokenRepository.delete(verificationToken);
         log.info("Verification token {} for user {} has been verified and deleted", token, user.getEmail());
         return verificationToken;
-    }
-
-    @Transactional
-    public VerificationToken verifyToken(Long userId, String token) {
-        User user = userService.getByUserId(userId);
-        return verifyToken(user, token);
     }
 }
