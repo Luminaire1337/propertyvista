@@ -1,8 +1,9 @@
 package io.github.luminaire1337.propertyvista.backend.identity.verification;
 
+import io.github.luminaire1337.propertyvista.backend.identity.user.User;
+import io.github.luminaire1337.propertyvista.backend.identity.user.UserService;
 import io.github.luminaire1337.propertyvista.backend.identity.verification.exception.VerificationTokenNotFoundException;
 import io.github.luminaire1337.propertyvista.backend.identity.verification.exception.VerificationTokenVerificationFailedException;
-import io.github.luminaire1337.propertyvista.backend.identity.user.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -18,13 +18,10 @@ import java.util.UUID;
 @Slf4j
 public class VerificationTokenService {
     private final VerificationTokenRepository verificationTokenRepository;
+    private final UserService userService;
 
     private LocalDateTime getExpiryDate() {
         return LocalDateTime.now().plusHours(24);
-    }
-
-    public Optional<VerificationToken> findByToken(String token) {
-        return verificationTokenRepository.findByToken(token);
     }
 
     public VerificationToken getByToken(String token) {
@@ -53,6 +50,12 @@ public class VerificationTokenService {
     }
 
     @Transactional
+    public VerificationToken generateToken(Long userId) {
+        User user = userService.getByUserId(userId);
+        return generateToken(user);
+    }
+
+    @Transactional
     public VerificationToken verifyToken(User user, String token) {
         VerificationToken verificationToken = getByToken(token);
 
@@ -69,5 +72,11 @@ public class VerificationTokenService {
         verificationTokenRepository.delete(verificationToken);
         log.info("Verification token {} for user {} has been verified and deleted", token, user.getEmail());
         return verificationToken;
+    }
+
+    @Transactional
+    public VerificationToken verifyToken(Long userId, String token) {
+        User user = userService.getByUserId(userId);
+        return verifyToken(user, token);
     }
 }

@@ -14,6 +14,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 public class PropertyVistaBackendApiApplication {
     static void main(String[] args) {
-       SpringApplication.run(PropertyVistaBackendApiApplication.class, args);
+        SpringApplication.run(PropertyVistaBackendApiApplication.class, args);
     }
 }

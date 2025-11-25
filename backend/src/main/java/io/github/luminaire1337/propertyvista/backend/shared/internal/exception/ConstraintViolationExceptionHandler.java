@@ -20,7 +20,7 @@ public class ConstraintViolationExceptionHandler {
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getConstraintViolations().forEach(violation -> {
-           errors.put(violation.getPropertyPath().toString(), violation.getMessage());
+            errors.put(violation.getPropertyPath().toString(), violation.getMessage());
         });
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

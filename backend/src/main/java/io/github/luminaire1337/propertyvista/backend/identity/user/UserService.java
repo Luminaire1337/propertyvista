@@ -18,9 +18,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -30,34 +27,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public Optional<User> findByEmail(EmailAddress email) {
-        return userRepository.findByEmail(email);
-    }
-
-    public boolean existsByEmail(EmailAddress email) {
-        return userRepository.existsByEmail(email);
-    }
-
-    public Optional<User> findByUserId(Long id) {
-        return userRepository.findById(id);
-    }
-
     public User getByUserId(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found"));
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    public boolean verifyPassword(User user, String password) {
-        return passwordEncoder.matches(password, user.getPassword());
-    }
-
     @Transactional
     public User createUser(EmailAddress email, String password, @Nullable UserRole role) {
-        if (existsByEmail(email)) {
+        if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException("User with email " + email + " already exists");
         }
 
@@ -91,67 +68,96 @@ public class UserService {
     }
 
     @Transactional
-    public User updateEmail(Long id, EmailAddress email) {
-        if (existsByEmail(email)) {
+    public User updateUserEmail(User user, EmailAddress email) {
+        if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException("User with email " + email + " already exists");
         }
-
-        User user = getByUserId(id);
         user.setEmail(email);
         user = userRepository.save(user);
-        log.info("Updated email for user with ID {} to {}", id, email);
+        log.info("Updated email for user with ID {} to {}", user.getId(), email);
         return user;
     }
 
     @Transactional
-    public User updatePassword(Long id, String password) {
+    public User updateUserEmail(Long id, EmailAddress email) {
         User user = getByUserId(id);
+        return updateUserEmail(user, email);
+    }
+
+    @Transactional
+    public User updateUserPassword(User user, String password) {
         user.setPassword(passwordEncoder.encode(password));
         user = userRepository.save(user);
-        log.info("Updated password for user with ID {}", id);
+        log.info("Updated password for user with ID {}", user.getId());
+        return user;
+    }
+
+    @Transactional
+    public User updateUserPassword(Long id, String password) {
+        User user = getByUserId(id);
+        return updateUserPassword(user, password);
+    }
+
+    @Transactional
+    public User updateUserRole(User user, UserRole role) {
+        user.setRole(role);
+        user = userRepository.save(user);
+        log.info("Updated role for user with ID {} to {}", user.getId(), role);
         return user;
     }
 
     @Transactional
     public User updateUserRole(Long id, UserRole role) {
         User user = getByUserId(id);
-        user.setRole(role);
+        return updateUserRole(user, role);
+    }
+
+    @Transactional
+    public User updateUserStatus(User user, UserStatus status) {
+        user.setStatus(status);
         user = userRepository.save(user);
-        log.info("Updated role for user with ID {} to {}", id, role);
+        log.info("Updated status for user with ID {} to {}", user.getId(), status);
         return user;
     }
 
     @Transactional
     public User updateUserStatus(Long id, UserStatus status) {
         User user = getByUserId(id);
-        user.setStatus(status);
+        return updateUserStatus(user, status);
+    }
+
+    @Transactional
+    public User updateUserInfo(User user, String firstName, String lastName, PhoneNumber phoneNumber) {
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setPhoneNumber(phoneNumber);
         user = userRepository.save(user);
-        log.info("Updated status for user with ID {} to {}", id, status);
+        log.info("Updated information for user with ID {}", user.getId());
         return user;
     }
 
     @Transactional
     public User updateUserInfo(Long id, String firstName, String lastName, PhoneNumber phoneNumber) {
         User user = getByUserId(id);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setPhoneNumber(phoneNumber);
-        user = userRepository.save(user);
-        log.info("Updated information for user with ID {}", id);
-        return user;
+        return updateUserInfo(user, firstName, lastName, phoneNumber);
     }
 
     @Transactional
-    public User updateAvatarImagePath(Long id, @Nullable ImagePath avatarImagePath) {
-        User user = getByUserId(id);
+    public User updateUserAvatarImagePath(User user, @Nullable ImagePath avatarImagePath) {
         user.setAvatarImagePath(avatarImagePath);
         user = userRepository.save(user);
-        log.info("Updated avatar image path for user with ID {}", id);
+        log.info("Updated avatar image path for user with ID {}", user.getId());
 
         if (user.getAvatarImagePath() != null) {
             applicationEventPublisher.publishEvent(new UserUpdatedAvatarEvent(user));
         }
 
         return user;
+    }
+
+    @Transactional
+    public User updateUserAvatarImagePath(Long id, @Nullable ImagePath avatarImagePath) {
+        User user = getByUserId(id);
+        return updateUserAvatarImagePath(user, avatarImagePath);
     }
 }

@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PhoneNumber {
-    @Pattern(regexp = "^\\+[1-9]\\d{1,14}$", message = "Invalid phone number format") // https://stackoverflow.com/a/23299989
+    @Pattern(regexp = "^\\+[1-9]\\d{1,14}$", message = "Invalid phone number format")
+    // https://stackoverflow.com/a/23299989
     private String value;
 
     @Override

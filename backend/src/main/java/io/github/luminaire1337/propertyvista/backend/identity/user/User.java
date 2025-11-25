@@ -6,7 +6,10 @@ import io.github.luminaire1337.propertyvista.backend.shared.PhoneNumber;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -70,9 +73,9 @@ public class User {
     private Integer propertyPoints;
 
     // CreatedAt and UpdatedAt timestamps
-    @Column(name="created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name="updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 }
