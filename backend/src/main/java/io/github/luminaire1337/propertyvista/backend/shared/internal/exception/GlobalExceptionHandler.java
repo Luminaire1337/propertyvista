@@ -1,5 +1,6 @@
-package io.github.luminaire1337.propertyvista.backend.shared.exception;
+package io.github.luminaire1337.propertyvista.backend.shared.internal.exception;
 
+import io.github.luminaire1337.propertyvista.backend.shared.internal.dto.ErrorResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -19,9 +20,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleException(Exception ex) {
+    public ResponseEntity<ErrorResponse> handleException(Exception ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("message", isDev ? ex.getMessage() : "An unexpected error occurred"));
+                .body(new ErrorResponse(isDev ? ex.getMessage() : "An unexpected error occurred"));
     }
 }

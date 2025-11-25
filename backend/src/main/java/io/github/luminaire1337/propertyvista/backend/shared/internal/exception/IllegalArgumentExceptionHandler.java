@@ -1,5 +1,6 @@
-package io.github.luminaire1337.propertyvista.backend.shared.exception;
+package io.github.luminaire1337.propertyvista.backend.shared.internal.exception;
 
+import io.github.luminaire1337.propertyvista.backend.shared.internal.dto.ErrorResponse;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -14,9 +15,9 @@ import java.util.Map;
 // Handle this exception after NoResourceFoundExceptionHandler but before GlobalExceptionHandler
 public class IllegalArgumentExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex) {
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("message", ex.getMessage()));
+                .body(new ErrorResponse(ex.getMessage()));
     }
 }

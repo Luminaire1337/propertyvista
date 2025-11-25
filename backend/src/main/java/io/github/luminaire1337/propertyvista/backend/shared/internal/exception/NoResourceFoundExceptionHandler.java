@@ -1,5 +1,6 @@
-package io.github.luminaire1337.propertyvista.backend.shared.exception;
+package io.github.luminaire1337.propertyvista.backend.shared.internal.exception;
 
+import io.github.luminaire1337.propertyvista.backend.shared.internal.dto.ErrorResponse;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -14,9 +15,9 @@ import java.util.Map;
 @Order(Ordered.HIGHEST_PRECEDENCE) // Handle this exception before any other exception handler
 public class NoResourceFoundExceptionHandler {
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<?> handleNoResourceFoundException(NoResourceFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(NoResourceFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(Map.of("message", "Resource not found"));
+                .body(new ErrorResponse("Resource not found"));
     }
 }

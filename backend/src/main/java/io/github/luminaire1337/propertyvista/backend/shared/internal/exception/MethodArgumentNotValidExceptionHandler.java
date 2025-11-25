@@ -1,5 +1,6 @@
-package io.github.luminaire1337.propertyvista.backend.shared.exception;
+package io.github.luminaire1337.propertyvista.backend.shared.internal.exception;
 
+import io.github.luminaire1337.propertyvista.backend.shared.internal.dto.ErrorResponse;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -16,12 +17,12 @@ import java.util.Map;
 // Handle this exception after IllegalArgumentExceptionHandler but before GlobalExceptionHandler
 public class MethodArgumentNotValidExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage()));
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("message", "Validation failed", "errors", errors));
+                .body(new ErrorResponse("Validation failed", errors));
     }
 }

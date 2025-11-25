@@ -1,5 +1,6 @@
-package io.github.luminaire1337.propertyvista.backend.shared.exception;
+package io.github.luminaire1337.propertyvista.backend.shared.internal.exception;
 
+import io.github.luminaire1337.propertyvista.backend.shared.internal.dto.ErrorResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -16,13 +17,13 @@ import java.util.Map;
 // Treat this exception handler on the same level as MethodArgumentNotValidExceptionHandler
 public class ConstraintViolationExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException ex) {
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getConstraintViolations().forEach(violation -> {
            errors.put(violation.getPropertyPath().toString(), violation.getMessage());
         });
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("message", "Validation failed", "errors", errors));
+                .body(new ErrorResponse("Validation failed", errors));
     }
 }

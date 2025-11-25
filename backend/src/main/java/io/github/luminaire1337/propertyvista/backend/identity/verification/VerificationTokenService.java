@@ -1,7 +1,7 @@
 package io.github.luminaire1337.propertyvista.backend.identity.verification;
 
-import io.github.luminaire1337.propertyvista.backend.identity.exception.VerificationTokenNotFoundException;
-import io.github.luminaire1337.propertyvista.backend.identity.exception.VerificationTokenVerificationFailedException;
+import io.github.luminaire1337.propertyvista.backend.identity.verification.exception.VerificationTokenNotFoundException;
+import io.github.luminaire1337.propertyvista.backend.identity.verification.exception.VerificationTokenVerificationFailedException;
 import io.github.luminaire1337.propertyvista.backend.identity.user.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

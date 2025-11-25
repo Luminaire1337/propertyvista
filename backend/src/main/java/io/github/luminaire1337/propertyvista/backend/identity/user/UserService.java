@@ -1,10 +1,10 @@
 package io.github.luminaire1337.propertyvista.backend.identity.user;
 
-import io.github.luminaire1337.propertyvista.backend.identity.event.UserCreatedEvent;
-import io.github.luminaire1337.propertyvista.backend.identity.event.UserDeletedEvent;
-import io.github.luminaire1337.propertyvista.backend.identity.event.UserUpdatedAvatarEvent;
-import io.github.luminaire1337.propertyvista.backend.identity.exception.UserAlreadyExistsException;
-import io.github.luminaire1337.propertyvista.backend.identity.exception.UserNotFoundException;
+import io.github.luminaire1337.propertyvista.backend.identity.user.event.UserCreatedEvent;
+import io.github.luminaire1337.propertyvista.backend.identity.user.event.UserDeletedEvent;
+import io.github.luminaire1337.propertyvista.backend.identity.user.event.UserUpdatedAvatarEvent;
+import io.github.luminaire1337.propertyvista.backend.identity.user.exception.UserAlreadyExistsException;
+import io.github.luminaire1337.propertyvista.backend.identity.user.exception.UserNotFoundException;
 import io.github.luminaire1337.propertyvista.backend.identity.verification.VerificationToken;
 import io.github.luminaire1337.propertyvista.backend.identity.verification.VerificationTokenService;
 import io.github.luminaire1337.propertyvista.backend.shared.EmailAddress;

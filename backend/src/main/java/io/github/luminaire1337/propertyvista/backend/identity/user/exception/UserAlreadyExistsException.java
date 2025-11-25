@@ -1,4 +1,4 @@
-package io.github.luminaire1337.propertyvista.backend.identity.exception;
+package io.github.luminaire1337.propertyvista.backend.identity.user.exception;
 
 import io.github.luminaire1337.propertyvista.backend.shared.RestApiException;
 import org.springframework.http.HttpStatus;
