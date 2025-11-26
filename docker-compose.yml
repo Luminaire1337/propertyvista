@@ -35,7 +35,7 @@ services:
     environment:
       - TZ=Europe/Warsaw
       - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATABASE_URL=jdbc:mysql://database:3306/${DB_NAME:-propertyvista}
+      - SPRING_DATABASE_URL=jdbc:mariadb://database:3306/${DB_NAME:-propertyvista}
       - SPRING_DATABASE_USERNAME=${DB_USER:-propertyvista}
       - SPRING_DATABASE_PASSWORD=${DB_PASSWORD:-propertyvista}
     depends_on:
@@ -52,7 +52,7 @@ services:
       - "traefik.http.routers.backend.middlewares=backend-strip,cors-headers,rate-limit"
 
   database:
-    image: mysql:8.0-debian
+    image: mariadb:12-noble
     container_name: propertyvista-database
     restart: unless-stopped
     volumes:
@@ -61,15 +61,16 @@ services:
       - "3306:3306"
     environment:
       - TZ=Europe/Warsaw
-      - MYSQL_DATABASE=${DB_NAME:-propertyvista}
-      - MYSQL_USER=${DB_USER:-propertyvista}
-      - MYSQL_PASSWORD=${DB_PASSWORD:-propertyvista}
-      - MYSQL_RANDOM_ROOT_PASSWORD=true
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${DB_USER:-propertyvista}", "-p${DB_PASSWORD:-propertyvista}" ]
+      - MARIADB_DATABASE=${DB_NAME:-propertyvista}
+      - MARIADB_USER=${DB_USER:-propertyvista}
+      - MARIADB_PASSWORD=${DB_PASSWORD:-propertyvista}
+      - MARIADB_RANDOM_ROOT_PASSWORD=1
+    healthcheck: # https://mariadb.com/docs/server/server-management/automated-mariadb-deployment-and-administration/docker-and-mariadb/using-healthcheck-sh#compose-file-example
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 10s
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 3
 
   frontend:
     build: ./frontend
