@@ -1,3 +1,4 @@
+# https://docs.spring.io/spring-modulith/reference/appendix.html#schemas.mariadb
 CREATE TABLE IF NOT EXISTS event_publication
 (
     id                     UUID                      NOT NULL,
