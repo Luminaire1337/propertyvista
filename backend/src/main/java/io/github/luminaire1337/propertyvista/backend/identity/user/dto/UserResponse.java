@@ -7,9 +7,10 @@ import io.github.luminaire1337.propertyvista.backend.shared.ImagePath;
 import io.github.luminaire1337.propertyvista.backend.shared.PhoneNumber;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record UserResponse(
-        Long id,
+        UUID id,
         EmailAddress email,
         UserRole role,
         UserStatus status,

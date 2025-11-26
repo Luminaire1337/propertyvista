@@ -22,9 +22,9 @@ public class VerificationTokenService {
         return LocalDateTime.now().plusHours(24);
     }
 
-    private VerificationToken getByToken(String token) {
-        return verificationTokenRepository.findByToken(token)
-                .orElseThrow(() -> new VerificationTokenNotFoundException("Verification token " + token + " not found"));
+    private VerificationToken getById(UUID id) {
+        return verificationTokenRepository.findById(id)
+                .orElseThrow(() -> new VerificationTokenNotFoundException("Verification token not found"));
     }
 
     public List<VerificationToken> findAllExpiredTokens() {
@@ -37,32 +37,31 @@ public class VerificationTokenService {
     @Transactional
     public VerificationToken generateToken(User user) {
         VerificationToken token = VerificationToken.builder()
-                .token(String.valueOf(UUID.randomUUID()))
                 .user(user)
                 .expiryDate(getExpiryDate())
                 .build();
 
         verificationTokenRepository.save(token);
-        log.info("Generated verification token for user {}: {}", user.getEmail(), token.getToken());
+        log.info("Generated verification token for user {}: {}", user.getEmail(), token.getId());
         return token;
     }
 
     @Transactional
-    public VerificationToken verifyToken(User user, String token) {
-        VerificationToken verificationToken = getByToken(token);
+    public VerificationToken verifyToken(UUID id, User user) {
+        VerificationToken token = getById(id);
 
-        if (!verificationToken.getUser().getId().equals(user.getId())) {
-            log.info("Verification token {} does not belong to user {}", token, user.getEmail());
+        if (!token.getUser().getId().equals(user.getId())) {
+            log.info("Verification token {} does not belong to user {}", id, user.getEmail());
             throw new VerificationTokenVerificationFailedException("Provided token does not belong to the specified user");
         }
 
-        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            log.info("Verification token {} for user {} has expired", token, user.getEmail());
+        if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
+            log.info("Verification token {} for user {} has expired", id, user.getEmail());
             throw new VerificationTokenVerificationFailedException("Verification token has expired");
         }
 
-        verificationTokenRepository.delete(verificationToken);
-        log.info("Verification token {} for user {} has been verified and deleted", token, user.getEmail());
-        return verificationToken;
+        verificationTokenRepository.delete(token);
+        log.info("Verification token {} for user {} has been verified and deleted", id, user.getEmail());
+        return token;
     }
 }

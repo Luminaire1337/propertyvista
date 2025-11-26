@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -22,8 +23,8 @@ import java.time.LocalDateTime;
 public class User {
     // Core fields
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @NotBlank(message = "Email is required")
     @Embedded

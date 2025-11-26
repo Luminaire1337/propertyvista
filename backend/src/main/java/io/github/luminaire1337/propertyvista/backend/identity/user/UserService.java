@@ -19,6 +19,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -29,7 +31,7 @@ public class UserService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final UserMapper userMapper;
 
-    private User getByUserId(Long id) {
+    private User getByUserId(UUID id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found"));
     }
@@ -48,7 +50,7 @@ public class UserService {
         user = userRepository.save(user);
 
         VerificationToken token = verificationTokenService.generateToken(user);
-        log.info("Created new user with ID {} and email {} and generated verification token {}", user.getId(), email, token.getToken());
+        log.info("Created new user with ID {} and email {} and generated verification token {}", user.getId(), email, token.getId());
 
         applicationEventPublisher.publishEvent(new UserCreatedEvent(user, token));
         return userMapper.toDTO(user);
@@ -64,7 +66,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse deleteUser(Long id) {
+    public UserResponse deleteUser(UUID id) {
         User user = getByUserId(id);
         return deleteUser(user);
     }
@@ -81,7 +83,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse updateUserEmail(Long id, EmailAddress email) {
+    public UserResponse updateUserEmail(UUID id, EmailAddress email) {
         User user = getByUserId(id);
         return updateUserEmail(user, email);
     }
@@ -95,7 +97,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse updateUserPassword(Long id, String password) {
+    public UserResponse updateUserPassword(UUID id, String password) {
         User user = getByUserId(id);
         return updateUserPassword(user, password);
     }
@@ -109,7 +111,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse updateUserRole(Long id, UserRole role) {
+    public UserResponse updateUserRole(UUID id, UserRole role) {
         User user = getByUserId(id);
         return updateUserRole(user, role);
     }
@@ -123,7 +125,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse updateUserStatus(Long id, UserStatus status) {
+    public UserResponse updateUserStatus(UUID id, UserStatus status) {
         User user = getByUserId(id);
         return updateUserStatus(user, status);
     }
@@ -139,7 +141,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse updateUserInfo(Long id, String firstName, String lastName, PhoneNumber phoneNumber) {
+    public UserResponse updateUserInfo(UUID id, String firstName, String lastName, PhoneNumber phoneNumber) {
         User user = getByUserId(id);
         return updateUserInfo(user, firstName, lastName, phoneNumber);
     }
@@ -158,7 +160,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse updateUserAvatarImagePath(Long id, @Nullable ImagePath avatarImagePath) {
+    public UserResponse updateUserAvatarImagePath(UUID id, @Nullable ImagePath avatarImagePath) {
         User user = getByUserId(id);
         return updateUserAvatarImagePath(user, avatarImagePath);
     }
