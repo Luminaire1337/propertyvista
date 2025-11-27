@@ -1,7 +1,10 @@
-package io.github.luminaire1337.propertyvista.backend.identity.auth;
+package io.github.luminaire1337.propertyvista.backend.identity.auth.service;
 
+import io.github.luminaire1337.propertyvista.backend.identity.auth.entity.RefreshToken;
 import io.github.luminaire1337.propertyvista.backend.identity.auth.exception.InvalidRefreshTokenException;
-import io.github.luminaire1337.propertyvista.backend.identity.user.User;
+import io.github.luminaire1337.propertyvista.backend.identity.auth.repository.RefreshTokenRepository;
+import io.github.luminaire1337.propertyvista.backend.identity.user.entity.User;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,12 @@ import java.util.UUID;
 public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
+    private RefreshToken getByRefreshTokenId(UUID id) {
+        return refreshTokenRepository.findById(id)
+                .orElseThrow(() -> new InvalidRefreshTokenException("Refresh token " + id + " not found"));
+    }
+
+    @Transactional
     public UUID generateRefreshToken(User user) {
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)
@@ -26,16 +35,16 @@ public class RefreshTokenService {
         return refreshToken.getId();
     }
 
+    @Transactional
     public void deleteRefreshToken(UUID refreshToken) {
-        refreshTokenRepository.findById(refreshToken).ifPresent(token -> {
-            refreshTokenRepository.delete(token);
-            log.info("Deleted refresh token {}", token.getId());
-        });
+        RefreshToken token = getByRefreshTokenId(refreshToken);
+        refreshTokenRepository.delete(token);
+        log.info("Deleted refresh token {}", refreshToken);
     }
 
+    @Transactional
     public RefreshToken ensureTokenValid(UUID refreshTokenId) {
-        RefreshToken refreshToken = refreshTokenRepository.findById(refreshTokenId)
-                .orElseThrow(() -> new InvalidRefreshTokenException("Invalid refresh token"));
+        RefreshToken refreshToken = getByRefreshTokenId(refreshTokenId);
 
         if (refreshToken.getExpiryDate().isBefore(LocalDateTime.now())) {
             log.info("Refresh token {} has expired", refreshTokenId);
@@ -52,6 +61,7 @@ public class RefreshTokenService {
                 .toList();
     }
 
+    @Transactional
     public void deleteRefreshTokens(List<RefreshToken> tokens) {
         refreshTokenRepository.deleteAll(tokens);
         log.info("Deleted {} expired refresh tokens", tokens.size());

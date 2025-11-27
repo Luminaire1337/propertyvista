@@ -1,6 +1,6 @@
-package io.github.luminaire1337.propertyvista.backend.identity.auth;
+package io.github.luminaire1337.propertyvista.backend.identity.auth.entity;
 
-import io.github.luminaire1337.propertyvista.backend.identity.user.User;
+import io.github.luminaire1337.propertyvista.backend.identity.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +21,7 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne()
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

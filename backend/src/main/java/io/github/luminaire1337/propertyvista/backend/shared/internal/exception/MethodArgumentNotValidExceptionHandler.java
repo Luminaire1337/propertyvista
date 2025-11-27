@@ -1,6 +1,6 @@
 package io.github.luminaire1337.propertyvista.backend.shared.internal.exception;
 
-import io.github.luminaire1337.propertyvista.backend.shared.internal.dto.ErrorResponse;
+import io.github.luminaire1337.propertyvista.backend.shared.ErrorResponse;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;

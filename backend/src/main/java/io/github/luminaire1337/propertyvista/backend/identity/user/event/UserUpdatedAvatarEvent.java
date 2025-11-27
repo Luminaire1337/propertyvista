@@ -1,6 +1,8 @@
 package io.github.luminaire1337.propertyvista.backend.identity.user.event;
 
-import io.github.luminaire1337.propertyvista.backend.identity.user.User;
+import io.github.luminaire1337.propertyvista.backend.shared.ImagePath;
 
-public record UserUpdatedAvatarEvent(User user) {
+import java.util.UUID;
+
+public record UserUpdatedAvatarEvent(UUID userId, ImagePath avatarPath) {
 }

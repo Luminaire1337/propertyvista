@@ -1,4 +1,4 @@
-package io.github.luminaire1337.propertyvista.backend.shared.internal.dto;
+package io.github.luminaire1337.propertyvista.backend.shared;
 
 import java.util.HashMap;
 import java.util.Map;

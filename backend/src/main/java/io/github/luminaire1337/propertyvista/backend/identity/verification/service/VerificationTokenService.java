@@ -1,8 +1,10 @@
-package io.github.luminaire1337.propertyvista.backend.identity.verification;
+package io.github.luminaire1337.propertyvista.backend.identity.verification.service;
 
-import io.github.luminaire1337.propertyvista.backend.identity.user.User;
+import io.github.luminaire1337.propertyvista.backend.identity.user.entity.User;
+import io.github.luminaire1337.propertyvista.backend.identity.verification.entity.VerificationToken;
 import io.github.luminaire1337.propertyvista.backend.identity.verification.exception.VerificationTokenNotFoundException;
 import io.github.luminaire1337.propertyvista.backend.identity.verification.exception.VerificationTokenVerificationFailedException;
+import io.github.luminaire1337.propertyvista.backend.identity.verification.repository.VerificationTokenRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +24,7 @@ public class VerificationTokenService {
         return LocalDateTime.now().plusHours(24);
     }
 
-    private VerificationToken getById(UUID id) {
+    private VerificationToken getByVerificationTokenId(UUID id) {
         return verificationTokenRepository.findById(id)
                 .orElseThrow(() -> new VerificationTokenNotFoundException("Verification token not found"));
     }
@@ -48,7 +50,7 @@ public class VerificationTokenService {
 
     @Transactional
     public VerificationToken verifyToken(UUID id, User user) {
-        VerificationToken token = getById(id);
+        VerificationToken token = getByVerificationTokenId(id);
 
         if (!token.getUser().getId().equals(user.getId())) {
             log.info("Verification token {} does not belong to user {}", id, user.getEmail());

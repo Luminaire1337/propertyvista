@@ -1,10 +1,12 @@
-package io.github.luminaire1337.propertyvista.backend.identity.user;
+package io.github.luminaire1337.propertyvista.backend.identity.user.entity;
 
 import io.github.luminaire1337.propertyvista.backend.shared.EmailAddress;
 import io.github.luminaire1337.propertyvista.backend.shared.ImagePath;
 import io.github.luminaire1337.propertyvista.backend.shared.PhoneNumber;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,14 +28,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @NotBlank(message = "Email is required")
     @Embedded
+    @NotNull(message = "Email is required")
+    @Valid
     @AttributeOverrides({
             @AttributeOverride(name = "value", column = @Column(name = "email", unique = true, nullable = false))
     })
     private EmailAddress email;
 
-    @NotBlank(message = "Password is required")
     @Column(nullable = false)
     private String password;
 
@@ -49,16 +51,17 @@ public class User {
 
     // User information fields
     @NotBlank(message = "First name is required")
-    @Size(max = 50, message = "First name must be at most 50 characters")
+    @Size(min = 3, max = 50, message = "First name must be between 3 and 50 characters")
     @Column(nullable = false)
     private String firstName;
 
     @NotBlank(message = "Last name is required")
-    @Size(max = 50, message = "Last name must be at most 50 characters")
+    @Size(min = 3, max = 50, message = "Last name must be between 3 and 50 characters")
     @Column(nullable = false)
     private String lastName;
 
-    @NotBlank(message = "Phone number is required")
+    @NotNull(message = "Phone number is required")
+    @Valid
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "value", column = @Column(name = "phone_number", nullable = false))
@@ -66,6 +69,7 @@ public class User {
     private PhoneNumber phoneNumber;
 
     @Embedded
+    @Valid
     @AttributeOverrides({
             @AttributeOverride(name = "value", column = @Column(name = "avatar_image_path"))
     })
@@ -81,4 +85,19 @@ public class User {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        var now = LocalDateTime.now();
+        createdAt = now;
+        updatedAt = now;
+        if (propertyPoints == null) {
+            propertyPoints = 7;
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

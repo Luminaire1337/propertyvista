@@ -12,9 +12,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmailAddress {
-    @Email(message = "Invalid email format")
-    @Size(max = 100, message = "Email must be at most 100 characters")
+    public static final String message = "Invalid email format";
+
+    @Size(max = 100, message = "Email must be at most 100 characters long")
+    @Email(message = message)
     private String value;
+
+    public static EmailAddress valueOf(String value) {
+        return new EmailAddress(value);
+    }
 
     @Override
     public String toString() {

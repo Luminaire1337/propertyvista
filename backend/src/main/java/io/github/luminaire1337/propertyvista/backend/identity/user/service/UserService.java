@@ -1,16 +1,22 @@
-package io.github.luminaire1337.propertyvista.backend.identity.user;
+package io.github.luminaire1337.propertyvista.backend.identity.user.service;
 
+import io.github.luminaire1337.propertyvista.backend.identity.auth.exception.UnacceptableUserStatusException;
+import io.github.luminaire1337.propertyvista.backend.identity.user.entity.User;
+import io.github.luminaire1337.propertyvista.backend.identity.user.entity.UserRole;
+import io.github.luminaire1337.propertyvista.backend.identity.user.entity.UserStatus;
 import io.github.luminaire1337.propertyvista.backend.identity.user.event.UserCreatedEvent;
 import io.github.luminaire1337.propertyvista.backend.identity.user.event.UserDeletedEvent;
 import io.github.luminaire1337.propertyvista.backend.identity.user.event.UserUpdatedAvatarEvent;
 import io.github.luminaire1337.propertyvista.backend.identity.user.exception.UserAlreadyExistsException;
 import io.github.luminaire1337.propertyvista.backend.identity.user.exception.UserNotFoundException;
 import io.github.luminaire1337.propertyvista.backend.identity.user.exception.UserPasswordVerificationFailedException;
-import io.github.luminaire1337.propertyvista.backend.identity.verification.VerificationToken;
-import io.github.luminaire1337.propertyvista.backend.identity.verification.VerificationTokenService;
+import io.github.luminaire1337.propertyvista.backend.identity.user.repository.UserRepository;
+import io.github.luminaire1337.propertyvista.backend.identity.verification.entity.VerificationToken;
+import io.github.luminaire1337.propertyvista.backend.identity.verification.service.VerificationTokenService;
 import io.github.luminaire1337.propertyvista.backend.shared.EmailAddress;
 import io.github.luminaire1337.propertyvista.backend.shared.ImagePath;
 import io.github.luminaire1337.propertyvista.backend.shared.PhoneNumber;
+import io.github.luminaire1337.propertyvista.backend.shared.SafePassword;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -36,14 +42,17 @@ public class UserService {
     }
 
     @Transactional
-    public User createUser(EmailAddress email, String password, @Nullable UserRole role) {
+    public User createUser(EmailAddress email, SafePassword password, String firstName, String lastName, PhoneNumber phoneNumber, @Nullable UserRole role) {
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException("User with email " + email + " already exists");
         }
 
         User user = User.builder()
                 .email(email)
-                .password(passwordEncoder.encode(password))
+                .password(passwordEncoder.encode(String.valueOf(password)))
+                .firstName(firstName)
+                .lastName(lastName)
+                .phoneNumber(phoneNumber)
                 .role(role != null ? role : UserRole.USER)
                 .build();
         user = userRepository.save(user);
@@ -56,13 +65,18 @@ public class UserService {
     }
 
     @Transactional
-    public User authenticateUser(EmailAddress email, String password) {
+    public User authenticateUser(EmailAddress email, SafePassword password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(String.valueOf(password), user.getPassword())) {
             throw new UserPasswordVerificationFailedException("User password verification failed");
         }
+
+        if (user.getStatus() != UserStatus.VERIFIED) {
+            throw new UnacceptableUserStatusException("User is not verified");
+        }
+
         return user;
     }
 
@@ -99,15 +113,15 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUserPassword(User user, String password) {
-        user.setPassword(passwordEncoder.encode(password));
+    public User updateUserPassword(User user, SafePassword password) {
+        user.setPassword(passwordEncoder.encode(String.valueOf(password)));
         user = userRepository.save(user);
         log.info("Updated password for user with ID {}", user.getId());
         return user;
     }
 
     @Transactional
-    public User updateUserPassword(UUID id, String password) {
+    public User updateUserPassword(UUID id, SafePassword password) {
         User user = getByUserId(id);
         return updateUserPassword(user, password);
     }

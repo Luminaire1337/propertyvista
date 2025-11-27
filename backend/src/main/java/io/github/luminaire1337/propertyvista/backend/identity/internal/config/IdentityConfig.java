@@ -1,4 +1,4 @@
-package io.github.luminaire1337.propertyvista.backend.identity.internal;
+package io.github.luminaire1337.propertyvista.backend.identity.internal.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

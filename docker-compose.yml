@@ -38,6 +38,8 @@ services:
       - SPRING_DATABASE_URL=jdbc:mariadb://database:3306/${DB_NAME:-propertyvista}
       - SPRING_DATABASE_USERNAME=${DB_USER:-propertyvista}
       - SPRING_DATABASE_PASSWORD=${DB_PASSWORD:-propertyvista}
+      - PROPERTYVISTA_JWT_SECRET=${JWT_SECRET:-defaultsecret}
+      - PROPERTYVISTA_JWT_EXPIRATION_MS=${JWT_EXPIRATION_MS:-864000000} # 1 day
     depends_on:
       database:
         condition: service_healthy

@@ -1,10 +1,10 @@
 package io.github.luminaire1337.propertyvista.backend.identity.internal.task;
 
-import io.github.luminaire1337.propertyvista.backend.identity.user.User;
-import io.github.luminaire1337.propertyvista.backend.identity.user.UserService;
-import io.github.luminaire1337.propertyvista.backend.identity.user.UserStatus;
-import io.github.luminaire1337.propertyvista.backend.identity.verification.VerificationToken;
-import io.github.luminaire1337.propertyvista.backend.identity.verification.VerificationTokenService;
+import io.github.luminaire1337.propertyvista.backend.identity.user.entity.User;
+import io.github.luminaire1337.propertyvista.backend.identity.user.entity.UserStatus;
+import io.github.luminaire1337.propertyvista.backend.identity.user.service.UserService;
+import io.github.luminaire1337.propertyvista.backend.identity.verification.entity.VerificationToken;
+import io.github.luminaire1337.propertyvista.backend.identity.verification.service.VerificationTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

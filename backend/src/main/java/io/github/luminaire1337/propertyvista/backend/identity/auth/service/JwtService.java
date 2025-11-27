@@ -1,10 +1,11 @@
-package io.github.luminaire1337.propertyvista.backend.identity.auth;
+package io.github.luminaire1337.propertyvista.backend.identity.auth.service;
 
 import io.github.luminaire1337.propertyvista.backend.identity.auth.exception.InvalidAccessTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class JwtService {
     @Value("${propertyvista.jwt.secret}")
     private String secret;
@@ -22,6 +24,10 @@ public class JwtService {
     private Long expirationMs;
 
     private SecretKey getSigningKey() {
+        if (secret.length() < 32) {
+            log.warn("JWT secret is less than 32 characters long, using a random key instead.");
+            return Jwts.SIG.HS256.key().build();
+        }
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
