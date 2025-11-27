@@ -41,7 +41,7 @@ public class VerificationTokenService {
                 .expiryDate(getExpiryDate())
                 .build();
 
-        verificationTokenRepository.save(token);
+        token = verificationTokenRepository.save(token);
         log.info("Generated verification token for user {}: {}", user.getEmail(), token.getId());
         return token;
     }
