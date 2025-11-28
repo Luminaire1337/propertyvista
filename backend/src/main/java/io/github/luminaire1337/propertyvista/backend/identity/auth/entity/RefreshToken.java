@@ -1,6 +1,7 @@
 package io.github.luminaire1337.propertyvista.backend.identity.auth.entity;
 
 import io.github.luminaire1337.propertyvista.backend.identity.user.entity.User;
+import io.github.luminaire1337.propertyvista.backend.shared.TokenGenerator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,10 +22,21 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(unique = true, nullable = false)
+    private String token;
+
     @ManyToOne()
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "user_agent")
+    private String userAgent;
+
     @Column(nullable = false)
     private LocalDateTime expiryDate;
+
+    @PrePersist
+    public void prePersist() {
+        token = TokenGenerator.generateToken(64);
+    }
 }

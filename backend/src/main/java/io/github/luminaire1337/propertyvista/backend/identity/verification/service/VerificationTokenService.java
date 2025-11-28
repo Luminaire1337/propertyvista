@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +23,8 @@ public class VerificationTokenService {
         return LocalDateTime.now().plusHours(24);
     }
 
-    private VerificationToken getByVerificationTokenId(UUID id) {
-        return verificationTokenRepository.findById(id)
+    private VerificationToken getByVerificationToken(String token) {
+        return verificationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new VerificationTokenNotFoundException("Verification token not found"));
     }
 
@@ -37,33 +36,32 @@ public class VerificationTokenService {
     }
 
     @Transactional
-    public VerificationToken generateToken(User user) {
+    public String generateToken(User user) {
         VerificationToken token = VerificationToken.builder()
                 .user(user)
                 .expiryDate(getExpiryDate())
                 .build();
 
         token = verificationTokenRepository.save(token);
-        log.info("Generated verification token for user {}: {}", user.getEmail(), token.getId());
-        return token;
+        log.info("Generated verification token for user {}: {}", user.getEmail(), token.getToken());
+        return token.getToken();
     }
 
     @Transactional
-    public VerificationToken verifyToken(UUID id, User user) {
-        VerificationToken token = getByVerificationTokenId(id);
+    public void verifyToken(String token, User user) {
+        VerificationToken verificationToken = getByVerificationToken(token);
 
-        if (!token.getUser().getId().equals(user.getId())) {
-            log.info("Verification token {} does not belong to user {}", id, user.getEmail());
+        if (!verificationToken.getUser().getId().equals(user.getId())) {
+            log.info("Verification token {} does not belong to user {}", token, user.getEmail());
             throw new VerificationTokenVerificationFailedException("Provided token does not belong to the specified user");
         }
 
-        if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
-            log.info("Verification token {} for user {} has expired", id, user.getEmail());
+        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            log.info("Verification token {} for user {} has expired", token, user.getEmail());
             throw new VerificationTokenVerificationFailedException("Verification token has expired");
         }
 
-        verificationTokenRepository.delete(token);
-        log.info("Verification token {} for user {} has been verified and deleted", id, user.getEmail());
-        return token;
+        verificationTokenRepository.delete(verificationToken);
+        log.info("Verification token {} for user {} has been verified and deleted", token, user.getEmail());
     }
 }

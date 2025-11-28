@@ -11,7 +11,6 @@ import io.github.luminaire1337.propertyvista.backend.identity.user.exception.Use
 import io.github.luminaire1337.propertyvista.backend.identity.user.exception.UserNotFoundException;
 import io.github.luminaire1337.propertyvista.backend.identity.user.exception.UserPasswordVerificationFailedException;
 import io.github.luminaire1337.propertyvista.backend.identity.user.repository.UserRepository;
-import io.github.luminaire1337.propertyvista.backend.identity.verification.entity.VerificationToken;
 import io.github.luminaire1337.propertyvista.backend.identity.verification.service.VerificationTokenService;
 import io.github.luminaire1337.propertyvista.backend.shared.EmailAddress;
 import io.github.luminaire1337.propertyvista.backend.shared.ImagePath;
@@ -36,7 +35,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    private User getByUserId(UUID id) {
+    public User getByUserId(UUID id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found"));
     }
@@ -53,14 +52,14 @@ public class UserService {
                 .firstName(firstName)
                 .lastName(lastName)
                 .phoneNumber(phoneNumber)
-                .role(role != null ? role : UserRole.USER)
+                .role(role)
                 .build();
         user = userRepository.save(user);
 
-        VerificationToken token = verificationTokenService.generateToken(user);
-        log.info("Created new user with ID {} and email {} and generated verification token {}", user.getId(), email, token.getId());
+        String token = verificationTokenService.generateToken(user);
+        log.info("Created new user with ID {} and email {} and generated verification token {}", user.getId(), email, token);
 
-        applicationEventPublisher.publishEvent(new UserCreatedEvent(user.getId(), token.getId()));
+        applicationEventPublisher.publishEvent(new UserCreatedEvent(user.getId(), token));
         return user;
     }
 
@@ -73,8 +72,12 @@ public class UserService {
             throw new UserPasswordVerificationFailedException("User password verification failed");
         }
 
-        if (user.getStatus() != UserStatus.VERIFIED) {
+        if (!user.isEnabled()) {
             throw new UnacceptableUserStatusException("User is not verified");
+        }
+        
+        if (!user.isAccountNonLocked()) {
+            throw new UnacceptableUserStatusException("User account is suspended");
         }
 
         return user;

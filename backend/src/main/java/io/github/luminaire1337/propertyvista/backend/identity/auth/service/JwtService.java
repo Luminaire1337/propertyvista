@@ -58,13 +58,11 @@ public class JwtService {
         return UUID.fromString(claims.getSubject());
     }
 
-    public boolean isTokenValid(String token) {
-        try {
-            Claims claims = extractPayload(token);
-            Date expiration = claims.getExpiration();
-            return expiration.after(new Date());
-        } catch (InvalidAccessTokenException e) {
-            return false;
+    public void ensureTokenValid(String token) {
+        Claims claims = extractPayload(token);
+        Date expiration = claims.getExpiration();
+        if (!expiration.after(new Date())) {
+            throw new InvalidAccessTokenException("Access token has expired");
         }
     }
 }

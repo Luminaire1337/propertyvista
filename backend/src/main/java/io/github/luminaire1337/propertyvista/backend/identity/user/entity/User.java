@@ -12,8 +12,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -22,7 +27,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User implements UserDetails {
     // Core fields
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -39,15 +44,13 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserRole role = UserRole.USER;
+    private UserRole role;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserStatus status = UserStatus.UNVERIFIED;
+    private UserStatus status;
 
     // User information fields
     @NotBlank(message = "First name is required")
@@ -88,16 +91,50 @@ public class User {
 
     @PrePersist
     protected void onCreate() {
+        if (role == null)
+            role = UserRole.USER;
+        if (status == null)
+            status = UserStatus.UNVERIFIED;
+        if (propertyPoints == null)
+            propertyPoints = 7;
+
         var now = LocalDateTime.now();
         createdAt = now;
         updatedAt = now;
-        if (propertyPoints == null) {
-            propertyPoints = 7;
-        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return String.valueOf(email);
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return status != UserStatus.SUSPENDED;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return status == UserStatus.VERIFIED;
     }
 }

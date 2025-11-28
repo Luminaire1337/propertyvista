@@ -1,6 +1,7 @@
 package io.github.luminaire1337.propertyvista.backend.identity.verification.entity;
 
 import io.github.luminaire1337.propertyvista.backend.identity.user.entity.User;
+import io.github.luminaire1337.propertyvista.backend.shared.TokenGenerator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,10 +22,18 @@ public class VerificationToken {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(unique = true, nullable = false)
+    private String token;
+
     @OneToOne()
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", unique = true, nullable = false)
     private User user;
 
     @Column(nullable = false)
     private LocalDateTime expiryDate;
+
+    @PrePersist
+    public void prePersist() {
+        token = TokenGenerator.generateToken(32);
+    }
 }

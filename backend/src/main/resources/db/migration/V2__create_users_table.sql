@@ -12,5 +12,6 @@ CREATE TABLE users
     property_points   INT          NOT NULL DEFAULT 7,
     created_at        DATETIME(6)  NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
     updated_at        DATETIME(6)  NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-    CONSTRAINT uc_users_email UNIQUE (email)
+    CONSTRAINT uc_users_email UNIQUE (email),
+    INDEX idx_users_email (email)
 );

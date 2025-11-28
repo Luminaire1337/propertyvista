@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -19,39 +18,9 @@ import java.util.UUID;
 public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
-    private RefreshToken getByRefreshTokenId(UUID id) {
-        return refreshTokenRepository.findById(id)
-                .orElseThrow(() -> new InvalidRefreshTokenException("Refresh token " + id + " not found"));
-    }
-
-    @Transactional
-    public UUID generateRefreshToken(User user) {
-        RefreshToken refreshToken = RefreshToken.builder()
-                .user(user)
-                .expiryDate(LocalDateTime.now().plusDays(30))
-                .build();
-        refreshToken = refreshTokenRepository.save(refreshToken);
-        log.info("Generated refresh token for user {}: {}", user.getEmail(), refreshToken.getId());
-        return refreshToken.getId();
-    }
-
-    @Transactional
-    public void deleteRefreshToken(UUID refreshToken) {
-        RefreshToken token = getByRefreshTokenId(refreshToken);
-        refreshTokenRepository.delete(token);
-        log.info("Deleted refresh token {}", refreshToken);
-    }
-
-    @Transactional
-    public RefreshToken ensureTokenValid(UUID refreshTokenId) {
-        RefreshToken refreshToken = getByRefreshTokenId(refreshTokenId);
-
-        if (refreshToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            log.info("Refresh token {} has expired", refreshTokenId);
-            refreshTokenRepository.delete(refreshToken);
-            throw new InvalidRefreshTokenException("Refresh token has expired");
-        }
-        return refreshToken;
+    private RefreshToken getByRefreshToken(String token) {
+        return refreshTokenRepository.findByToken(token)
+                .orElseThrow(() -> new InvalidRefreshTokenException("Refresh token not found"));
     }
 
     public List<RefreshToken> findAllExpiredTokens() {
@@ -59,6 +28,38 @@ public class RefreshTokenService {
         return refreshTokenRepository.findAll().stream()
                 .filter(token -> token.getExpiryDate().isBefore(now))
                 .toList();
+    }
+
+    @Transactional
+    public String generateRefreshToken(User user, String userAgent) {
+        RefreshToken refreshToken = RefreshToken.builder()
+                .user(user)
+                .userAgent(userAgent)
+                .expiryDate(LocalDateTime.now().plusDays(30))
+                .build();
+        refreshToken = refreshTokenRepository.save(refreshToken);
+        log.info("Generated refresh token for user {}: {}", user.getEmail(), refreshToken.getToken());
+        return refreshToken.getToken();
+    }
+
+    @Transactional
+    public void deleteRefreshToken(String refreshToken) {
+        RefreshToken token = getByRefreshToken(refreshToken);
+        refreshTokenRepository.delete(token);
+        log.info("Deleted refresh token {}", refreshToken);
+    }
+
+    @Transactional
+    public User ensureTokenValid(String refreshToken) {
+        RefreshToken token = getByRefreshToken(refreshToken);
+
+        if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
+            log.info("Refresh token {} has expired", token.getToken());
+            throw new InvalidRefreshTokenException("Refresh token has expired");
+        }
+
+        refreshTokenRepository.delete(token); // Delete token either way, so it can't be reused
+        return token.getUser(); // Return the user to generate a new token
     }
 
     @Transactional

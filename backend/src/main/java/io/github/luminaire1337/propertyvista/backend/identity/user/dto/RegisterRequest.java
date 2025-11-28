@@ -1,4 +1,4 @@
-package io.github.luminaire1337.propertyvista.backend.identity.auth.dto;
+package io.github.luminaire1337.propertyvista.backend.identity.user.dto;
 
 import io.github.luminaire1337.propertyvista.backend.shared.EmailAddress;
 import io.github.luminaire1337.propertyvista.backend.shared.PhoneNumber;

@@ -3,12 +3,9 @@ package io.github.luminaire1337.propertyvista.backend.identity.auth.controller;
 import io.github.luminaire1337.propertyvista.backend.identity.auth.dto.AuthResponse;
 import io.github.luminaire1337.propertyvista.backend.identity.auth.dto.LoginRequest;
 import io.github.luminaire1337.propertyvista.backend.identity.auth.dto.RefreshTokenRequest;
-import io.github.luminaire1337.propertyvista.backend.identity.auth.dto.RegisterRequest;
 import io.github.luminaire1337.propertyvista.backend.identity.auth.service.AuthService;
-import io.github.luminaire1337.propertyvista.backend.identity.user.dto.UserResponse;
 import io.github.luminaire1337.propertyvista.backend.shared.EmailAddress;
 import io.github.luminaire1337.propertyvista.backend.shared.ErrorResponse;
-import io.github.luminaire1337.propertyvista.backend.shared.PhoneNumber;
 import io.github.luminaire1337.propertyvista.backend.shared.SafePassword;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,8 +22,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/identity/auth")
@@ -39,28 +35,6 @@ import java.util.UUID;
 })
 public class AuthController {
     private final AuthService authService;
-
-    @PostMapping("/register")
-    @Operation(
-            summary = "Register a new user and obtain tokens",
-            responses = {
-                    @ApiResponse(responseCode = "201", description = "User registered successfully", content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = UserResponse.class))
-                    })
-            }
-    )
-    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
-        UserResponse userResponse = authService.register
-                (
-                        EmailAddress.valueOf(registerRequest.email()),
-                        SafePassword.valueOf(registerRequest.password()),
-                        registerRequest.firstName(),
-                        registerRequest.lastName(),
-                        PhoneNumber.valueOf(registerRequest.phoneNumber())
-                );
-        return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
-    }
 
     @PostMapping("/login")
     @Operation(
@@ -76,10 +50,11 @@ public class AuthController {
                     })
             }
     )
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         AuthResponse authResponse = authService.login(
                 EmailAddress.valueOf(loginRequest.email()),
-                SafePassword.valueOf(loginRequest.password())
+                SafePassword.valueOf(loginRequest.password()),
+                request.getHeader("User-Agent")
         );
         return ResponseEntity.status(HttpStatus.OK).body(authResponse);
     }
@@ -92,7 +67,7 @@ public class AuthController {
             }
     )
     public ResponseEntity<Void> logout(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
-        authService.logout(UUID.fromString(refreshTokenRequest.refreshToken()));
+        authService.logout(refreshTokenRequest.refreshToken());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -106,9 +81,10 @@ public class AuthController {
                     })
             }
     )
-    public ResponseEntity<AuthResponse> refreshTokens(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+    public ResponseEntity<AuthResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest, HttpServletRequest request) {
         AuthResponse authResponse = authService.refreshAccessToken(
-                UUID.fromString(refreshTokenRequest.refreshToken())
+                refreshTokenRequest.refreshToken(),
+                request.getHeader("User-Agent")
         );
         return ResponseEntity.status(HttpStatus.OK).body(authResponse);
     }
