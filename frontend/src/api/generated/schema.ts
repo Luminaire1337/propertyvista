@@ -4,14 +4,15 @@
  */
 
 export interface paths {
-    "/identity/auth/register": {
+    "/identity/user": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Get current user information */
+        get: operations["getCurrentUser"];
         put?: never;
         /** Register a new user and obtain tokens */
         post: operations["register"];
@@ -31,7 +32,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Refresh authentication tokens using a valid refresh token */
-        post: operations["refreshTokens"];
+        post: operations["refreshToken"];
         delete?: never;
         options?: never;
         head?: never;
@@ -111,7 +112,6 @@ export interface components {
         };
         AuthResponse: {
             accessToken?: string;
-            /** Format: uuid */
             refreshToken?: string;
             /** Format: int64 */
             expirationMs?: number;
@@ -133,6 +133,35 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    getCurrentUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User information retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserResponse"];
+                };
+            };
+            /** @description Invalid request payload */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     register: {
         parameters: {
             query?: never;
@@ -166,7 +195,7 @@ export interface operations {
             };
         };
     };
-    refreshTokens: {
+    refreshToken: {
         parameters: {
             query?: never;
             header?: never;
