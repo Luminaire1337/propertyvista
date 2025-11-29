@@ -75,14 +75,16 @@ services:
       retries: 3
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        - VITE_API_URL=/api
     container_name: propertyvista-frontend
     restart: unless-stopped
     expose:
       - "80"
     environment:
       - TZ=Europe/Warsaw
-      - VITE_API_URL=/api
     depends_on:
       backend:
         condition: service_started
