@@ -47,7 +47,7 @@ public class UserController {
                     })
             }
     )
-    public ResponseEntity<UserResponse> getCurrentUser() {
+    public ResponseEntity<UserResponse> index() {
         User currentUser = currentUserContext.getCurrentUser();
         return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(currentUser));
     }
@@ -74,5 +74,21 @@ public class UserController {
                         null
                 );
         return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.toDTO(user));
+    }
+
+    @DeleteMapping()
+    @Operation(
+            summary = "Delete the current user's account",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "User account deleted successfully", content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UserResponse.class))
+                    })
+            }
+    )
+    public ResponseEntity<UserResponse> delete() {
+        User user = currentUserContext.getCurrentUser();
+        user = userService.deleteUser(user);
+        return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
     }
 }
