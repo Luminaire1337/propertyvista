@@ -124,6 +124,7 @@ export const useAuthStore = defineStore('auth', () => {
       userProfile.value = null
     } catch (error) {
       console.error('Auth Store: Error during logout:', error)
+      throw new Error('Logout failed: ' + makeErrorResponseHumanReadable(error as ErrorResponse))
     }
   }
 

@@ -12,11 +12,12 @@ export interface paths {
             cookie?: never;
         };
         /** Get current user information */
-        get: operations["getCurrentUser"];
+        get: operations["index"];
         put?: never;
         /** Register a new user and obtain tokens */
         post: operations["register"];
-        delete?: never;
+        /** Delete the current user's account */
+        delete: operations["delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -133,7 +134,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    getCurrentUser: {
+    index: {
         parameters: {
             query?: never;
             header?: never;
@@ -177,6 +178,35 @@ export interface operations {
         responses: {
             /** @description User registered successfully */
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserResponse"];
+                };
+            };
+            /** @description Invalid request payload */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User account deleted successfully */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

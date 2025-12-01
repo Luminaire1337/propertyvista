@@ -3,4 +3,6 @@
 @theme {
   --font-sans: 'Inter', sans-serif;
   --color-primary: #00ba52;
+  /* Darken primary color by 10% */
+  --color-primary-dark: color-mix(in srgb, var(--color-primary) 90%, black);
 }

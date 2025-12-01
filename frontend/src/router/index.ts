@@ -19,6 +19,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/RegisterPage.vue'),
     meta: { requiresGuest: true },
   },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/ErrorPage.vue'),
+  },
 ]
 
 const router = createRouter({
