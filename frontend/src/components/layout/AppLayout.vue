@@ -9,7 +9,7 @@ import { Toaster } from 'vue-sonner'
     <NavBar />
     <RouterView v-slot="{ Component, route }">
       <transition name="fade" mode="out-in">
-        <main :key="route.path">
+        <main :key="route.path" class="py-8">
           <component :is="Component" />
         </main>
       </transition>

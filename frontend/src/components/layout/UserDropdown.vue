@@ -10,7 +10,7 @@ const props = defineProps<{
   authStore: ReturnType<typeof useAuthStore>
 }>()
 
-const logout = (event: Event) => {
+const handleLogout = (event: Event) => {
   event.preventDefault()
   toast.promise(props.authStore.logout(), {
     loading: 'Wylogowywanie...',
@@ -18,7 +18,7 @@ const logout = (event: Event) => {
       router.push({ name: 'home' })
       return 'Pomyślnie wylogowano.'
     },
-    error: (err: Error) => `Błąd podczas wylogowywania: ${err.message}`,
+    error: (err: Error) => err.message,
   })
 }
 
@@ -33,7 +33,7 @@ const dropDownLinks = [
   },
   {
     name: 'Wyloguj się',
-    action: logout,
+    action: handleLogout,
   },
 ]
 </script>

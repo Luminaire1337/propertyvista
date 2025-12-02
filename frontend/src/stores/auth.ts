@@ -124,7 +124,7 @@ export const useAuthStore = defineStore('auth', () => {
       userProfile.value = null
     } catch (error) {
       console.error('Auth Store: Error during logout:', error)
-      throw new Error('Logout failed: ' + makeErrorResponseHumanReadable(error as ErrorResponse))
+      throw new Error(makeErrorResponseHumanReadable(error as ErrorResponse))
     }
   }
 
@@ -152,7 +152,7 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('expirationDate', expirationDate.value.toString())
     } catch (error) {
       console.error('Auth Store: Error during login:', error)
-      throw new Error('Login failed: ' + makeErrorResponseHumanReadable(error as ErrorResponse))
+      throw new Error(makeErrorResponseHumanReadable(error as ErrorResponse))
     }
   }
 
@@ -170,9 +170,7 @@ export const useAuthStore = defineStore('auth', () => {
       if (error) throw error
     } catch (error) {
       console.error('Auth Store: Error during registration:', error)
-      throw new Error(
-        'Registration failed: ' + makeErrorResponseHumanReadable(error as ErrorResponse),
-      )
+      throw new Error(makeErrorResponseHumanReadable(error as ErrorResponse))
     }
   }
 

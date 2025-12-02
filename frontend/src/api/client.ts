@@ -9,16 +9,17 @@ export const setApiAccessToken = (newToken: string | null) => {
 
 type ErrorResponse = components['schemas']['ErrorResponse']
 export const makeErrorResponseHumanReadable = (error: ErrorResponse): string => {
-  let message = error.message || 'An error occurred'
+  let message = error.message || 'Wystąpił błąd'
 
   // Check if error has any details
-  if (error.errors && Array.isArray(error.errors) && error.errors.length > 0) {
-    const details = error.errors.map((err) => err.message).join('; ')
-    message += ` Details: ${details}`
-    return message
+  if (error.errors && Object.keys(error.errors).length > 0) {
+    const details = Object.entries(error.errors)
+      .map(([, msg]) => msg)
+      .join('; ')
+    message += `: ${details}`
   }
 
-  return 'An unknown error occurred'
+  return message
 }
 
 const client = createClient<paths>({

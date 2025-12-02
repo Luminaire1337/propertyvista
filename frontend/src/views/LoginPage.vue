@@ -1,55 +1,56 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { toast } from 'vue-sonner'
+import router from '@/router'
+import PrimaryButton from '@/components/PrimaryButton.vue'
 
 const authStore = useAuthStore()
 
 const email = ref('')
 const password = ref('')
 
-const handleSubmit = async () => {
-  try {
-    await authStore.login({ email: email.value, password: password.value })
-    // Redirect to home page or dashboard after successful login
-  } catch (error) {
-    alert((error as Error).message)
-  }
+const handleLogin = (event: Event) => {
+  event.preventDefault()
+  toast.promise(authStore.login({ email: email.value, password: password.value }), {
+    loading: 'Logowanie...',
+    success: () => {
+      router.push({ name: 'home' })
+      return 'Pomyślnie zalogowano.'
+    },
+    error: (err: Error) => err.message,
+  })
 }
 </script>
 
 <template>
-  <!-- TEMPORARY LOGIN FORM -->
-  <form class="max-w-md mx-auto mt-10" @submit.prevent="handleSubmit">
-    <h1 class="text-3xl font-bold mb-6">Login</h1>
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email</label>
-      <input
-        v-model="email"
-        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        id="email"
-        type="email"
-        placeholder="Enter your email"
-        required
-      />
-    </div>
-    <div class="mb-6">
-      <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Password</label>
-      <input
-        v-model="password"
-        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        id="password"
-        type="password"
-        placeholder="Enter your password"
-        required
-      />
-    </div>
-    <div class="flex items-center justify-between">
-      <button
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        type="submit"
-      >
-        Login
-      </button>
-    </div>
-  </form>
+  <div class="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+    <h1 class="text-4xl font-bold mb-4">Zaloguj się</h1>
+    <form @submit="handleLogin" class="w-full max-w-sm bg-white p-6 rounded shadow-md">
+      <div class="mb-4 text-left">
+        <label for="email" class="block text-gray-700 mb-2">Email:</label>
+        <input
+          v-model="email"
+          type="email"
+          id="email"
+          required
+          class="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-green-300"
+        />
+      </div>
+      <div class="mb-6 text-left">
+        <label for="password" class="block text-gray-700 mb-2">Hasło:</label>
+        <input
+          v-model="password"
+          type="password"
+          id="password"
+          required
+          class="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-green-300"
+        />
+      </div>
+      <PrimaryButton type="submit" class="w-full">Zaloguj się</PrimaryButton>
+      <RouterLink to="/register" class="block mt-4 text-sm text-gray-900 hover:underline">
+        Nie masz konta? Zarejestruj się
+      </RouterLink>
+    </form>
+  </div>
 </template>
