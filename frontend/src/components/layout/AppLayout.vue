@@ -9,9 +9,9 @@ import { Toaster } from 'vue-sonner'
     <NavBar />
     <RouterView v-slot="{ Component, route }">
       <transition name="fade" mode="out-in">
-        <div :key="route.path">
+        <main :key="route.path">
           <component :is="Component" />
-        </div>
+        </main>
       </transition>
     </RouterView>
     <Toaster position="bottom-right" theme="light" rich-colors />
