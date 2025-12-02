@@ -7,9 +7,11 @@ import { Toaster } from 'vue-sonner'
 <template>
   <div class="flex flex-col min-h-screen">
     <NavBar />
-    <RouterView v-slot="{ Component }">
-      <transition name="fade">
-        <component :is="Component" />
+    <RouterView v-slot="{ Component, route }">
+      <transition name="fade" mode="out-in">
+        <div :key="route.path">
+          <component :is="Component" />
+        </div>
       </transition>
     </RouterView>
     <Toaster position="bottom-right" theme="light" rich-colors />
