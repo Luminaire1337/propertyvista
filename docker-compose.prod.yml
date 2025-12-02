@@ -1,7 +1,6 @@
 services:
   traefik:
     image: traefik:latest
-    container_name: propertyvista-traefik
     restart: unless-stopped
     ports:
       - "80:80"
@@ -27,7 +26,9 @@ services:
       - "traefik.http.middlewares.rate-limit.ratelimit.period=1s"
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: ./docker/prod/Dockerfile
     container_name: propertyvista-backend
     restart: unless-stopped
     expose:
@@ -53,33 +54,12 @@ services:
       - "traefik.http.middlewares.backend-strip.stripprefix.forceSlash=false"
       - "traefik.http.routers.backend.middlewares=backend-strip,cors-headers,rate-limit"
 
-  database:
-    image: mariadb:12-noble
-    container_name: propertyvista-database
-    restart: unless-stopped
-    volumes:
-      - db_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
-    environment:
-      - TZ=Europe/Warsaw
-      - MARIADB_DATABASE=${DB_NAME:-propertyvista}
-      - MARIADB_USER=${DB_USER:-propertyvista}
-      - MARIADB_PASSWORD=${DB_PASSWORD:-propertyvista}
-      - MARIADB_RANDOM_ROOT_PASSWORD=1
-    healthcheck: # https://mariadb.com/docs/server/server-management/automated-mariadb-deployment-and-administration/docker-and-mariadb/using-healthcheck-sh#compose-file-example
-      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
-      start_period: 10s
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
   frontend:
     build:
       context: ./frontend
+      dockerfile: ./docker/prod/Dockerfile
       args:
         - VITE_API_URL=/api
-    container_name: propertyvista-frontend
     restart: unless-stopped
     expose:
       - "80"
@@ -95,6 +75,3 @@ services:
       - "traefik.http.routers.frontend.priority=1"
       - "traefik.http.services.frontend.loadbalancer.server.port=80"
       - "traefik.http.routers.frontend.middlewares=cors-headers"
-
-volumes:
-  db_data:

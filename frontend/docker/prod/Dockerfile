@@ -10,7 +10,7 @@ ENV VITE_API_URL=$VITE_API_URL
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Copy package files and install dependencies
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
 # Copy the rest of the application code and build the project
@@ -26,7 +26,7 @@ RUN rm -rf ./*
 COPY --from=build /app/dist .
 
 # Copy nginx config
-COPY docker/default.conf /etc/nginx/conf.d/default.conf
+COPY docker/prod/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Expose port
 EXPOSE 80

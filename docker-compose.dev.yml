@@ -1,0 +1,47 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ./docker/dev/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./backend/src:/app/src:ro
+      - ./backend/pom.xml:/app/pom.xml:ro
+      - maven_cache:/home/docker/.m2
+    ports:
+      - "8080:8080"
+      - "5005:5005" # for remote debugging
+    environment:
+      - TZ=Europe/Warsaw
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_DATABASE_URL=jdbc:mariadb://database:3306/${DB_NAME:-propertyvista}
+      - SPRING_DATABASE_USERNAME=${DB_USER:-propertyvista}
+      - SPRING_DATABASE_PASSWORD=${DB_PASSWORD:-propertyvista}
+      - PROPERTYVISTA_JWT_SECRET=${JWT_SECRET:-CHANGEMECHANGEMECHANGEMECHANGEME}
+      - PROPERTYVISTA_JWT_EXPIRATION_MS=${JWT_EXPIRATION_MS:-864000000} # 1 day
+    depends_on:
+      database:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./docker/dev/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./frontend/src:/app/src:ro
+      - ./frontend/index.html:/app/index.html:ro
+      - ./frontend/vite.config.ts:/app/vite.config.ts:ro
+      - node_modules:/app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - TZ=Europe/Warsaw
+      - VITE_API_URL=http://localhost:8080
+    depends_on:
+      backend:
+        condition: service_started
+
+volumes:
+  maven_cache:
+  node_modules:

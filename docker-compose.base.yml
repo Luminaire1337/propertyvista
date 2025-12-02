@@ -1,0 +1,23 @@
+services:
+  database:
+    image: mariadb:12-noble
+    restart: unless-stopped
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - TZ=Europe/Warsaw
+      - MARIADB_DATABASE=${DB_NAME:-propertyvista}
+      - MARIADB_USER=${DB_USER:-propertyvista}
+      - MARIADB_PASSWORD=${DB_PASSWORD:-propertyvista}
+      - MARIADB_RANDOM_ROOT_PASSWORD=1
+    healthcheck: # https://mariadb.com/docs/server/server-management/automated-mariadb-deployment-and-administration/docker-and-mariadb/using-healthcheck-sh#compose-file-example
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  db_data:
