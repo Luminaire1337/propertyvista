@@ -3,6 +3,7 @@ import PropertyVistaLogo from '../PropertyVistaLogo.vue'
 import { siteName } from '@/site'
 import { useAuthStore } from '@/stores/auth'
 import UserDropdown from './UserDropdown.vue'
+import PrimaryButton from '../PrimaryButton.vue'
 
 const navLinks = [
   { name: 'Nieruchomości', path: '/properties' },
@@ -48,11 +49,8 @@ const authStore = useAuthStore()
             <UserDropdown :auth-store="authStore" />
           </template>
           <template v-else>
-            <RouterLink
-              to="/login"
-              class="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark transition-colors"
-            >
-              Zaloguj się
+            <RouterLink to="/login">
+              <PrimaryButton>Zaloguj się</PrimaryButton>
             </RouterLink>
           </template>
         </div>
