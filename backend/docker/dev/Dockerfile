@@ -1,8 +1,8 @@
 FROM eclipse-temurin:25-jdk-alpine
 WORKDIR /app
 
-# Install curl for healthcheck and maven
-RUN apk add --no-cache curl maven
+# Install maven
+RUN apk add --no-cache maven
 
 # Set default permission
 ARG DEFAULT_PERMISSION=755
@@ -28,10 +28,6 @@ RUN mvn dependency:go-offline -B
 
 # Expose the application port and debug port
 EXPOSE 8080 5005
-
-# Add a health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-  CMD curl -f http://localhost:8080/actuator/health || exit 1
 
 # Run the application with auto-reload and remote debugging enabled
 # https://stackoverflow.com/a/69880735

@@ -6,7 +6,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./backend/src:/app/src:ro
-      - ./backend/pom.xml:/app/pom.xml:ro
       - maven_cache:/home/docker/.m2
     ports:
       - "8080:8080"
