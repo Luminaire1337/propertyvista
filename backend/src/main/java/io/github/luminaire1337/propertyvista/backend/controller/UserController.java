@@ -1,6 +1,7 @@
 package io.github.luminaire1337.propertyvista.backend.controller;
 
 import io.github.luminaire1337.propertyvista.backend.dto.request.RegisterRequest;
+import io.github.luminaire1337.propertyvista.backend.dto.request.VerifyEmailRequest;
 import io.github.luminaire1337.propertyvista.backend.dto.response.ErrorResponse;
 import io.github.luminaire1337.propertyvista.backend.dto.response.UserResponse;
 import io.github.luminaire1337.propertyvista.backend.entity.User;
@@ -89,6 +90,21 @@ public class UserController {
     public ResponseEntity<UserResponse> delete() {
         User user = currentUserContext.getCurrentUser();
         user = userService.deleteUser(user);
+        return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
+    }
+
+    @PostMapping("/verify-email")
+    @Operation(
+            summary = "Verify the current user's email address",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "User email verified successfully", content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UserResponse.class))
+                    })
+            }
+    )
+    public ResponseEntity<UserResponse> verifyEmail(@Valid @RequestBody VerifyEmailRequest verifyEmailRequest) {
+        User user = userService.verifyUser(verifyEmailRequest.token());
         return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
     }
 }

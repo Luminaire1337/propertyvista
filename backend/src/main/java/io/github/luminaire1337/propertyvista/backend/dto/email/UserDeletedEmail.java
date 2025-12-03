@@ -20,8 +20,6 @@ public record UserDeletedEmail(
         return """
                 <p>Dear %s %s,</p>
                 <p>We regret to inform you that your account has been deleted from our system. If you believe this was a mistake or have any questions, please contact our support team.</p>
-                <p>Thank you for being a part of our community.</p>
-                <p>Best regards,<br/>The Property Vista Team</p>
                 """
                 .formatted(user.getFirstName(), user.getLastName());
     }

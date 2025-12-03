@@ -7,16 +7,23 @@ const routes: RouteRecordRaw[] = [
     name: 'home',
     component: () => import('@/views/HomePage.vue'),
   },
+  // Auth routes
   {
     path: '/login',
     name: 'login',
-    component: () => import('@/views/LoginPage.vue'),
+    component: () => import('@/views/auth/LoginPage.vue'),
     meta: { requiresGuest: true },
   },
   {
     path: '/register',
     name: 'register',
-    component: () => import('@/views/RegisterPage.vue'),
+    component: () => import('@/views/auth/RegisterPage.vue'),
+    meta: { requiresGuest: true },
+  },
+  {
+    path: '/verify-email',
+    name: 'verify-email',
+    component: () => import('@/views/user/VerifyEmailPage.vue'),
     meta: { requiresGuest: true },
   },
   {

@@ -19,6 +19,9 @@ public class EmailService {
     @Value("${propertyvista.mail.from}")
     private String from;
 
+    @Value("${propertyvista.frontend.url}")
+    private String frontendUrl;
+
     @Async
     public void sendEmail(EmailDetails emailDetails) {
         try {
@@ -28,7 +31,10 @@ public class EmailService {
             helper.setFrom(from);
             helper.setTo(emailDetails.getRecipientEmail());
             helper.setSubject(emailDetails.getSubject());
-            helper.setText(emailDetails.getBody(), true); // true indicates HTML
+
+            String bodyWithFrontendUrl = emailDetails.getBody().replace("{FRONTEND_URL}", frontendUrl);
+            helper.setText(bodyWithFrontendUrl, true); // true indicates HTML
+            
             mailSender.send(mimeMessage);
             log.info("Email sent to {}", emailDetails.getRecipientEmail());
         } catch (Exception e) {

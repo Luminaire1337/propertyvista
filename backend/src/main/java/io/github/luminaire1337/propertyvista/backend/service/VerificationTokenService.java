@@ -48,13 +48,9 @@ public class VerificationTokenService {
     }
 
     @Transactional
-    public void verifyToken(String token, User user) {
+    public User verifyToken(String token) {
         VerificationToken verificationToken = getByVerificationToken(token);
-
-        if (!verificationToken.getUser().getId().equals(user.getId())) {
-            log.info("Verification token {} does not belong to user {}", token, user.getEmail());
-            throw new VerificationTokenVerificationFailedException("Provided token does not belong to the specified user");
-        }
+        User user = verificationToken.getUser();
 
         if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
             log.info("Verification token {} for user {} has expired", token, user.getEmail());
@@ -63,5 +59,6 @@ public class VerificationTokenService {
 
         verificationTokenRepository.delete(verificationToken);
         log.info("Verification token {} for user {} has been verified and deleted", token, user.getEmail());
+        return user;
     }
 }

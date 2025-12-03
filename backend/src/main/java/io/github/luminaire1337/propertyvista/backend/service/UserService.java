@@ -147,4 +147,11 @@ public class UserService {
         log.info("Updated avatar image path for user with ID {}", user.getId());
         return user;
     }
+
+    @Transactional
+    public User verifyUser(String token) {
+        User user = verificationTokenService.verifyToken(token);
+        user = updateUserStatus(user, UserStatus.VERIFIED);
+        return user;
+    }
 }
