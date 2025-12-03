@@ -46,7 +46,7 @@ export const useAuthStore = defineStore('auth', () => {
         console.log('Auth Store: Access token expired, attempting to refresh.')
 
         // Attempt to refresh tokens
-        const { data, error } = await client.POST('/identity/auth/refresh', {
+        const { data, error } = await client.POST('/auth/refresh', {
           body: {
             refreshToken: refreshToken.value!,
           },
@@ -82,7 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
       await validateAccessTokenDuration()
 
       // Fetch user profile
-      const { data, error } = await client.GET('/identity/user')
+      const { data, error } = await client.GET('/user')
 
       if (isAuthenticated.value) {
         console.warn('Auth Store: fetchUserProfile aborted, user is already authenticated.')
@@ -110,7 +110,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       // Inform API about logout if refresh token exists
       if (refreshToken.value) {
-        await client.POST('/identity/auth/logout', {
+        await client.POST('/auth/logout', {
           body: {
             refreshToken: refreshToken.value,
           },
@@ -135,7 +135,7 @@ export const useAuthStore = defineStore('auth', () => {
         return
       }
 
-      const { data, error } = await client.POST('/identity/auth/login', {
+      const { data, error } = await client.POST('/auth/login', {
         body: credentials,
       })
 
@@ -163,7 +163,7 @@ export const useAuthStore = defineStore('auth', () => {
         return
       }
 
-      const { error } = await client.POST('/identity/user', {
+      const { error } = await client.POST('/user', {
         body: details,
       })
 

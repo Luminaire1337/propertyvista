@@ -23,7 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/identity/user")
+@RequestMapping("/user")
 @RequiredArgsConstructor
 @Tag(name = "User Management", description = "Endpoints for managing user information")
 @ApiResponses(value = {
