@@ -23,9 +23,6 @@ COPY --chown=${USER_NAME}:${GROUP_NAME} --chmod=${DEFAULT_PERMISSION} pom.xml .
 # Change to the non-root user
 USER ${USER_NAME}
 
-# Download the dependencies as non-root user
-RUN mvn dependency:go-offline -B
-
 # Expose the application port and debug port
 EXPOSE 8080 5005
 
