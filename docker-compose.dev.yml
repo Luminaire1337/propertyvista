@@ -13,11 +13,17 @@ services:
     environment:
       - TZ=Europe/Warsaw
       - SPRING_PROFILES_ACTIVE=dev
+      - PROPERTYVISTA_FRONTEND_URL=http://localhost:5173
       - SPRING_DATABASE_URL=jdbc:mariadb://database:3306/${DB_NAME:-propertyvista}
       - SPRING_DATABASE_USERNAME=${DB_USER:-propertyvista}
       - SPRING_DATABASE_PASSWORD=${DB_PASSWORD:-propertyvista}
       - PROPERTYVISTA_JWT_SECRET=${JWT_SECRET:-CHANGEMECHANGEMECHANGEMECHANGEME}
       - PROPERTYVISTA_JWT_EXPIRATION_MS=${JWT_EXPIRATION_MS:-864000000} # 1 day
+      - SPRING_MAIL_HOST=mailpit
+      - SPRING_MAIL_PORT=1025
+      - SPRING_MAIL_USERNAME=mailpit
+      - SPRING_MAIL_PASSWORD=mailpit
+      - PROPERTYVISTA_MAIL_FROM=noreply@propertyvista.com
     depends_on:
       database:
         condition: service_healthy
@@ -41,6 +47,22 @@ services:
       backend:
         condition: service_started
 
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    volumes:
+      - mailpit_data:/data
+    ports:
+      - "8025:8025"  # Web interface
+      - "1025:1025"  # SMTP
+    environment:
+      - TZ=Europe/Warsaw
+      - MP_MAX_MESSAGES=5000
+      - MP_DATABASE=/data/mailpit.db
+      - MP_SMTP_AUTH_ACCEPT_ANY=1
+      - MP_SMTP_AUTH_ALLOW_INSECURE=1
+
 volumes:
   maven_cache:
   node_modules:
+  mailpit_data:

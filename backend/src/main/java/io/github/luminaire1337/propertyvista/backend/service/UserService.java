@@ -1,5 +1,7 @@
 package io.github.luminaire1337.propertyvista.backend.service;
 
+import io.github.luminaire1337.propertyvista.backend.dto.email.UserDeletedEmail;
+import io.github.luminaire1337.propertyvista.backend.dto.email.UserRegisteredEmail;
 import io.github.luminaire1337.propertyvista.backend.entity.User;
 import io.github.luminaire1337.propertyvista.backend.entity.UserRole;
 import io.github.luminaire1337.propertyvista.backend.entity.UserStatus;
@@ -28,6 +30,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final VerificationTokenService verificationTokenService;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     public User getByUserId(UUID id) {
         return userRepository.findById(id)
@@ -52,6 +55,8 @@ public class UserService {
 
         String token = verificationTokenService.generateToken(user);
         log.info("Created new user with ID {} and email {} and generated verification token {}", user.getId(), email, token);
+
+        emailService.sendEmail(new UserRegisteredEmail(user, token));
         return user;
     }
 
@@ -79,13 +84,9 @@ public class UserService {
     public User deleteUser(User user) {
         userRepository.delete(user);
         log.info("Deleted user with ID {}", user.getId());
-        return user;
-    }
 
-    @Transactional
-    public User deleteUser(UUID id) {
-        User user = getByUserId(id);
-        return deleteUser(user);
+        emailService.sendEmail(new UserDeletedEmail(user));
+        return user;
     }
 
     @Transactional
@@ -114,12 +115,6 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUserPassword(UUID id, SafePassword password) {
-        User user = getByUserId(id);
-        return updateUserPassword(user, password);
-    }
-
-    @Transactional
     public User updateUserRole(User user, UserRole role) {
         user.setRole(role);
         user = userRepository.save(user);
@@ -128,23 +123,11 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUserRole(UUID id, UserRole role) {
-        User user = getByUserId(id);
-        return updateUserRole(user, role);
-    }
-
-    @Transactional
     public User updateUserStatus(User user, UserStatus status) {
         user.setStatus(status);
         user = userRepository.save(user);
         log.info("Updated status for user with ID {} to {}", user.getId(), status);
         return user;
-    }
-
-    @Transactional
-    public User updateUserStatus(UUID id, UserStatus status) {
-        User user = getByUserId(id);
-        return updateUserStatus(user, status);
     }
 
     @Transactional
@@ -158,22 +141,10 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUserInfo(UUID id, String firstName, String lastName, PhoneNumber phoneNumber) {
-        User user = getByUserId(id);
-        return updateUserInfo(user, firstName, lastName, phoneNumber);
-    }
-
-    @Transactional
     public User updateUserAvatarImagePath(User user, @Nullable ImagePath avatarImagePath) {
         user.setAvatarImagePath(avatarImagePath);
         user = userRepository.save(user);
         log.info("Updated avatar image path for user with ID {}", user.getId());
         return user;
-    }
-
-    @Transactional
-    public User updateUserAvatarImagePath(UUID id, @Nullable ImagePath avatarImagePath) {
-        User user = getByUserId(id);
-        return updateUserAvatarImagePath(user, avatarImagePath);
     }
 }

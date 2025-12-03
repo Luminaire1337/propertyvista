@@ -36,11 +36,17 @@ services:
     environment:
       - TZ=Europe/Warsaw
       - SPRING_PROFILES_ACTIVE=prod
+      - PROPERTYVISTA_FRONTEND_URL=${FRONTEND_URL:-http://localhost}
       - SPRING_DATABASE_URL=jdbc:mariadb://database:3306/${DB_NAME:-propertyvista}
       - SPRING_DATABASE_USERNAME=${DB_USER:-propertyvista}
       - SPRING_DATABASE_PASSWORD=${DB_PASSWORD:-propertyvista}
       - PROPERTYVISTA_JWT_SECRET=${JWT_SECRET:-CHANGEMECHANGEMECHANGEMECHANGEME}
       - PROPERTYVISTA_JWT_EXPIRATION_MS=${JWT_EXPIRATION_MS:-864000000} # 1 day
+      - SPRING_MAIL_HOST=${MAIL_HOST:-}
+      - SPRING_MAIL_PORT=${MAIL_PORT:-}
+      - SPRING_MAIL_USERNAME=${MAIL_USERNAME:-}
+      - SPRING_MAIL_PASSWORD=${MAIL_PASSWORD:-}
+      - PROPERTYVISTA_MAIL_FROM=${MAIL_FROM:-}
     depends_on:
       database:
         condition: service_healthy
