@@ -1,0 +1,21 @@
+package io.github.luminaire1337.propertyvista.backend.exception.handler;
+
+import io.github.luminaire1337.propertyvista.backend.dto.response.ErrorResponse;
+import io.github.luminaire1337.propertyvista.backend.exception.RestApiException;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+@RestControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE + 10)
+public class RestApiExceptionHandler {
+    @ExceptionHandler(RestApiException.class)
+    public ResponseEntity<ErrorResponse> handleRestApiException(RestApiException ex) {
+        return ResponseEntity
+                .status(ex.getStatus() != null ? ex.getStatus() : HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+}
