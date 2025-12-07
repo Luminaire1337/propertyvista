@@ -34,7 +34,7 @@ public class EmailService {
 
             String bodyWithFrontendUrl = emailDetails.getBody().replace("{FRONTEND_URL}", frontendUrl);
             helper.setText(bodyWithFrontendUrl, true); // true indicates HTML
-            
+
             mailSender.send(mimeMessage);
             log.info("Email sent to {}", emailDetails.getRecipientEmail());
         } catch (Exception e) {

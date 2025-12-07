@@ -101,12 +101,6 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUserEmail(UUID id, EmailAddress email) {
-        User user = getByUserId(id);
-        return updateUserEmail(user, email);
-    }
-
-    @Transactional
     public User updateUserPassword(User user, SafePassword password) {
         user.setPassword(passwordEncoder.encode(String.valueOf(password)));
         user = userRepository.save(user);

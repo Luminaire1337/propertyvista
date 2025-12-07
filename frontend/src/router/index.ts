@@ -20,12 +20,14 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/auth/RegisterPage.vue'),
     meta: { requiresGuest: true },
   },
+  // User routes
   {
     path: '/verify-email',
     name: 'verify-email',
     component: () => import('@/views/user/VerifyEmailPage.vue'),
     meta: { requiresGuest: true },
   },
+  // Catch 404 errors
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
