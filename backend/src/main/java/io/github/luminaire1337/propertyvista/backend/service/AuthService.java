@@ -3,8 +3,6 @@ package io.github.luminaire1337.propertyvista.backend.service;
 import io.github.luminaire1337.propertyvista.backend.dto.response.AuthResponse;
 import io.github.luminaire1337.propertyvista.backend.entity.User;
 import io.github.luminaire1337.propertyvista.backend.mapper.UserMapper;
-import io.github.luminaire1337.propertyvista.backend.vo.EmailAddress;
-import io.github.luminaire1337.propertyvista.backend.vo.SafePassword;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +27,7 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthResponse login(EmailAddress email, SafePassword password, String userAgent) {
+    public AuthResponse login(String email, String password, String userAgent) {
         User user = userService.authenticateUser(email, password);
         return generateAuthResponse(user, userAgent);
     }

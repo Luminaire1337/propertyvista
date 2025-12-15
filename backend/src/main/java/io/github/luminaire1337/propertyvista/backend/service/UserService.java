@@ -5,21 +5,18 @@ import io.github.luminaire1337.propertyvista.backend.dto.email.UserRegisteredEma
 import io.github.luminaire1337.propertyvista.backend.entity.User;
 import io.github.luminaire1337.propertyvista.backend.entity.UserRole;
 import io.github.luminaire1337.propertyvista.backend.entity.UserStatus;
-import io.github.luminaire1337.propertyvista.backend.exception.UnacceptableUserStatusException;
+import io.github.luminaire1337.propertyvista.backend.exception.ForbiddenAccessException;
 import io.github.luminaire1337.propertyvista.backend.exception.UserAlreadyExistsException;
 import io.github.luminaire1337.propertyvista.backend.exception.UserNotFoundException;
 import io.github.luminaire1337.propertyvista.backend.exception.UserPasswordVerificationFailedException;
 import io.github.luminaire1337.propertyvista.backend.repository.UserRepository;
-import io.github.luminaire1337.propertyvista.backend.vo.EmailAddress;
-import io.github.luminaire1337.propertyvista.backend.vo.ImagePath;
-import io.github.luminaire1337.propertyvista.backend.vo.PhoneNumber;
-import io.github.luminaire1337.propertyvista.backend.vo.SafePassword;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -38,14 +35,14 @@ public class UserService {
     }
 
     @Transactional
-    public User createUser(EmailAddress email, SafePassword password, String firstName, String lastName, PhoneNumber phoneNumber, @Nullable UserRole role) {
+    public User createUser(String email, String password, String firstName, String lastName, String phoneNumber, @Nullable UserRole role) {
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException("User with email " + email + " already exists");
         }
 
         User user = User.builder()
                 .email(email)
-                .password(passwordEncoder.encode(String.valueOf(password)))
+                .password(passwordEncoder.encode(password))
                 .firstName(firstName)
                 .lastName(lastName)
                 .phoneNumber(phoneNumber)
@@ -61,20 +58,20 @@ public class UserService {
     }
 
     @Transactional
-    public User authenticateUser(EmailAddress email, SafePassword password) {
+    public User authenticateUser(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
 
-        if (!passwordEncoder.matches(String.valueOf(password), user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new UserPasswordVerificationFailedException("User password verification failed");
         }
 
         if (!user.isEnabled()) {
-            throw new UnacceptableUserStatusException("User is not verified");
+            throw new ForbiddenAccessException("User is not verified");
         }
 
         if (!user.isAccountNonLocked()) {
-            throw new UnacceptableUserStatusException("User account is suspended");
+            throw new ForbiddenAccessException("User account is suspended");
         }
 
         return user;
@@ -90,7 +87,7 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUserEmail(User user, EmailAddress email) {
+    public User updateUserEmail(User user, String email) {
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException("User with email " + email + " already exists");
         }
@@ -101,8 +98,8 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUserPassword(User user, SafePassword password) {
-        user.setPassword(passwordEncoder.encode(String.valueOf(password)));
+    public User updateUserPassword(User user, String password) {
+        user.setPassword(passwordEncoder.encode(password));
         user = userRepository.save(user);
         log.info("Updated password for user with ID {}", user.getId());
         return user;
@@ -125,7 +122,7 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUserInfo(User user, String firstName, String lastName, PhoneNumber phoneNumber) {
+    public User updateUserInfo(User user, String firstName, String lastName, String phoneNumber) {
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setPhoneNumber(phoneNumber);
@@ -135,9 +132,9 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUserAvatarImagePath(User user, @Nullable ImagePath avatarImagePath) {
-        user.setAvatarImagePath(avatarImagePath);
-        user = userRepository.save(user);
+    public User updateUserAvatarImage(User user, @Nullable MultipartFile avatarImage) {
+//        user.setAvatarImagePath(avatarImagePath);
+//        user = userRepository.save(user);
         log.info("Updated avatar image path for user with ID {}", user.getId());
         return user;
     }

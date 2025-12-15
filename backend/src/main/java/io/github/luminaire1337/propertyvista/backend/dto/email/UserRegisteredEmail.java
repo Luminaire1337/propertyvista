@@ -8,7 +8,7 @@ public record UserRegisteredEmail(
 ) implements EmailDetails {
     @Override
     public String getRecipientEmail() {
-        return String.valueOf(user.getEmail());
+        return user.getEmail();
     }
 
     @Override

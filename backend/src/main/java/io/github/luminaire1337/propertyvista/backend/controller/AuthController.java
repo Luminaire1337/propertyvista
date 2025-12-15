@@ -1,12 +1,10 @@
 package io.github.luminaire1337.propertyvista.backend.controller;
 
 import io.github.luminaire1337.propertyvista.backend.dto.request.LoginRequest;
-import io.github.luminaire1337.propertyvista.backend.dto.request.RefreshTokenRequest;
+import io.github.luminaire1337.propertyvista.backend.dto.request.TokenRequest;
 import io.github.luminaire1337.propertyvista.backend.dto.response.AuthResponse;
 import io.github.luminaire1337.propertyvista.backend.dto.response.ErrorResponse;
 import io.github.luminaire1337.propertyvista.backend.service.AuthService;
-import io.github.luminaire1337.propertyvista.backend.vo.EmailAddress;
-import io.github.luminaire1337.propertyvista.backend.vo.SafePassword;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -52,8 +50,8 @@ public class AuthController {
     )
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         AuthResponse authResponse = authService.login(
-                EmailAddress.valueOf(loginRequest.email()),
-                SafePassword.valueOf(loginRequest.password()),
+                loginRequest.email(),
+                loginRequest.password(),
                 request.getHeader("User-Agent")
         );
         return ResponseEntity.status(HttpStatus.OK).body(authResponse);
@@ -66,8 +64,8 @@ public class AuthController {
                     @ApiResponse(responseCode = "200", description = "User logged out successfully")
             }
     )
-    public ResponseEntity<Void> logout(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
-        authService.logout(refreshTokenRequest.refreshToken());
+    public ResponseEntity<Void> logout(@Valid @RequestBody TokenRequest tokenRequest) {
+        authService.logout(tokenRequest.token());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -81,9 +79,9 @@ public class AuthController {
                     })
             }
     )
-    public ResponseEntity<AuthResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest, HttpServletRequest request) {
+    public ResponseEntity<AuthResponse> refreshToken(@Valid @RequestBody TokenRequest tokenRequest, HttpServletRequest request) {
         AuthResponse authResponse = authService.refreshAccessToken(
-                refreshTokenRequest.refreshToken(),
+                tokenRequest.token(),
                 request.getHeader("User-Agent")
         );
         return ResponseEntity.status(HttpStatus.OK).body(authResponse);

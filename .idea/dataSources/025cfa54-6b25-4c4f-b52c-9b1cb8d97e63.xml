@@ -1357,7 +1357,7 @@ propertyvista|schema||propertyvista||UPDATE|G</Grants>
       <AutoIntrospectionLevel>3</AutoIntrospectionLevel>
       <Current>1</Current>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2025-12-03.20:54:07</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-12-15.15:46:50</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_uca1400_ai_ci</CollationName>
     </schema>
     <user id="556" parent="1" name="propertyvista"/>

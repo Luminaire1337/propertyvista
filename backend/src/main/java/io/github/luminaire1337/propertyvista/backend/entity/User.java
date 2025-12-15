@@ -1,13 +1,6 @@
 package io.github.luminaire1337.propertyvista.backend.entity;
 
-import io.github.luminaire1337.propertyvista.backend.vo.EmailAddress;
-import io.github.luminaire1337.propertyvista.backend.vo.ImagePath;
-import io.github.luminaire1337.propertyvista.backend.vo.PhoneNumber;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,13 +26,8 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Embedded
-    @NotNull(message = "Email is required")
-    @Valid
-    @AttributeOverrides({
-            @AttributeOverride(name = "value", column = @Column(name = "email", unique = true, nullable = false))
-    })
-    private EmailAddress email;
+    @Column(unique = true, nullable = false)
+    private String email;
 
     @Column(nullable = false)
     private String password;
@@ -53,30 +41,17 @@ public class User implements UserDetails {
     private UserStatus status;
 
     // User information fields
-    @NotBlank(message = "First name is required")
-    @Size(min = 3, max = 50, message = "First name must be between 3 and 50 characters")
     @Column(nullable = false)
     private String firstName;
 
-    @NotBlank(message = "Last name is required")
-    @Size(min = 3, max = 50, message = "Last name must be between 3 and 50 characters")
     @Column(nullable = false)
     private String lastName;
 
-    @NotNull(message = "Phone number is required")
-    @Valid
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "value", column = @Column(name = "phone_number", nullable = false))
-    })
-    private PhoneNumber phoneNumber;
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
 
-    @Embedded
-    @Valid
-    @AttributeOverrides({
-            @AttributeOverride(name = "value", column = @Column(name = "avatar_image_path"))
-    })
-    private ImagePath avatarImagePath;
+    @Column(name = "avatar_image_path")
+    private String avatarImagePath;
 
     // Site specific fields
     @Column(nullable = false)
@@ -115,7 +90,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return String.valueOf(email);
+        return email;
     }
 
     @Override
@@ -136,5 +111,9 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return status == UserStatus.VERIFIED;
+    }
+
+    public boolean isAdmin() {
+        return role == UserRole.ADMIN;
     }
 }
