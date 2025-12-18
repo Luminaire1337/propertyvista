@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PropertyVistaLogo from '../PropertyVistaLogo.vue'
 import { siteName } from '@/site'
-import { useUser } from '@/hooks/useUser'
+import { useCurrentUser } from '@/queries/useCurrentUser'
 import UserDropdown from './UserDropdown.vue'
 import PrimaryButton from '../PrimaryButton.vue'
 
@@ -11,7 +11,7 @@ const navLinks = [
   { name: 'Kup PropertyPoints', path: '/buy-points' },
 ]
 
-const { data: user, isPending } = useUser()
+const { data: user, isPending } = useCurrentUser()
 </script>
 
 <template>

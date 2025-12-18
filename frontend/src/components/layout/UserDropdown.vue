@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useUser } from '@/hooks/useUser'
+import { useCurrentUser } from '@/queries/useCurrentUser'
 import { useLogoutMutation } from '@/mutations/auth'
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { ChevronDown } from 'lucide-vue-next'
 import AvatarImage from '../AvatarImage.vue'
 
-const { data: user } = useUser()
+const { data: user } = useCurrentUser()
 const logoutMutation = useLogoutMutation()
 
 const handleLogout = (event: Event) => {
