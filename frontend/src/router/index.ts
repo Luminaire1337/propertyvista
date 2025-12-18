@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/stores/auth'
+import { isAuthenticated } from '@/mutations/auth'
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
@@ -41,15 +41,11 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const authStore = useAuthStore()
+  const authenticated = isAuthenticated()
 
-  if (authStore.isAwaitingAuthentication) {
-    await authStore.fetchUserProfile()
-  }
-
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+  if (to.meta.requiresAuth && !authenticated) {
     next({ name: 'login' })
-  } else if (to.meta.requiresGuest && authStore.isAuthenticated) {
+  } else if (to.meta.requiresGuest && authenticated) {
     next({ name: 'home' })
   } else {
     next()

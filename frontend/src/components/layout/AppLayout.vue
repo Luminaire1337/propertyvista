@@ -2,6 +2,9 @@
 import NavBar from './NavBar.vue'
 import FootBar from './FootBar.vue'
 import { Toaster } from 'vue-sonner'
+import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
+
+const isDev = import.meta.env.DEV
 </script>
 
 <template>
@@ -16,5 +19,6 @@ import { Toaster } from 'vue-sonner'
     </RouterView>
     <Toaster position="bottom-right" theme="light" rich-colors />
     <FootBar />
+    <VueQueryDevtools v-if="isDev" />
   </div>
 </template>

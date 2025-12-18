@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { toast } from 'vue-sonner'
+import { useRegisterMutation } from '@/mutations/auth'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 
-const authStore = useAuthStore()
+const registerMutation = useRegisterMutation()
 
 const page = ref<'register' | 'email-verification'>('register')
 const email = ref('')
@@ -15,21 +14,18 @@ const phoneNumber = ref('')
 
 const handleRegister = (event: Event) => {
   event.preventDefault()
-  toast.promise(
-    authStore.register({
+  registerMutation.mutate(
+    {
       email: email.value,
       password: password.value,
       firstName: firstName.value,
       lastName: lastName.value,
       phoneNumber: phoneNumber.value,
-    }),
+    },
     {
-      loading: 'Rejestrowanie nowego konta...',
-      success: () => {
+      onSuccess: () => {
         page.value = 'email-verification'
-        return 'Pomyślnie zarejestrowano konto.'
       },
-      error: (err: Error) => err.message,
     },
   )
 }

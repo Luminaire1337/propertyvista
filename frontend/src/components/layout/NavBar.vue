@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PropertyVistaLogo from '../PropertyVistaLogo.vue'
 import { siteName } from '@/site'
-import { useAuthStore } from '@/stores/auth'
+import { useUser } from '@/hooks/useUser'
 import UserDropdown from './UserDropdown.vue'
 import PrimaryButton from '../PrimaryButton.vue'
 
@@ -11,7 +11,7 @@ const navLinks = [
   { name: 'Kup PropertyPoints', path: '/buy-points' },
 ]
 
-const authStore = useAuthStore()
+const { data: user, isPending } = useUser()
 </script>
 
 <template>
@@ -45,8 +45,15 @@ const authStore = useAuthStore()
 
         <!-- User profile dropdown (component from HeadlessUI) or Login button -->
         <div>
-          <template v-if="authStore.isAuthenticated">
-            <UserDropdown :auth-store="authStore" />
+          <template v-if="isPending">
+            <!-- Skeleton loader -->
+            <div class="flex items-center space-x-2 px-4 py-2">
+              <div class="w-8 h-8 rounded-full bg-gray-300 animate-pulse"></div>
+              <div class="h-4 w-24 bg-gray-300 rounded animate-pulse"></div>
+            </div>
+          </template>
+          <template v-else-if="user">
+            <UserDropdown />
           </template>
           <template v-else>
             <RouterLink to="/login">

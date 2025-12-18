@@ -1,25 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { toast } from 'vue-sonner'
-import router from '@/router'
+import { useLoginMutation } from '@/mutations/auth'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 
-const authStore = useAuthStore()
+const loginMutation = useLoginMutation()
 
 const email = ref('')
 const password = ref('')
 
 const handleLogin = (event: Event) => {
   event.preventDefault()
-  toast.promise(authStore.login({ email: email.value, password: password.value }), {
-    loading: 'Logowanie...',
-    success: () => {
-      router.push({ name: 'home' })
-      return 'Pomyślnie zalogowano.'
-    },
-    error: (err: Error) => err.message,
-  })
+  loginMutation.mutate({ email: email.value, password: password.value })
 }
 </script>
 

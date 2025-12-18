@@ -1,25 +1,16 @@
 <script setup lang="ts">
-import type { useAuthStore } from '@/stores/auth'
+import { useUser } from '@/hooks/useUser'
+import { useLogoutMutation } from '@/mutations/auth'
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { ChevronDown } from 'lucide-vue-next'
 import AvatarImage from '../AvatarImage.vue'
-import { toast } from 'vue-sonner'
-import router from '@/router'
 
-const props = defineProps<{
-  authStore: ReturnType<typeof useAuthStore>
-}>()
+const { data: user } = useUser()
+const logoutMutation = useLogoutMutation()
 
 const handleLogout = (event: Event) => {
   event.preventDefault()
-  toast.promise(props.authStore.logout(), {
-    loading: 'Wylogowywanie...',
-    success: () => {
-      router.push({ name: 'home' })
-      return 'Pomyślnie wylogowano.'
-    },
-    error: (err: Error) => err.message,
-  })
+  logoutMutation.mutate()
 }
 
 const dropDownLinks = [
@@ -43,12 +34,8 @@ const dropDownLinks = [
     <MenuButton
       class="px-4 py-2 rounded flex items-center space-x-2 hover:bg-gray-200 transition-colors backdrop-blur-sm"
     >
-      <AvatarImage
-        :src="authStore.userProfile!.avatarImagePath"
-        alt="Awatar użytkownika"
-        :size="32"
-      />
-      <span>Witaj, {{ authStore.userProfile!.firstName }}!</span>
+      <AvatarImage :src="user?.avatarImagePath ?? undefined" alt="Awatar użytkownika" :size="32" />
+      <span>Witaj, {{ user?.firstName }}!</span>
       <ChevronDown :size="16" />
     </MenuButton>
     <transition
