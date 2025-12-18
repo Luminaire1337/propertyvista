@@ -27,6 +27,17 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/user/VerifyEmailPage.vue'),
     meta: { requiresGuest: true },
   },
+  // Other routes
+  {
+    path: '/terms-of-service',
+    name: 'tos',
+    component: () => import('@/views/other/TosPage.vue'),
+  },
+  {
+    path: '/privacy-policy',
+    name: 'privacy-policy',
+    component: () => import('@/views/other/PrivacyPolicyPage.vue'),
+  },
   // Catch 404 errors
   {
     path: '/:pathMatch(.*)*',
