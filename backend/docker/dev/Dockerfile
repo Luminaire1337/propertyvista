@@ -14,8 +14,12 @@ ARG GROUP_NAME=docker
 ARG GROUP_ID=1000
 RUN addgroup -g ${GROUP_ID} ${GROUP_NAME} && \
     adduser -D -u ${USER_ID} -G ${GROUP_NAME} -s /bin/sh ${USER_NAME} && \
+    mkdir -p /app/m2 && \
     chown -R ${USER_NAME}:${GROUP_NAME} /app && \
     chmod -R ${DEFAULT_PERMISSION} /app
+
+# Change Maven local repository to /app/m2
+ENV JAVA_TOOL_OPTIONS="-Dmaven.repo.local=/app/m2"
 
 # Copy the pom.xml
 COPY --chown=${USER_NAME}:${GROUP_NAME} --chmod=${DEFAULT_PERMISSION} pom.xml .
@@ -25,6 +29,9 @@ USER ${USER_NAME}
 
 # Expose the application port and debug port
 EXPOSE 8080 5005
+
+# Expose volume for hot-reloading
+VOLUME /app/src /app/m2
 
 # Run the application with auto-reload and remote debugging enabled
 # https://stackoverflow.com/a/69880735
