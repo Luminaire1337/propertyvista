@@ -2,11 +2,11 @@ import type { components } from '@/api/generated/schema'
 import client, { normalizeError } from '@/api/client'
 
 type User = {
-  [K in keyof Omit<components['schemas']['UserResponse'], 'avatarImagePath'>]-?: NonNullable<
-    Required<components['schemas']['UserResponse'][K]>
+  [K in keyof Omit<components['schemas']['UserResponse'], 'avatarImagePath'>]-?: Required<
+    components['schemas']['UserResponse'][K]
   >
 } & {
-  avatarImagePath?: string | null
+  avatarImagePath: string | null
 }
 type RegisterRequest = components['schemas']['RegisterRequest']
 type TokenRequest = components['schemas']['TokenRequest']
@@ -29,27 +29,21 @@ export abstract class UserService {
   }
 
   static async getUser(id: string | 'me'): Promise<User> {
-    let response
-    switch (id) {
-      case 'me':
-        response = await client.GET('/users/me')
-        break
-      default:
-        response = await client.GET('/users/{id}', { params: { path: { id } } })
-    }
+    const response =
+      id === 'me'
+        ? await client.GET('/users/me')
+        : await client.GET('/users/{id}', { params: { path: { id } } })
+
     if (response.error) throw new Error(normalizeError(response.error))
     return response.data as User
   }
 
   static async deleteUser(id: string | 'me'): Promise<User> {
-    let response
-    switch (id) {
-      case 'me':
-        response = await client.DELETE('/users/me')
-        break
-      default:
-        response = await client.DELETE('/users/{id}', { params: { path: { id } } })
-    }
+    const response =
+      id === 'me'
+        ? await client.DELETE('/users/me')
+        : await client.DELETE('/users/{id}', { params: { path: { id } } })
+
     if (response.error) throw new Error(normalizeError(response.error))
     return response.data as User
   }
@@ -58,17 +52,11 @@ export abstract class UserService {
     id: string | 'me',
     emailData: UpdateUserEmailRequest,
   ): Promise<User> {
-    let response
-    switch (id) {
-      case 'me':
-        response = await client.PUT('/users/me/email', { body: emailData })
-        break
-      default:
-        response = await client.PUT('/users/{id}/email', {
-          body: emailData,
-          params: { path: { id } },
-        })
-    }
+    const response =
+      id === 'me'
+        ? await client.PUT('/users/me/email', { body: emailData })
+        : await client.PUT('/users/{id}/email', { body: emailData, params: { path: { id } } })
+
     if (response.error) throw new Error(normalizeError(response.error))
     return response.data as User
   }
@@ -77,17 +65,11 @@ export abstract class UserService {
     id: string | 'me',
     passwordData: UpdateUserPasswordRequest,
   ): Promise<User> {
-    let response
-    switch (id) {
-      case 'me':
-        response = await client.PUT('/users/me/password', { body: passwordData })
-        break
-      default:
-        response = await client.PUT('/users/{id}/password', {
-          body: passwordData,
-          params: { path: { id } },
-        })
-    }
+    const response =
+      id === 'me'
+        ? await client.PUT('/users/me/password', { body: passwordData })
+        : await client.PUT('/users/{id}/password', { body: passwordData, params: { path: { id } } })
+
     if (response.error) throw new Error(normalizeError(response.error))
     return response.data as User
   }
@@ -111,51 +93,35 @@ export abstract class UserService {
   }
 
   static async updateUserInfo(id: string | 'me', infoData: UpdateUserInfoRequest): Promise<User> {
-    let response
-    switch (id) {
-      case 'me':
-        response = await client.PUT('/users/me/info', { body: infoData })
-        break
-      default:
-        response = await client.PUT('/users/{id}/info', {
-          body: infoData,
-          params: { path: { id } },
-        })
-    }
+    const response =
+      id === 'me'
+        ? await client.PUT('/users/me/info', { body: infoData })
+        : await client.PUT('/users/{id}/info', { body: infoData, params: { path: { id } } })
+
     if (response.error) throw new Error(normalizeError(response.error))
     return response.data as User
   }
 
   static async updateUserAvatar(id: string | 'me', avatarImage: File): Promise<User> {
-    let response
+    // https://github.com/openapi-ts/openapi-typescript/issues/1214#issuecomment-2662177105
+    const response =
+      id === 'me'
+        ? await client.PUT('/users/me/avatar', { file: avatarImage as unknown as string })
+        : await client.PUT('/users/{id}/avatar', {
+            file: avatarImage as unknown as string,
+            params: { path: { id } },
+          })
 
-    switch (id) {
-      case 'me':
-        response = await client.PUT('/users/me/avatar', {
-          // https://github.com/openapi-ts/openapi-typescript/issues/1214#issuecomment-2662177105
-          file: avatarImage as unknown as string,
-        })
-        break
-      default:
-        response = await client.PUT('/users/{id}/avatar', {
-          // https://github.com/openapi-ts/openapi-typescript/issues/1214#issuecomment-2662177105
-          file: avatarImage as unknown as string,
-          params: { path: { id } },
-        })
-    }
     if (response.error) throw new Error(normalizeError(response.error))
     return response.data as User
   }
 
   static async deleteUserAvatar(id: string | 'me'): Promise<User> {
-    let response
-    switch (id) {
-      case 'me':
-        response = await client.DELETE('/users/me/avatar')
-        break
-      default:
-        response = await client.DELETE('/users/{id}/avatar', { params: { path: { id } } })
-    }
+    const response =
+      id === 'me'
+        ? await client.DELETE('/users/me/avatar')
+        : await client.DELETE('/users/{id}/avatar', { params: { path: { id } } })
+
     if (response.error) throw new Error(normalizeError(response.error))
     return response.data as User
   }
