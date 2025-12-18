@@ -1,4 +1,4 @@
-import { UserService } from '@/services/users'
+import { UserService } from '@/services/user'
 import { useQuery } from '@tanstack/vue-query'
 import { isAuthenticated, useLogoutMutation } from '@/mutations/auth'
 import { watch } from 'vue'

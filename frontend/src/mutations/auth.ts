@@ -1,7 +1,7 @@
 import type { components } from '@/api/generated/schema'
 import router from '@/router'
 import AuthService, { type Auth } from '@/services/auth'
-import { UserService } from '@/services/users'
+import { UserService } from '@/services/user'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
 
@@ -101,8 +101,8 @@ export const useLoginMutation = () => {
       toast.success('Pomyślnie zalogowano!')
       router.push({ name: 'home' })
     },
-    onError: (error: Error | unknown) => {
-      toast.error((error as Error).message)
+    onError: (error: Error) => {
+      toast.error(error.message)
     },
   })
 }
@@ -118,8 +118,8 @@ export const useRegisterMutation = () => {
     onSuccess: () => {
       toast.success('Pomyślnie zarejestrowano konto!')
     },
-    onError: (error: Error | unknown) => {
-      toast.error((error as Error).message)
+    onError: (error: Error) => {
+      toast.error(error.message)
     },
   })
 }
