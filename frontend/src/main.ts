@@ -12,5 +12,4 @@ const app = createApp(App)
 app.use(VueQueryPlugin)
 app.use(router)
 
-await router.isReady()
 app.mount('#app')
