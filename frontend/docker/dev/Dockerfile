@@ -29,5 +29,8 @@ RUN pnpm install --frozen-lockfile
 # Expose port
 EXPOSE 5173
 
+# Expose volume for hot-reloading
+VOLUME /app/src /app/node_modules
+
 # Start the development server
 CMD ["pnpm", "run", "dev", "--host", "0.0.0.0"]

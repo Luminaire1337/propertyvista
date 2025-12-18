@@ -14,7 +14,6 @@ ARG GROUP_NAME=docker
 ARG GROUP_ID=1000
 RUN addgroup -g ${GROUP_ID} ${GROUP_NAME} && \
     adduser -D -u ${USER_ID} -G ${GROUP_NAME} -s /bin/sh ${USER_NAME} && \
-    mkdir -p /app/m2 && \
     chown -R ${USER_NAME}:${GROUP_NAME} /app && \
     chmod -R ${DEFAULT_PERMISSION} /app
 
