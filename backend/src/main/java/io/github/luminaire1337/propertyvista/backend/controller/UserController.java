@@ -73,15 +73,12 @@ public class UserController {
     @Operation(
             summary = "Verify user's email address",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "User email verified successfully", content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = UserResponse.class))
-                    })
+                    @ApiResponse(responseCode = "200", description = "User email verified successfully")
             }
     )
-    public ResponseEntity<UserResponse> verifyUserEmail(@Valid @RequestBody TokenRequest tokenRequest) {
-        User user = userService.verifyUser(tokenRequest.token());
-        return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
+    public ResponseEntity<Void> verifyUserEmail(@Valid @RequestBody TokenRequest tokenRequest) {
+        userService.verifyUser(tokenRequest.token());
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping({"/me", "/{id}"})
@@ -216,10 +213,10 @@ public class UserController {
         user = userService.updateUserStatus(user, updateUserStatusRequest.status());
         return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
     }
-
-    @PutMapping("/{id}/info")
+    
+    @PutMapping({"/me/info", "/{id}/info"})
     @Operation(
-            summary = "Update user information by ID",
+            summary = "Update user information by ID or current user if no ID is provided",
             responses = {
                     @ApiResponse(responseCode = "200", description = "User information updated successfully", content = {
                             @Content(mediaType = "application/json",
@@ -227,9 +224,17 @@ public class UserController {
                     })
             }
     )
-    public ResponseEntity<UserResponse> updateUserInfo(@PathVariable UUID id, @Valid @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
-        currentUserContext.ensureCurrentUserIsAdmin();
-        User user = userService.getByUserId(id);
+    public ResponseEntity<UserResponse> updateUserInfo(@PathVariable(required = false) UUID id, @Valid @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
+        User user;
+
+        // Check if an ID was provided and if the current user is an admin
+        if (id != null) {
+            currentUserContext.ensureCurrentUserIsAdmin();
+            user = userService.getByUserId(id);
+        } else {
+            user = currentUserContext.getCurrentUser();
+        }
+
         user = userService.updateUserInfo(
                 user,
                 updateUserInfoRequest.firstName(),
