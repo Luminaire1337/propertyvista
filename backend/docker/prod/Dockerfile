@@ -1,14 +1,16 @@
-# Let's start, by building our Spring Boot app and turning it into a jar file.
+# Build stage
 FROM maven:3-eclipse-temurin-25-alpine AS build
 WORKDIR /app
 
-# Copy the pom.xml and download the dependencies
+# Copy the pom.xml and download the dependencies with cache
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn dependency:go-offline -B
 
 # Copy the source code and build the application
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn clean package -DskipTests
 
 # Runtime stage
 FROM eclipse-temurin:25-jre-alpine
@@ -17,24 +19,16 @@ WORKDIR /app
 # Install curl for healthcheck
 RUN apk add --no-cache curl
 
-# Set default permission
-ARG DEFAULT_PERMISSION=755
-
 # Create a non-root user to run the application
-ARG USER_NAME=docker
-ARG USER_ID=1000
-ARG GROUP_NAME=docker
-ARG GROUP_ID=1000
-RUN addgroup -g ${GROUP_ID} ${GROUP_NAME} && \
-    adduser -D -u ${USER_ID} -G ${GROUP_NAME} -s /bin/sh ${USER_NAME} && \
-    chown -R ${USER_NAME}:${GROUP_NAME} /app && \
-    chmod -R ${DEFAULT_PERMISSION} /app
+RUN addgroup -g 1000 docker && \
+    adduser -D -u 1000 -G docker docker && \
+    chown docker:docker /app
 
 # Copy the jar file from the build stage
-COPY --chown=${USER_NAME}:${GROUP_NAME} --chmod=${DEFAULT_PERMISSION} --from=build /app/target/*.jar app.jar
+COPY --chown=docker:docker --from=build /app/target/*.jar app.jar
 
 # Change to the non-root user
-USER ${USER_NAME}
+USER docker
 
 # Expose the application port
 EXPOSE 8080

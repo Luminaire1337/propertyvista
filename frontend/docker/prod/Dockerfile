@@ -11,7 +11,8 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Copy package files and install dependencies
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN pnpm install --frozen-lockfile
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
 
 # Copy the rest of the application code and build the project
 COPY . .
@@ -19,9 +20,12 @@ RUN pnpm run build
 
 # Runtime stage
 FROM nginx:alpine
-WORKDIR /usr/share/nginx/html
+
+# Install curl for healthcheck
+RUN apk add --no-cache curl
 
 # Copy built files from the build stage
+WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 COPY --from=build /app/dist .
 
