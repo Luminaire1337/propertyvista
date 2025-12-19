@@ -24,6 +24,6 @@ public class ConstraintViolationExceptionHandler {
         });
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("Validation failed", errors));
+                .body(new ErrorResponse("Nieprawidłowe dane", errors));
     }
 }

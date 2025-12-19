@@ -10,7 +10,6 @@ import io.github.luminaire1337.propertyvista.backend.exception.ForbiddenAccessEx
 import io.github.luminaire1337.propertyvista.backend.exception.NotFoundException;
 import io.github.luminaire1337.propertyvista.backend.helper.BucketNames;
 import io.github.luminaire1337.propertyvista.backend.repository.UserRepository;
-import io.minio.ObjectWriteResponse;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -34,13 +33,13 @@ public class UserService {
 
     public User getByUserId(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User with ID " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Użytkownik o podanym ID nie istnieje"));
     }
 
     @Transactional
     public User createUser(String email, String password, String firstName, String lastName, String phoneNumber, @Nullable UserRole role) {
         if (userRepository.existsByEmail(email)) {
-            throw new BadRequestException("User with email " + email + " already exists");
+            throw new BadRequestException("Użytkownik z podanym adresem e-mail już istnieje");
         }
 
         User user = User.builder()
@@ -63,18 +62,18 @@ public class UserService {
     @Transactional
     public User authenticateUser(String email, String password) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("User with email " + email + " not found"));
+                .orElseThrow(() -> new NotFoundException("Konto o podanym adresie e-mail nie istnieje"));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new BadRequestException("User password verification failed");
+            throw new BadRequestException("Nieprawidłowe hasło");
         }
 
         if (!user.isEnabled()) {
-            throw new ForbiddenAccessException("User is not verified");
+            throw new ForbiddenAccessException("Twoje konto nie zostało zweryfikowane. Sprawdź swoją skrzynkę e-mail, aby zweryfikować konto.");
         }
 
         if (!user.isAccountNonLocked()) {
-            throw new ForbiddenAccessException("User account is suspended");
+            throw new ForbiddenAccessException("Twoje konto zostało zablokowane. Skontaktuj się z administratorem.");
         }
 
         return user;
@@ -93,7 +92,7 @@ public class UserService {
     @Transactional
     public User updateUserEmail(User user, String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new BadRequestException("User with email " + email + " already exists");
+            throw new BadRequestException("Użytkownik z podanym adresem e-mail już istnieje");
         }
         user.setEmail(email);
         user = userRepository.save(user);
@@ -154,16 +153,16 @@ public class UserService {
 
         // Validate new avatar image
         if (!imageService.isImageValid(avatarImage)) {
-            throw new BadRequestException("Uploaded avatar image is invalid");
+            throw new BadRequestException("Nieprawidłowy format lub rozmiar pliku obrazu awatara");
         }
 
         // Generate unique filename for the new avatar image
         String newFileName = UUID.randomUUID() + "." + imageService.getImageExtension(avatarImage);
 
         // Upload new avatar image
-        ObjectWriteResponse uploadResponse = minioService.uploadFile(BucketNames.PRIVATE_AVATAR_IMAGES, newFileName, avatarImage);
+        var uploadResponse = minioService.uploadFile(BucketNames.PRIVATE_AVATAR_IMAGES, newFileName, avatarImage);
         if (uploadResponse == null) {
-            throw new BadRequestException("Failed to upload avatar image");
+            throw new BadRequestException("Nie udało się przesłać obrazu awatara. Spróbuj ponownie później.");
         }
 
         // Delete old avatar image if exists

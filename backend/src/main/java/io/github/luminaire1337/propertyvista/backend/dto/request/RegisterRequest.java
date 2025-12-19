@@ -7,23 +7,23 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record RegisterRequest(
-        @NotBlank(message = "Email is required")
-        @Size(min = 3, max = 64, message = "Email must be between 3 and 64 characters")
-        @Email(message = "Invalid email format")
+        @NotBlank(message = "Adres e-mail jest wymagany")
+        @Size(min = 3, max = 64, message = "Adres e-mail musi mieć od 3 do 64 znaków")
+        @Email(message = "Nieprawidłowy format adresu e-mail")
         String email,
-        @NotBlank(message = "Password is required")
-        @Size(min = 8, max = 64, message = "Password must be between 8 and 64 characters")
-        @Pattern(regexp = CommonRegExps.password, message = "Your password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character")
+        @NotBlank(message = "Hasło jest wymagane")
+        @Size(min = 8, max = 64, message = "Hasło musi mieć od 8 do 64 znaków")
+        @Pattern(regexp = CommonRegExps.password, message = "Hasło musi zawierać co najmniej jedną wielką literę, jedną małą literę, jedną cyfrę oraz jeden znak specjalny")
         String password,
-        @NotBlank(message = "First name is required")
-        @Size(min = 3, max = 50, message = "First name must be between 3 and 50 characters")
+        @NotBlank(message = "Imię jest wymagane")
+        @Size(min = 3, max = 50, message = "Imię musi mieć między 3 a 50 znaków")
         String firstName,
-        @NotBlank(message = "Last name is required")
-        @Size(min = 3, max = 50, message = "Last name must be between 3 and 50 characters")
+        @NotBlank(message = "Nazwisko jest wymagane")
+        @Size(min = 3, max = 50, message = "Nazwisko musi mieć między 3 a 50 znaków")
         String lastName,
-        @NotBlank(message = "Phone number is required")
-        @Size(min = 7, max = 15, message = "Phone number must be between 7 and 15 characters")
-        @Pattern(regexp = CommonRegExps.phoneNumber, message = "Your phone number must be in E.164 format, e.g., +1234567890")
+        @NotBlank(message = "Numer telefonu jest wymagany")
+        @Size(min = 7, max = 15, message = "Numer telefonu musi mieć od 7 do 15 znaków")
+        @Pattern(regexp = CommonRegExps.phoneNumber, message = "Nieprawidłowy format numeru telefonu")
         String phoneNumber
 ) {
 

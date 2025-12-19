@@ -21,7 +21,7 @@ public class RefreshTokenService {
 
     private RefreshToken getByRefreshToken(String token) {
         return refreshTokenRepository.findByToken(token)
-                .orElseThrow(() -> new NotFoundException("Refresh token not found"));
+                .orElseThrow(() -> new NotFoundException("Token odświeżania nie znaleziony"));
     }
 
     public List<RefreshToken> findAllExpiredTokens() {
@@ -56,7 +56,7 @@ public class RefreshTokenService {
 
         if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
             log.info("Refresh token {} has expired", token.getToken());
-            throw new BadRequestException("Refresh token has expired");
+            throw new BadRequestException("Token odświeżania wygasł");
         }
 
         refreshTokenRepository.delete(token); // Delete token either way, so it can't be reused

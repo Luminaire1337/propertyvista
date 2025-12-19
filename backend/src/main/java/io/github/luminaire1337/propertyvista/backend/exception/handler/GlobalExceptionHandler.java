@@ -21,6 +21,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(isDev ? ex.getMessage() : "An unexpected error occurred"));
+                .body(new ErrorResponse(isDev ? ex.getMessage() : "Wystąpił nieoczekiwany błąd serwera"));
     }
 }

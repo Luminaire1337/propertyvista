@@ -23,6 +23,6 @@ public class MethodArgumentNotValidExceptionHandler {
                 errors.put(error.getField(), error.getDefaultMessage()));
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("Validation failed", errors));
+                .body(new ErrorResponse("Nieprawidłowe dane", errors));
     }
 }

@@ -49,7 +49,7 @@ public class JwtService {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (Exception e) {
-            throw new BadRequestException("Invalid or expired access token");
+            throw new BadRequestException("Nieprawidłowy token dostępu");
         }
     }
 
@@ -62,7 +62,7 @@ public class JwtService {
         Claims claims = extractPayload(token);
         Date expiration = claims.getExpiration();
         if (!expiration.after(new Date())) {
-            throw new BadRequestException("Access token has expired");
+            throw new BadRequestException("Token dostępu wygasł");
         }
     }
 }

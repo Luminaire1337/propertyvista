@@ -25,7 +25,7 @@ public class VerificationTokenService {
 
     private VerificationToken getByVerificationToken(String token) {
         return verificationTokenRepository.findByToken(token)
-                .orElseThrow(() -> new NotFoundException("Verification token not found"));
+                .orElseThrow(() -> new NotFoundException("Token weryfikacyjny nie znaleziony"));
     }
 
     public List<VerificationToken> findAllExpiredTokens() {
@@ -54,7 +54,7 @@ public class VerificationTokenService {
 
         if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
             log.info("Verification token {} for user {} has expired", token, user.getEmail());
-            throw new BadRequestException("Verification token has expired");
+            throw new BadRequestException("Token weryfikacyjny wygasł");
         }
 
         verificationTokenRepository.delete(verificationToken);

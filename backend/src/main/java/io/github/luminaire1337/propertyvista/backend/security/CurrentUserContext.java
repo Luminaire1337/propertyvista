@@ -15,19 +15,19 @@ public class CurrentUserContext {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null || !auth.isAuthenticated() || auth.getPrincipal() == null) {
-            throw new UnauthorizedAccessException("User is not authenticated");
+            throw new UnauthorizedAccessException("Nie jesteś zalogowany");
         }
 
         if (!(auth.getPrincipal() instanceof User user)) {
-            throw new UnauthorizedAccessException("User is not authenticated");
+            throw new UnauthorizedAccessException("Nie jesteś zalogowany");
         }
 
         if (!user.isEnabled()) {
-            throw new ForbiddenAccessException("User is not verified");
+            throw new ForbiddenAccessException("Twoje konto nie zostało zweryfikowane. Sprawdź swoją skrzynkę e-mail, aby zweryfikować konto.");
         }
 
         if (!user.isAccountNonLocked()) {
-            throw new ForbiddenAccessException("User account is suspended");
+            throw new ForbiddenAccessException("Twoje konto zostało zablokowane. Skontaktuj się z administratorem.");
         }
 
         return user;
@@ -41,7 +41,7 @@ public class CurrentUserContext {
     public void ensureCurrentUserIsAdmin() {
         User user = getCurrentUser();
         if (!user.isAdmin()) {
-            throw new ForbiddenAccessException("User does not have admin privileges");
+            throw new ForbiddenAccessException("Nie masz uprawnień do wykonania tej akcji");
         }
     }
 }

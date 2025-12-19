@@ -16,6 +16,6 @@ public class NoResourceFoundExceptionHandler {
     public ResponseEntity<ErrorResponse> handleNoResourceFoundException(NoResourceFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("Resource not found"));
+                .body(new ErrorResponse("Nie znaleziono zasobu"));
     }
 }
