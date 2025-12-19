@@ -13,7 +13,7 @@ import java.util.List;
 @Profile("dev")
 public class DevConfig {
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // Mirror of Traefik's CORS settings from docker-compose.yml
         configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost"));

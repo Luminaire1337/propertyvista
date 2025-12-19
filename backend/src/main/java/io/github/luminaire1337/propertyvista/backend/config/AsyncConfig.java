@@ -1,12 +1,12 @@
 package io.github.luminaire1337.propertyvista.backend.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Executor;
 
-@Component
+@Configuration
 public class AsyncConfig {
     @Bean
     public Executor taskExecutor() {

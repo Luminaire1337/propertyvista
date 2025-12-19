@@ -1,24 +1,27 @@
 package io.github.luminaire1337.propertyvista.backend.service;
 
 import io.minio.*;
-import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MinioService {
+public class StorageService {
     private final MinioClient minioClient;
 
-    public void deleteObjectIfExists(String bucketName, String objectName) {
+    @Value("${propertyvista.storage.public-url}")
+    private String publicStorageUrl;
+
+    public void deleteFileIfExists(String bucketName, String fileName) {
         try {
             boolean found = minioClient.statObject(
                     StatObjectArgs.builder()
                             .bucket(bucketName)
-                            .object(objectName)
+                            .object(fileName)
                             .build()
             ) != null;
 
@@ -26,32 +29,32 @@ public class MinioService {
                 minioClient.removeObject(
                         RemoveObjectArgs.builder()
                                 .bucket(bucketName)
-                                .object(objectName)
+                                .object(fileName)
                                 .build()
                 );
-                log.info("Deleted object '{}' from bucket '{}'", objectName, bucketName);
+                log.info("Deleted object '{}' from bucket '{}'", fileName, bucketName);
             } else {
-                log.info("Object '{}' not found in bucket '{}', no deletion performed", objectName, bucketName);
+                log.info("Object '{}' not found in bucket '{}', no deletion performed", fileName, bucketName);
             }
         } catch (Exception e) {
-            log.error("Error while checking or deleting object '{}' from bucket '{}': {}", objectName, bucketName, e.getMessage());
+            log.error("Error while checking or deleting object '{}' from bucket '{}': {}", fileName, bucketName, e.getMessage());
         }
     }
 
-    public ObjectWriteResponse uploadFile(String bucketName, String objectName, MultipartFile file) {
+    public ObjectWriteResponse uploadFile(String bucketName, String fileName, MultipartFile file) {
         try {
             var response = minioClient.putObject(
                     PutObjectArgs.builder()
                             .bucket(bucketName)
-                            .object(objectName)
+                            .object(fileName)
                             .stream(file.getInputStream(), file.getSize(), -1)
                             .contentType(file.getContentType())
                             .build()
             );
-            log.info("Uploaded image '{}' to bucket '{}'", objectName, bucketName);
+            log.info("Uploaded image '{}' to bucket '{}'", fileName, bucketName);
             return response;
         } catch (Exception e) {
-            log.error("Error while uploading image '{}' to bucket '{}': {}", objectName, bucketName, e.getMessage());
+            log.error("Error while uploading image '{}' to bucket '{}': {}", fileName, bucketName, e.getMessage());
             return null;
         }
     }
@@ -84,21 +87,7 @@ public class MinioService {
         }
     }
 
-    public String generatePresignedUrl(String bucketName, String objectName) {
-        try {
-            String url = minioClient.getPresignedObjectUrl(
-                    GetPresignedObjectUrlArgs.builder()
-                            .method(Method.GET)
-                            .bucket(bucketName)
-                            .object(objectName)
-                            .expiry(60 * 60) // URL valid for 1 hour
-                            .build()
-            );
-            log.info("Generated presigned URL for object '{}' in bucket '{}'", objectName, bucketName);
-            return url;
-        } catch (Exception e) {
-            log.error("Error while generating presigned URL for object '{}' in bucket '{}': {}", objectName, bucketName, e.getMessage());
-            return null;
-        }
+    public String getPublicFileUrl(String bucketName, String fileName) {
+        return "%s/%s/%s".formatted(publicStorageUrl, bucketName, fileName);
     }
 }

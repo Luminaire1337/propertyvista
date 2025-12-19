@@ -37,7 +37,6 @@ services:
       - TZ=Europe/Warsaw
       - SPRING_PROFILES_ACTIVE=prod
       - PROPERTYVISTA_FRONTEND_URL=${FRONTEND_URL:-http://localhost}
-      - PROPERTYVISTA_STORAGE_URL=${STORAGE_URL:-http://storage:9000}
       - SPRING_DATABASE_URL=jdbc:mariadb://database:3306/${DB_NAME:-propertyvista}
       - SPRING_DATABASE_USERNAME=${DB_USER:-propertyvista}
       - SPRING_DATABASE_PASSWORD=${DB_PASSWORD:-propertyvista}
@@ -48,10 +47,17 @@ services:
       - SPRING_MAIL_USERNAME=${MAIL_USERNAME:-}
       - SPRING_MAIL_PASSWORD=${MAIL_PASSWORD:-}
       - PROPERTYVISTA_MAIL_FROM=${MAIL_FROM:-}
+      - PROPERTYVISTA_STORAGE_URL=http://storage:9000
+      - PROPERTYVISTA_PUBLIC_STORAGE_URL=${PUBLIC_STORAGE_URL:http://localhost:9000}
       - PROPERTYVISTA_STORAGE_ACCESS_KEY=${STORAGE_ACCESS_KEY:-storageaccesskey}
       - PROPERTYVISTA_STORAGE_SECRET_KEY=${STORAGE_SECRET_KEY:-storagesecretkey}
+      - SPRING_REDIS_URL=redis://:${CACHE_PASSWORD:-propertyvista}@cache:6379
     depends_on:
       database:
+        condition: service_healthy
+      storage:
+        condition: service_healthy
+      cache:
         condition: service_healthy
     labels:
       - "traefik.enable=true"
@@ -76,7 +82,7 @@ services:
       - TZ=Europe/Warsaw
     depends_on:
       backend:
-        condition: service_started
+        condition: service_healthy
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"

@@ -3,9 +3,9 @@ package io.github.luminaire1337.propertyvista.backend.config;
 import io.minio.MinioClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
-@Component
+@Configuration
 public class MinioConfig {
     @Value("${propertyvista.storage.url}")
     private String storageUrl;

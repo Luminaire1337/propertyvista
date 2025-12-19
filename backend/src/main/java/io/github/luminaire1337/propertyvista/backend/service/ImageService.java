@@ -1,6 +1,5 @@
 package io.github.luminaire1337.propertyvista.backend.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -8,14 +7,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class ImageService {
-    private final MinioService minioService;
-
     private final long maxFileSize = 5 * 1024 * 1024; // 5 MB
     private final String[] allowedImageTypes = {
             "image/jpeg",
@@ -54,6 +51,10 @@ public class ImageService {
     public String getImageExtension(MultipartFile image) {
         String contentType = image.getContentType();
         return imageTypeExtensions.get(contentType);
+    }
+
+    public String generateImageFileName(MultipartFile image) {
+        return UUID.randomUUID() + "." + getImageExtension(image);
     }
 
     @Async

@@ -28,7 +28,7 @@ public class UserService {
     private final VerificationTokenService verificationTokenService;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
-    private final MinioService minioService;
+    private final StorageService storageService;
     private final ImageService imageService;
 
     public User getByUserId(UUID id) {
@@ -137,7 +137,7 @@ public class UserService {
     private void deleteUserOldAvatar(User user) {
         String currentAvatarPath = user.getAvatarImagePath();
         if (currentAvatarPath != null && !currentAvatarPath.isBlank()) {
-            minioService.deleteObjectIfExists(BucketNames.PUBLIC_AVATAR_IMAGES, currentAvatarPath);
+            storageService.deleteFileIfExists(BucketNames.PUBLIC_AVATAR_IMAGES, currentAvatarPath);
         }
     }
 
@@ -157,10 +157,10 @@ public class UserService {
         }
 
         // Generate unique filename for the new avatar image
-        String newFileName = UUID.randomUUID() + "." + imageService.getImageExtension(avatarImage);
+        String newFileName = imageService.generateImageFileName(avatarImage);
 
         // Upload new avatar image
-        var uploadResponse = minioService.uploadFile(BucketNames.PRIVATE_AVATAR_IMAGES, newFileName, avatarImage);
+        var uploadResponse = storageService.uploadFile(BucketNames.PRIVATE_AVATAR_IMAGES, newFileName, avatarImage);
         if (uploadResponse == null) {
             throw new BadRequestException("Nie udało się przesłać obrazu awatara. Spróbuj ponownie później.");
         }
@@ -177,13 +177,13 @@ public class UserService {
 
             if (finalUser != null && success) {
                 // Move image from private to public bucket after processing
-                minioService.moveObjectBetweenBuckets(BucketNames.PRIVATE_AVATAR_IMAGES, BucketNames.PUBLIC_AVATAR_IMAGES, newFileName);
+                storageService.moveObjectBetweenBuckets(BucketNames.PRIVATE_AVATAR_IMAGES, BucketNames.PUBLIC_AVATAR_IMAGES, newFileName);
                 finalUser.setAvatarImagePath(newFileName);
                 userRepository.save(finalUser);
                 log.info("User's avatar image is now available in public bucket for user ID {}", userId);
             } else {
                 log.error("Failed to process avatar image for user ID {}", userId);
-                minioService.deleteObjectIfExists(BucketNames.PRIVATE_AVATAR_IMAGES, newFileName);
+                storageService.deleteFileIfExists(BucketNames.PRIVATE_AVATAR_IMAGES, newFileName);
             }
         });
         return user;
