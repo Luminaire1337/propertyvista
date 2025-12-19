@@ -213,7 +213,7 @@ public class UserController {
         user = userService.updateUserStatus(user, updateUserStatusRequest.status());
         return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
     }
-    
+
     @PutMapping({"/me/info", "/{id}/info"})
     @Operation(
             summary = "Update user information by ID or current user if no ID is provided",

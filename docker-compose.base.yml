@@ -19,5 +19,19 @@ services:
       timeout: 5s
       retries: 3
 
+  storage:
+    image: rustfs/rustfs:latest
+    restart: unless-stopped
+    volumes:
+      - storage_data:/data
+    ports:
+      - "9000:9000"
+    environment:
+      - TZ=Europe/Warsaw
+      - RUSTFS_CONSOLE_ENABLE=false
+      - RUSTFS_ACCESS_KEY=${STORAGE_ACCESS_KEY:-storageaccesskey}
+      - RUSTFS_SECRET_KEY=${STORAGE_SECRET_KEY:-storagesecretkey}
+
 volumes:
   db_data:
+  storage_data:

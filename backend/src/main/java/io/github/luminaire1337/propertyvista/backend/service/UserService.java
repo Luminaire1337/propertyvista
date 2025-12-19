@@ -5,11 +5,10 @@ import io.github.luminaire1337.propertyvista.backend.dto.email.UserRegisteredEma
 import io.github.luminaire1337.propertyvista.backend.entity.User;
 import io.github.luminaire1337.propertyvista.backend.entity.UserRole;
 import io.github.luminaire1337.propertyvista.backend.entity.UserStatus;
-import io.github.luminaire1337.propertyvista.backend.exception.ForbiddenAccessException;
-import io.github.luminaire1337.propertyvista.backend.exception.UserAlreadyExistsException;
-import io.github.luminaire1337.propertyvista.backend.exception.UserNotFoundException;
-import io.github.luminaire1337.propertyvista.backend.exception.UserPasswordVerificationFailedException;
+import io.github.luminaire1337.propertyvista.backend.exception.*;
+import io.github.luminaire1337.propertyvista.backend.helper.BucketNames;
 import io.github.luminaire1337.propertyvista.backend.repository.UserRepository;
+import io.minio.ObjectWriteResponse;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +27,8 @@ public class UserService {
     private final VerificationTokenService verificationTokenService;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final MinioService minioService;
+    private final ImageService imageService;
 
     public User getByUserId(UUID id) {
         return userRepository.findById(id)
@@ -79,6 +80,7 @@ public class UserService {
 
     @Transactional
     public User deleteUser(User user) {
+        deleteUserOldAvatar(user);
         userRepository.delete(user);
         log.info("Deleted user with ID {}", user.getId());
 
@@ -131,18 +133,64 @@ public class UserService {
         return user;
     }
 
+    private void deleteUserOldAvatar(User user) {
+        String currentAvatarPath = user.getAvatarImagePath();
+        if (currentAvatarPath != null && !currentAvatarPath.isBlank()) {
+            minioService.deleteObjectIfExists(BucketNames.PUBLIC_AVATAR_IMAGES, currentAvatarPath);
+        }
+    }
+
     @Transactional
     public User updateUserAvatarImage(User user, @Nullable MultipartFile avatarImage) {
-//        user.setAvatarImagePath(avatarImagePath);
-//        user = userRepository.save(user);
-        log.info("Updated avatar image path for user with ID {}", user.getId());
+        if (avatarImage == null || avatarImage.isEmpty()) {
+            deleteUserOldAvatar(user);
+            user.setAvatarImagePath(null);
+            user = userRepository.save(user);
+            log.info("Removed avatar image for user with ID {}", user.getId());
+            return user;
+        }
+
+        // Validate new avatar image
+        if (!imageService.isImageValid(avatarImage)) {
+            throw new InvalidImageException("Uploaded avatar image is invalid");
+        }
+
+        // Generate unique filename for the new avatar image
+        String newFileName = UUID.randomUUID() + "." + imageService.getImageExtension(avatarImage);
+
+        // Upload new avatar image
+        ObjectWriteResponse uploadResponse = minioService.uploadFile(BucketNames.PRIVATE_AVATAR_IMAGES, newFileName, avatarImage);
+        if (uploadResponse == null) {
+            throw new InvalidImageException("Failed to upload avatar image");
+        }
+
+        // Delete old avatar image if exists
+        deleteUserOldAvatar(user);
+        user.setAvatarImagePath(null);
+        user = userRepository.save(user);
+
+        // Process image asynchronously in the background
+        UUID userId = user.getId();
+        imageService.processImage(avatarImage, (success) -> {
+            User finalUser = userRepository.findById(userId).orElse(null);
+
+            if (finalUser != null && success) {
+                // Move image from private to public bucket after processing
+                minioService.moveObjectBetweenBuckets(BucketNames.PRIVATE_AVATAR_IMAGES, BucketNames.PUBLIC_AVATAR_IMAGES, newFileName);
+                finalUser.setAvatarImagePath(newFileName);
+                userRepository.save(finalUser);
+                log.info("User's avatar image is now available in public bucket for user ID {}", userId);
+            } else {
+                log.error("Failed to process avatar image for user ID {}", userId);
+                minioService.deleteObjectIfExists(BucketNames.PRIVATE_AVATAR_IMAGES, newFileName);
+            }
+        });
         return user;
     }
 
     @Transactional
-    public User verifyUser(String token) {
+    public void verifyUser(String token) {
         User user = verificationTokenService.verifyToken(token);
-        user = updateUserStatus(user, UserStatus.VERIFIED);
-        return user;
+        updateUserStatus(user, UserStatus.VERIFIED);
     }
 }

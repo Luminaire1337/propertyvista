@@ -13,8 +13,8 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.UUID;
 
-@Service
 @Slf4j
+@Service
 public class JwtService {
     @Value("${propertyvista.jwt.secret}")
     private String secret;
