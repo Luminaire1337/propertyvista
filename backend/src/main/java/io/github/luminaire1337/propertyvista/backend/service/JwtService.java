@@ -1,6 +1,6 @@
 package io.github.luminaire1337.propertyvista.backend.service;
 
-import io.github.luminaire1337.propertyvista.backend.exception.InvalidAccessTokenException;
+import io.github.luminaire1337.propertyvista.backend.exception.BadRequestException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -49,7 +49,7 @@ public class JwtService {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (Exception e) {
-            throw new InvalidAccessTokenException("Invalid or expired access token");
+            throw new BadRequestException("Invalid or expired access token");
         }
     }
 
@@ -62,7 +62,7 @@ public class JwtService {
         Claims claims = extractPayload(token);
         Date expiration = claims.getExpiration();
         if (!expiration.after(new Date())) {
-            throw new InvalidAccessTokenException("Access token has expired");
+            throw new BadRequestException("Access token has expired");
         }
     }
 }

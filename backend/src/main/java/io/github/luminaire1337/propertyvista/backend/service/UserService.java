@@ -5,7 +5,9 @@ import io.github.luminaire1337.propertyvista.backend.dto.email.UserRegisteredEma
 import io.github.luminaire1337.propertyvista.backend.entity.User;
 import io.github.luminaire1337.propertyvista.backend.entity.UserRole;
 import io.github.luminaire1337.propertyvista.backend.entity.UserStatus;
-import io.github.luminaire1337.propertyvista.backend.exception.*;
+import io.github.luminaire1337.propertyvista.backend.exception.BadRequestException;
+import io.github.luminaire1337.propertyvista.backend.exception.ForbiddenAccessException;
+import io.github.luminaire1337.propertyvista.backend.exception.NotFoundException;
 import io.github.luminaire1337.propertyvista.backend.helper.BucketNames;
 import io.github.luminaire1337.propertyvista.backend.repository.UserRepository;
 import io.minio.ObjectWriteResponse;
@@ -32,13 +34,13 @@ public class UserService {
 
     public User getByUserId(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("User with ID " + id + " not found"));
     }
 
     @Transactional
     public User createUser(String email, String password, String firstName, String lastName, String phoneNumber, @Nullable UserRole role) {
         if (userRepository.existsByEmail(email)) {
-            throw new UserAlreadyExistsException("User with email " + email + " already exists");
+            throw new BadRequestException("User with email " + email + " already exists");
         }
 
         User user = User.builder()
@@ -61,10 +63,10 @@ public class UserService {
     @Transactional
     public User authenticateUser(String email, String password) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
+                .orElseThrow(() -> new NotFoundException("User with email " + email + " not found"));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new UserPasswordVerificationFailedException("User password verification failed");
+            throw new BadRequestException("User password verification failed");
         }
 
         if (!user.isEnabled()) {
@@ -91,7 +93,7 @@ public class UserService {
     @Transactional
     public User updateUserEmail(User user, String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new UserAlreadyExistsException("User with email " + email + " already exists");
+            throw new BadRequestException("User with email " + email + " already exists");
         }
         user.setEmail(email);
         user = userRepository.save(user);
@@ -152,7 +154,7 @@ public class UserService {
 
         // Validate new avatar image
         if (!imageService.isImageValid(avatarImage)) {
-            throw new InvalidImageException("Uploaded avatar image is invalid");
+            throw new BadRequestException("Uploaded avatar image is invalid");
         }
 
         // Generate unique filename for the new avatar image
@@ -161,7 +163,7 @@ public class UserService {
         // Upload new avatar image
         ObjectWriteResponse uploadResponse = minioService.uploadFile(BucketNames.PRIVATE_AVATAR_IMAGES, newFileName, avatarImage);
         if (uploadResponse == null) {
-            throw new InvalidImageException("Failed to upload avatar image");
+            throw new BadRequestException("Failed to upload avatar image");
         }
 
         // Delete old avatar image if exists

@@ -2,7 +2,8 @@ package io.github.luminaire1337.propertyvista.backend.service;
 
 import io.github.luminaire1337.propertyvista.backend.entity.RefreshToken;
 import io.github.luminaire1337.propertyvista.backend.entity.User;
-import io.github.luminaire1337.propertyvista.backend.exception.InvalidRefreshTokenException;
+import io.github.luminaire1337.propertyvista.backend.exception.BadRequestException;
+import io.github.luminaire1337.propertyvista.backend.exception.NotFoundException;
 import io.github.luminaire1337.propertyvista.backend.repository.RefreshTokenRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class RefreshTokenService {
 
     private RefreshToken getByRefreshToken(String token) {
         return refreshTokenRepository.findByToken(token)
-                .orElseThrow(() -> new InvalidRefreshTokenException("Refresh token not found"));
+                .orElseThrow(() -> new NotFoundException("Refresh token not found"));
     }
 
     public List<RefreshToken> findAllExpiredTokens() {
@@ -55,7 +56,7 @@ public class RefreshTokenService {
 
         if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
             log.info("Refresh token {} has expired", token.getToken());
-            throw new InvalidRefreshTokenException("Refresh token has expired");
+            throw new BadRequestException("Refresh token has expired");
         }
 
         refreshTokenRepository.delete(token); // Delete token either way, so it can't be reused

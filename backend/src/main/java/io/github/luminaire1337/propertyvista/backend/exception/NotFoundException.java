@@ -2,8 +2,8 @@ package io.github.luminaire1337.propertyvista.backend.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class VerificationTokenNotFoundException extends RestApiException {
-    public VerificationTokenNotFoundException(String message) {
+public class NotFoundException extends RestApiException {
+    public NotFoundException(String message) {
         super(message, HttpStatus.NOT_FOUND);
     }
 }

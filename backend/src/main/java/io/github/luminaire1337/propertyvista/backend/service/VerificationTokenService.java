@@ -2,8 +2,8 @@ package io.github.luminaire1337.propertyvista.backend.service;
 
 import io.github.luminaire1337.propertyvista.backend.entity.User;
 import io.github.luminaire1337.propertyvista.backend.entity.VerificationToken;
-import io.github.luminaire1337.propertyvista.backend.exception.VerificationTokenNotFoundException;
-import io.github.luminaire1337.propertyvista.backend.exception.VerificationTokenVerificationFailedException;
+import io.github.luminaire1337.propertyvista.backend.exception.BadRequestException;
+import io.github.luminaire1337.propertyvista.backend.exception.NotFoundException;
 import io.github.luminaire1337.propertyvista.backend.repository.VerificationTokenRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class VerificationTokenService {
 
     private VerificationToken getByVerificationToken(String token) {
         return verificationTokenRepository.findByToken(token)
-                .orElseThrow(() -> new VerificationTokenNotFoundException("Verification token not found"));
+                .orElseThrow(() -> new NotFoundException("Verification token not found"));
     }
 
     public List<VerificationToken> findAllExpiredTokens() {
@@ -54,7 +54,7 @@ public class VerificationTokenService {
 
         if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
             log.info("Verification token {} for user {} has expired", token, user.getEmail());
-            throw new VerificationTokenVerificationFailedException("Verification token has expired");
+            throw new BadRequestException("Verification token has expired");
         }
 
         verificationTokenRepository.delete(verificationToken);
