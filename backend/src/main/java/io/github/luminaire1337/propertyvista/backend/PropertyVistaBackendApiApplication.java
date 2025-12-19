@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableCaching
 @SpringBootApplication
 public class PropertyVistaBackendApiApplication {
-    static void main(String[] args) {
+    public static void main(String[] args) {
         SpringApplication.run(PropertyVistaBackendApiApplication.class, args);
     }
 }

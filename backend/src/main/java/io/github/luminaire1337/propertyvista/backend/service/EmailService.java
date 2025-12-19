@@ -23,7 +23,7 @@ public class EmailService {
     private String frontendUrl;
 
     @Async
-    public void sendEmail(EmailDetails emailDetails) {
+    public void sendEmailAsync(EmailDetails emailDetails) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);

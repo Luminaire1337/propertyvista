@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./backend/src:/app/src:ro
-      - maven_cache:/home/docker/.m2
+      - maven_cache:/home/ubuntu/.m2
     ports:
       - "8080:8080"
       - "5005:5005" # for remote debugging
@@ -29,6 +29,7 @@ services:
       - PROPERTYVISTA_STORAGE_ACCESS_KEY=${STORAGE_ACCESS_KEY:-storageaccesskey}
       - PROPERTYVISTA_STORAGE_SECRET_KEY=${STORAGE_SECRET_KEY:-storagesecretkey}
       - SPRING_REDIS_URL=redis://:${CACHE_PASSWORD:-propertyvista}@cache:6379
+      - PROPERTYVISTA_GOOGLE_CLOUD_KEY=${GOOGLE_CLOUD_KEY:-}
     depends_on:
       database:
         condition: service_healthy

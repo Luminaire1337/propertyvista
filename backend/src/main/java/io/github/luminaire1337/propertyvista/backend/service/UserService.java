@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -55,7 +56,7 @@ public class UserService {
         String token = verificationTokenService.generateToken(user);
         log.info("Created new user with ID {} and email {} and generated verification token {}", user.getId(), email, token);
 
-        emailService.sendEmail(new UserRegisteredEmail(user, token));
+        emailService.sendEmailAsync(new UserRegisteredEmail(user, token));
         return user;
     }
 
@@ -85,7 +86,7 @@ public class UserService {
         userRepository.delete(user);
         log.info("Deleted user with ID {}", user.getId());
 
-        emailService.sendEmail(new UserDeletedEmail(user));
+        emailService.sendEmailAsync(new UserDeletedEmail(user));
         return user;
     }
 
@@ -172,12 +173,12 @@ public class UserService {
 
         // Process image asynchronously in the background
         UUID userId = user.getId();
-        imageService.processImage(avatarImage, (success) -> {
+        imageService.validateImagesContentAsync(List.of(uploadResponse), (success) -> {
             User finalUser = userRepository.findById(userId).orElse(null);
 
             if (finalUser != null && success) {
                 // Move image from private to public bucket after processing
-                storageService.moveObjectBetweenBuckets(BucketNames.PRIVATE_AVATAR_IMAGES, BucketNames.PUBLIC_AVATAR_IMAGES, newFileName);
+                storageService.moveFileBetweenBuckets(BucketNames.PRIVATE_AVATAR_IMAGES, BucketNames.PUBLIC_AVATAR_IMAGES, newFileName);
                 finalUser.setAvatarImagePath(newFileName);
                 userRepository.save(finalUser);
                 log.info("User's avatar image is now available in public bucket for user ID {}", userId);

@@ -12,14 +12,17 @@ public record UserDeletedEmail(
 
     @Override
     public String getSubject() {
-        return "Your account has been deleted";
+        return "Twoje konto zostało usunięte";
     }
-
+    
     @Override
     public String getBody() {
         return """
-                <p>Dear %s %s,</p>
-                <p>We regret to inform you that your account has been deleted from our system. If you believe this was a mistake or have any questions, please contact our support team.</p>
+                <p>Szanowny/a %s %s,</p>
+                <p>Z przykrością informujemy, że Twoje konto zostało usunięte z naszego systemu. Jeśli uważasz, że to pomyłka lub masz jakiekolwiek pytania, skontaktuj się z naszym zespołem wsparcia.</p>
+                <p>Pozdrawiamy,<br/>Zespół Property Vista</p>
+                <br/>
+                <p>Prosimy nie odpowiadać na tę wiadomość, ponieważ jest to automatycznie generowany e-mail.</p>
                 """
                 .formatted(user.getFirstName(), user.getLastName());
     }

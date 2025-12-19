@@ -59,17 +59,17 @@ public class StorageService {
         }
     }
 
-    public void moveObjectBetweenBuckets(String sourceBucket, String destinationBucket, String objectName) {
+    public void moveFileBetweenBuckets(String sourceBucket, String destinationBucket, String fileName) {
         try {
             // Copy the object to the new bucket
             minioClient.copyObject(
                     CopyObjectArgs.builder()
                             .source(CopySource.builder()
                                     .bucket(sourceBucket)
-                                    .object(objectName)
+                                    .object(fileName)
                                     .build())
                             .bucket(destinationBucket)
-                            .object(objectName)
+                            .object(fileName)
                             .build()
             );
 
@@ -77,17 +77,32 @@ public class StorageService {
             minioClient.removeObject(
                     RemoveObjectArgs.builder()
                             .bucket(sourceBucket)
-                            .object(objectName)
+                            .object(fileName)
                             .build()
             );
 
-            log.info("Moved object '{}' from bucket '{}' to bucket '{}'", objectName, sourceBucket, destinationBucket);
+            log.info("Moved object '{}' from bucket '{}' to bucket '{}'", fileName, sourceBucket, destinationBucket);
         } catch (Exception e) {
-            log.error("Error while moving object '{}' from bucket '{}' to bucket '{}': {}", objectName, sourceBucket, destinationBucket, e.getMessage());
+            log.error("Error while moving object '{}' from bucket '{}' to bucket '{}': {}", fileName, sourceBucket, destinationBucket, e.getMessage());
         }
     }
 
     public String getPublicFileUrl(String bucketName, String fileName) {
         return "%s/%s/%s".formatted(publicStorageUrl, bucketName, fileName);
+    }
+
+    public byte[] getFileContent(String bucketName, String fileName) {
+        try {
+            var stream = minioClient.getObject(
+                    GetObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(fileName)
+                            .build()
+            );
+            return stream.readAllBytes();
+        } catch (Exception e) {
+            log.error("Error while retrieving content of object '{}' from bucket '{}': {}", fileName, bucketName, e.getMessage());
+            return null;
+        }
     }
 }

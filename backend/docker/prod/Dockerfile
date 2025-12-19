@@ -1,34 +1,32 @@
 # Build stage
-FROM maven:3-eclipse-temurin-25-alpine AS build
+FROM eclipse-temurin:21-jdk-noble AS build
 WORKDIR /app
 
-# Copy the pom.xml and download the dependencies with cache
-COPY pom.xml .
+# Copy Maven wrapper and pom.xml
+COPY .mvn .mvn
+COPY mvnw pom.xml ./
+RUN chmod +x mvnw
+
 RUN --mount=type=cache,target=/root/.m2 \
-    mvn dependency:go-offline -B
+    ./mvnw dependency:go-offline -B
 
 # Copy the source code and build the application
 COPY src ./src
 RUN --mount=type=cache,target=/root/.m2 \
-    mvn clean package -DskipTests
+    ./mvnw clean package -DskipTests
 
 # Runtime stage
-FROM eclipse-temurin:25-jre-alpine
+FROM eclipse-temurin:21-jre-noble
 WORKDIR /app
 
-# Install curl for healthcheck
-RUN apk add --no-cache curl
-
-# Create a non-root user to run the application
-RUN addgroup -g 1000 docker && \
-    adduser -D -u 1000 -G docker docker && \
-    chown docker:docker /app
+# Set up permissions for a non-root user
+RUN chown -R ubuntu:ubuntu /app
 
 # Copy the jar file from the build stage
-COPY --chown=docker:docker --from=build /app/target/*.jar app.jar
+COPY --chown=ubuntu:ubuntu --from=build /app/target/*.jar app.jar
 
 # Change to the non-root user
-USER docker
+USER ubuntu
 
 # Expose the application port
 EXPOSE 8080
