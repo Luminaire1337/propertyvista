@@ -94,9 +94,9 @@ export const useLoginMutation = () => {
       const response = await AuthService.login(credentials)
       return response
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       saveStorageData(data)
-      queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+      await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
 
       toast.success('Pomyślnie zalogowano!')
       router.push({ name: 'home' })

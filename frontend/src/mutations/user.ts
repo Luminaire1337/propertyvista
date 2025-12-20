@@ -18,7 +18,7 @@ export const useVerifyEmailMutation = () => {
       await UserService.verifyEmail(tokenData)
     },
     onSuccess: () => {
-      toast.success('Email został pomyślnie zweryfikowany!')
+      toast.success('E-mail został pomyślnie zweryfikowany!')
       router.push({ name: 'login' })
     },
     onError: (error: Error) => {
@@ -57,9 +57,9 @@ export const useUpdateUserEmailMutation = () => {
     }) => {
       return await UserService.updateUserEmail(id, emailData)
     },
-    onSuccess: (_, data) => {
-      if (data.id === 'me') queryClient.invalidateQueries({ queryKey: ['currentUser'] })
-      toast.success('Email został pomyślnie zaktualizowany!')
+    onSuccess: async (_, data) => {
+      if (data.id === 'me') await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+      toast.success('E-mail został pomyślnie zaktualizowany!')
     },
     onError: (error: Error) => {
       toast.error(error.message)
@@ -79,8 +79,8 @@ export const useUpdateUserPasswordMutation = () => {
     }) => {
       return await UserService.updateUserPassword(id, passwordData)
     },
-    onSuccess: (_, data) => {
-      if (data.id === 'me') queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+    onSuccess: async (_, data) => {
+      if (data.id === 'me') await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
       toast.success('Hasło zostało pomyślnie zmienione!')
     },
     onError: (error: Error) => {
@@ -129,8 +129,8 @@ export const useUpdateUserInfoMutation = () => {
     }) => {
       return await UserService.updateUserInfo(id, infoData)
     },
-    onSuccess: (_, data) => {
-      if (data.id === 'me') queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+    onSuccess: async (_, data) => {
+      if (data.id === 'me') await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
       toast.success('Informacje zostały pomyślnie zaktualizowane!')
     },
     onError: (error: Error) => {
@@ -145,9 +145,9 @@ export const useUpdateUserAvatarMutation = () => {
     mutationFn: async ({ id = 'me', avatarImage }: { id?: string | 'me'; avatarImage: File }) => {
       return await UserService.updateUserAvatar(id, avatarImage)
     },
-    onSuccess: (_, data) => {
-      if (data.id === 'me') queryClient.invalidateQueries({ queryKey: ['currentUser'] })
-      toast.success('Avatar został pomyślnie zaktualizowany!')
+    onSuccess: async (_, data) => {
+      if (data.id === 'me') await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+      toast.success('Awatar został pomyślnie zaktualizowany!')
     },
     onError: (error: Error) => {
       toast.error(error.message)
@@ -161,12 +161,21 @@ export const useDeleteUserAvatarMutation = () => {
     mutationFn: async (id: string | 'me' = 'me') => {
       return await UserService.deleteUserAvatar(id)
     },
-    onSuccess: (_, id) => {
-      if (id === 'me') queryClient.invalidateQueries({ queryKey: ['currentUser'] })
-      toast.success('Avatar został pomyślnie usunięty!')
+    onSuccess: async (_, id) => {
+      if (id === 'me') await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+      toast.success('Awatar został pomyślnie usunięty!')
     },
     onError: (error: Error) => {
       toast.error(error.message)
+    },
+  })
+}
+
+export const useInvalidateCurrentUserQuery = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
     },
   })
 }

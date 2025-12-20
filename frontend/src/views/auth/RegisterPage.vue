@@ -34,9 +34,9 @@ const handleRegister = (event: Event) => {
 <template>
   <div class="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
     <template v-if="page === 'email-verification'">
-      <h1 class="text-4xl font-bold mb-4">Weryfikacja email</h1>
+      <h1 class="text-4xl font-bold mb-4">Weryfikacja e-mail</h1>
       <p class="text-lg mb-6 max-w-2xl">
-        Dziękujemy za rejestrację! Na podany adres email
+        Dziękujemy za rejestrację! Na podany adres e-mail
         <strong>{{ email }}</strong> wysłaliśmy wiadomość z linkiem weryfikacyjnym. Prosimy
         sprawdzić swoją skrzynkę pocztową i kliknąć w link, aby aktywować konto.
       </p>
@@ -81,7 +81,7 @@ const handleRegister = (event: Event) => {
           />
         </div>
         <div class="mb-4 text-left">
-          <label for="email" class="block text-gray-700 mb-2">Email:</label>
+          <label for="email" class="block text-gray-700 mb-2">E-mail:</label>
           <input
             v-model="email"
             type="email"
@@ -110,7 +110,9 @@ const handleRegister = (event: Event) => {
             >Regulamin</RouterLink
           >.
         </div>
-        <PrimaryButton type="submit" class="w-full">Zarejestruj się</PrimaryButton>
+        <PrimaryButton type="submit" class="w-full" :disabled="registerMutation.isPending.value">
+          {{ registerMutation.isPending.value ? 'Rejestrowanie...' : 'Zarejestruj się' }}
+        </PrimaryButton>
         <RouterLink to="/login" class="block mt-4 text-sm text-gray-900 hover:underline">
           Masz już konto? Zaloguj się
         </RouterLink>

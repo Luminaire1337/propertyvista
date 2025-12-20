@@ -27,6 +27,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/user/VerifyEmailPage.vue'),
     meta: { requiresGuest: true },
   },
+  {
+    path: '/settings',
+    name: 'settings',
+    component: () => import('@/views/user/SettingsPage.vue'),
+    meta: { requiresAuth: true },
+  },
   // Other routes
   {
     path: '/terms-of-service',

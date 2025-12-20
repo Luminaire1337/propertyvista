@@ -103,12 +103,18 @@ export abstract class UserService {
   }
 
   static async updateUserAvatar(id: string | 'me', avatarImage: File): Promise<User> {
-    // https://github.com/openapi-ts/openapi-typescript/issues/1214#issuecomment-2662177105
+    const formData = new FormData()
+    formData.append('avatarImage', avatarImage)
+
     const response =
       id === 'me'
-        ? await client.PUT('/users/me/avatar', { file: avatarImage as unknown as string })
+        ? await client.PUT('/users/me/avatar', {
+            // @ts-expect-error - FormData is compatible but TypeScript doesn't recognize it
+            body: formData,
+          })
         : await client.PUT('/users/{id}/avatar', {
-            file: avatarImage as unknown as string,
+            // @ts-expect-error - FormData is compatible but TypeScript doesn't recognize it
+            body: formData,
             params: { path: { id } },
           })
 

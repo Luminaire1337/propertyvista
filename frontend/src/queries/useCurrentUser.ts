@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { isAuthenticated, useLogoutMutation } from '@/mutations/auth'
 import { watch } from 'vue'
 
-export const useCurrentUser = () => {
+const useCurrentUser = () => {
   const logoutMutation = useLogoutMutation()
 
   const query = useQuery({
@@ -25,3 +25,5 @@ export const useCurrentUser = () => {
 
   return query
 }
+
+export default useCurrentUser
