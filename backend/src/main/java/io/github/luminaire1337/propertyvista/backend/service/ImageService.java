@@ -71,6 +71,13 @@ public class ImageService {
 
     @Async
     public void validateImagesContentAsync(List<ObjectWriteResponse> images, Consumer<Boolean> callback) {
+        // Check if Google API key is set
+        if (googleCloudApiKey == null || googleCloudApiKey.isEmpty()) {
+            log.warn("Google Cloud API key is not set. Skipping image content validation.");
+            callback.accept(true);
+            return;
+        }
+
         HeaderProvider headerProvider = () -> Map.of("X-Goog-Api-Key", googleCloudApiKey);
 
         try (ImageAnnotatorClient vision = ImageAnnotatorClient.create(
