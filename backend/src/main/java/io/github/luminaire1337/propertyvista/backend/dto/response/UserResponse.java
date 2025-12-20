@@ -1,7 +1,7 @@
 package io.github.luminaire1337.propertyvista.backend.dto.response;
 
-import io.github.luminaire1337.propertyvista.backend.entity.UserRole;
-import io.github.luminaire1337.propertyvista.backend.entity.UserStatus;
+import io.github.luminaire1337.propertyvista.backend.entity.utility.UserRole;
+import io.github.luminaire1337.propertyvista.backend.entity.utility.UserStatus;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

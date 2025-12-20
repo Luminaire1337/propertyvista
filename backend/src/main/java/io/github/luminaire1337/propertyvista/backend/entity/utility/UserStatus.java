@@ -1,4 +1,4 @@
-package io.github.luminaire1337.propertyvista.backend.entity;
+package io.github.luminaire1337.propertyvista.backend.entity.utility;
 
 public enum UserStatus {
     VERIFIED,

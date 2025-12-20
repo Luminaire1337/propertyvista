@@ -4,7 +4,7 @@ CREATE TABLE verification_tokens
     token       VARCHAR(255) NOT NULL,
     user_id     UUID         NOT NULL,
     expiry_date DATETIME     NOT NULL,
-    CONSTRAINT uc_verification_tokens_user_id UNIQUE (user_id),
+    CONSTRAINT uc_verification_tokens_token_user_id UNIQUE (token, user_id),
     CONSTRAINT fk_verification_tokens_on_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     INDEX idx_verification_tokens_token (token),
     INDEX idx_verification_tokens_user_id (user_id)

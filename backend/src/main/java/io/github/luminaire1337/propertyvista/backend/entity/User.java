@@ -1,5 +1,7 @@
 package io.github.luminaire1337.propertyvista.backend.entity;
 
+import io.github.luminaire1337.propertyvista.backend.entity.utility.UserRole;
+import io.github.luminaire1337.propertyvista.backend.entity.utility.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,6 +58,9 @@ public class User implements UserDetails {
     // Site specific fields
     @Column(nullable = false)
     private Integer propertyPoints;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Property> properties;
 
     // CreatedAt and UpdatedAt timestamps
     @Column(name = "created_at", nullable = false, updatable = false)

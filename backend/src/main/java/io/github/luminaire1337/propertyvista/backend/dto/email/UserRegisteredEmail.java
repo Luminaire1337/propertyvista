@@ -13,14 +13,14 @@ public record UserRegisteredEmail(
 
     @Override
     public String getSubject() {
-        return "Witamy w Property Vista! Potwierdź swój adres e-mail";
+        return "Potwierdź swój adres e-mail";
     }
 
     @Override
     public String getBody() {
         return """
                 <p>Szanowny/a %s %s,</p>
-                <p>Dziękujemy za rejestrację w Property Vista! Aby zakończyć proces rejestracji, prosimy o potwierdzenie swojego adresu e-mail, klikając w poniższy link:</p>
+                <p>Dziękujemy za rejestrację w naszym serwisie. Aby zakończyć proces rejestracji, prosimy o potwierdzenie swojego adresu e-mail, klikając w poniższy link:</p>
                 <p><a href="{FRONTEND_URL}/verify-email?token=%s">Potwierdź adres e-mail</a></p>
                 <p>Jeśli nie dokonywałeś/aś rejestracji, zignoruj tę wiadomość.</p>
                 <p>Pozdrawiamy,<br/>Zespół Property Vista</p>

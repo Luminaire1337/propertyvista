@@ -1,8 +1,8 @@
 package io.github.luminaire1337.propertyvista.backend.task;
 
 import io.github.luminaire1337.propertyvista.backend.entity.User;
-import io.github.luminaire1337.propertyvista.backend.entity.UserStatus;
 import io.github.luminaire1337.propertyvista.backend.entity.VerificationToken;
+import io.github.luminaire1337.propertyvista.backend.entity.utility.UserStatus;
 import io.github.luminaire1337.propertyvista.backend.service.UserService;
 import io.github.luminaire1337.propertyvista.backend.service.VerificationTokenService;
 import lombok.RequiredArgsConstructor;
