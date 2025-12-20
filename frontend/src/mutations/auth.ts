@@ -134,6 +134,7 @@ export const useLogoutMutation = () => {
     onSettled: () => {
       // Clear data regardless of success or failure
       clearStorageData()
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] })
       queryClient.setQueryData(['currentUser'], null)
 
       toast.success('Pomyślnie wylogowano!')
