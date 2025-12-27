@@ -4,11 +4,13 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
+      - "8080:8080" # Traefik dashboard
     environment:
       - TZ=Europe/Warsaw
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command:
+      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
@@ -16,9 +18,9 @@ services:
       - "traefik.enable=true"
       # CORS middleware configuration
       - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
-      - "traefik.http.middlewares.cors-headers.headers.accesscontrolalloworiginlist=${CORS_ALLOWED_ORIGINS:-http://localhost}"
-      - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowheaders=Authorization,Content-Type,Accept,X-Requested-With"
-      - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowcredentials=true"
+      - "traefik.http.middlewares.cors-headers.headers.accesscontrolalloworiginlist=http://localhost"
+      - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowheaders=Authorization,Content-Type"
+      - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowcredentials=false"
       - "traefik.http.middlewares.cors-headers.headers.accesscontrolmaxage=3600"
       # Rate limiting middleware - 100 requests per second average, burst of 50
       - "traefik.http.middlewares.rate-limit.ratelimit.average=100"
@@ -36,23 +38,22 @@ services:
     environment:
       - TZ=Europe/Warsaw
       - SPRING_PROFILES_ACTIVE=prod
-      - PROPERTYVISTA_FRONTEND_URL=${FRONTEND_URL:-http://localhost}
-      - SPRING_DATABASE_URL=jdbc:mariadb://database:3306/${DB_NAME:-propertyvista}
-      - SPRING_DATABASE_USERNAME=${DB_USER:-propertyvista}
-      - SPRING_DATABASE_PASSWORD=${DB_PASSWORD:-propertyvista}
-      - PROPERTYVISTA_JWT_SECRET=${JWT_SECRET:-CHANGEMECHANGEMECHANGEMECHANGEME}
-      - PROPERTYVISTA_JWT_EXPIRATION_MS=${JWT_EXPIRATION_MS:-864000000} # 1 day
-      - SPRING_MAIL_HOST=${MAIL_HOST:-}
-      - SPRING_MAIL_PORT=${MAIL_PORT:-}
-      - SPRING_MAIL_USERNAME=${MAIL_USERNAME:-}
-      - SPRING_MAIL_PASSWORD=${MAIL_PASSWORD:-}
-      - PROPERTYVISTA_MAIL_FROM=${MAIL_FROM:-}
+      - SPRING_DATABASE_URL=jdbc:mariadb://database:3306/${DB_NAME}?user=${DB_USER}&password=${DB_PASSWORD}
+      - SPRING_MAIL_HOST=${MAIL_HOST}
+      - SPRING_MAIL_PORT=${MAIL_PORT}
+      - SPRING_MAIL_USERNAME=${MAIL_USERNAME}
+      - SPRING_MAIL_PASSWORD=${MAIL_PASSWORD}
+      - SPRING_REDIS_URL=redis://:${CACHE_PASSWORD}@cache:6379
+      # Custom variables
+      - PROPERTYVISTA_JWT_SECRET=${JWT_SECRET}
+      - PROPERTYVISTA_JWT_EXPIRATION_MS=${JWT_EXPIRATION_MS}
+      - PROPERTYVISTA_FRONTEND_URL=http://localhost
+      - PROPERTYVISTA_MAIL_FROM=${MAIL_FROM}
       - PROPERTYVISTA_STORAGE_URL=http://storage:9000
-      - PROPERTYVISTA_PUBLIC_STORAGE_URL=${PUBLIC_STORAGE_URL:-http://localhost:9000}
-      - PROPERTYVISTA_STORAGE_ACCESS_KEY=${STORAGE_ACCESS_KEY:-storageaccesskey}
-      - PROPERTYVISTA_STORAGE_SECRET_KEY=${STORAGE_SECRET_KEY:-storagesecretkey}
-      - SPRING_REDIS_URL=redis://:${CACHE_PASSWORD:-propertyvista}@cache:6379
-      - PROPERTYVISTA_GOOGLE_CLOUD_KEY=${GOOGLE_CLOUD_KEY:-}
+      - PROPERTYVISTA_PUBLIC_STORAGE_URL=https://storage.localhost
+      - PROPERTYVISTA_STORAGE_ACCESS_KEY=${STORAGE_ACCESS_KEY}
+      - PROPERTYVISTA_STORAGE_SECRET_KEY=${STORAGE_SECRET_KEY}
+      - PROPERTYVISTA_GOOGLE_CLOUD_KEY=${GOOGLE_CLOUD_KEY}
     depends_on:
       database:
         condition: service_healthy
@@ -62,20 +63,18 @@ services:
         condition: service_healthy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.rule=Host(`api.localhost`)"
       - "traefik.http.routers.backend.entrypoints=web"
       - "traefik.http.routers.backend.priority=10"
       - "traefik.http.services.backend.loadbalancer.server.port=8080"
-      - "traefik.http.middlewares.backend-strip.stripprefix.prefixes=/api"
-      - "traefik.http.middlewares.backend-strip.stripprefix.forceSlash=false"
-      - "traefik.http.routers.backend.middlewares=backend-strip,cors-headers,rate-limit"
+      - "traefik.http.routers.backend.middlewares=cors-headers,rate-limit"
 
   frontend:
     build:
       context: ./frontend
       dockerfile: ./docker/prod/Dockerfile
       args:
-        - VITE_API_URL=/api
+        - VITE_API_URL=http://api.localhost
     restart: unless-stopped
     expose:
       - "80"
@@ -86,8 +85,8 @@ services:
         condition: service_healthy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
       - "traefik.http.routers.frontend.entrypoints=web"
       - "traefik.http.routers.frontend.priority=1"
       - "traefik.http.services.frontend.loadbalancer.server.port=80"
-      - "traefik.http.routers.frontend.middlewares=cors-headers"
+      - "traefik.http.routers.frontend.middlewares=cors-headers,rate-limit"

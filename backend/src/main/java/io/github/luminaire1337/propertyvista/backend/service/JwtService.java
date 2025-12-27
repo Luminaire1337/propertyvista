@@ -16,11 +16,11 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class JwtService {
-    @Value("${propertyvista.jwt.secret}")
+    @Value("${PROPERTYVISTA_JWT_SECRET}")
     private String secret;
 
     @Getter
-    @Value("${propertyvista.jwt.expiration-ms}")
+    @Value("${PROPERTYVISTA_JWT_EXPIRATION_MS}")
     private Long expirationMs;
 
     private SecretKey getSigningKey() {

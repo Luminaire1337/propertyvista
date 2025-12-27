@@ -16,10 +16,10 @@ import org.springframework.stereotype.Service;
 public class EmailService {
     private final JavaMailSender mailSender;
 
-    @Value("${propertyvista.mail.from}")
+    @Value("${PROPERTYVISTA_MAIL_FROM}")
     private String from;
 
-    @Value("${propertyvista.frontend.url}")
+    @Value("${PROPERTYVISTA_FRONTEND_URL}")
     private String frontendUrl;
 
     @Async

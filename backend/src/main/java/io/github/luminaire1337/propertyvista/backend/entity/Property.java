@@ -73,7 +73,7 @@ public class Property {
 
     @PrePersist
     protected void onCreate() {
-        if (slug == null || slug.isEmpty()) {
+        if (slug == null || slug.isBlank()) {
             var slugifier = Slugify.builder()
                     .lowerCase(true)
                     .build();
@@ -89,7 +89,7 @@ public class Property {
 
     @PreUpdate
     protected void onUpdate() {
-        if (slug == null || slug.isEmpty()) {
+        if (slug == null || slug.isBlank()) {
             var slugifier = Slugify.builder()
                     .lowerCase(true)
                     .build();

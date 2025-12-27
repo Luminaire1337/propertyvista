@@ -8,9 +8,9 @@ services:
       - "3306:3306"
     environment:
       - TZ=Europe/Warsaw
-      - MARIADB_DATABASE=${DB_NAME:-propertyvista}
-      - MARIADB_USER=${DB_USER:-propertyvista}
-      - MARIADB_PASSWORD=${DB_PASSWORD:-propertyvista}
+      - MARIADB_DATABASE=${DB_NAME}
+      - MARIADB_USER=${DB_USER}
+      - MARIADB_PASSWORD=${DB_PASSWORD}
       - MARIADB_RANDOM_ROOT_PASSWORD=1
     healthcheck: # https://mariadb.com/docs/server/server-management/automated-mariadb-deployment-and-administration/docker-and-mariadb/using-healthcheck-sh#compose-file-example
       test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
@@ -26,16 +26,23 @@ services:
       - storage_data:/data
     ports:
       - "9000:9000"
+      - "9001:9001" # Console port
     environment:
       - TZ=Europe/Warsaw
-      - RUSTFS_CONSOLE_ENABLE=false
-      - RUSTFS_ACCESS_KEY=${STORAGE_ACCESS_KEY:-storageaccesskey}
-      - RUSTFS_SECRET_KEY=${STORAGE_SECRET_KEY:-storagesecretkey}
+      - RUSTFS_ACCESS_KEY=${STORAGE_ACCESS_KEY}
+      - RUSTFS_SECRET_KEY=${STORAGE_SECRET_KEY}
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9000/health" ]
       interval: 10s
       timeout: 5s
       retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.storage.rule=Host(`storage.localhost`)"
+      - "traefik.http.routers.storage.entrypoints=web"
+      - "traefik.http.routers.storage.priority=5"
+      - "traefik.http.services.storage.loadbalancer.server.port=9000"
+      - "traefik.http.routers.storage.middlewares=cors-headers,rate-limit"
 
   cache:
     image: redis:8-alpine
@@ -49,7 +56,7 @@ services:
     command:
       - /bin/sh
       - -c
-      - redis-server --requirepass ${CACHE_PASSWORD:-propertyvista}
+      - redis-server --requirepass ${CACHE_PASSWORD}
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s

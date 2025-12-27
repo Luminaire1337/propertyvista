@@ -34,7 +34,7 @@ public class ImageService {
             )
     );
 
-    @Value("${propertyvista.google.cloud.api-key}")
+    @Value("${PROPERTYVISTA_GOOGLE_CLOUD_KEY}")
     private String googleCloudApiKey;
 
     public boolean isImageValid(MultipartFile image) {
@@ -72,7 +72,7 @@ public class ImageService {
     @Async
     public void validateImagesContentAsync(List<ObjectWriteResponse> images, Consumer<Boolean> callback) {
         // Check if Google API key is set
-        if (googleCloudApiKey == null || googleCloudApiKey.isEmpty()) {
+        if (googleCloudApiKey == null || googleCloudApiKey.isBlank()) {
             log.warn("Google Cloud API key is not set. Skipping image content validation.");
             callback.accept(true);
             return;

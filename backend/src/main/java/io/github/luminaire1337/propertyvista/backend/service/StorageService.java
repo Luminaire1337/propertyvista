@@ -13,7 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class StorageService {
     private final MinioClient minioClient;
 
-    @Value("${propertyvista.storage.public-url}")
+    @Value("${PROPERTYVISTA_STORAGE_URL}")
+    private String storageUrl;
+
+    @Value("${PROPERTYVISTA_PUBLIC_STORAGE_URL}")
     private String publicStorageUrl;
 
     public void deleteFileIfExists(String bucketName, String fileName) {
@@ -88,7 +91,11 @@ public class StorageService {
     }
 
     public String getPublicFileUrl(String bucketName, String fileName) {
-        return "%s/%s/%s".formatted(publicStorageUrl, bucketName, fileName);
+        return "%s/%s/%s".formatted(
+                publicStorageUrl != null && !publicStorageUrl.isBlank() ? publicStorageUrl : storageUrl,
+                bucketName,
+                fileName
+        );
     }
 
     public byte[] getFileContent(String bucketName, String fileName) {

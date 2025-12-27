@@ -7,13 +7,13 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MinioConfig {
-    @Value("${propertyvista.storage.url}")
+    @Value("${PROPERTYVISTA_STORAGE_URL}")
     private String storageUrl;
 
-    @Value("${propertyvista.storage.access-key}")
+    @Value("${PROPERTYVISTA_STORAGE_ACCESS_KEY}")
     private String accessKey;
 
-    @Value("${propertyvista.storage.secret-key}")
+    @Value("${PROPERTYVISTA_STORAGE_SECRET_KEY}")
     private String secretKey;
 
     @Bean
