@@ -15,7 +15,7 @@ services:
     labels:
       - "traefik.enable=true"
       # CORS middleware configuration
-      - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS,PATCH"
+      - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
       - "traefik.http.middlewares.cors-headers.headers.accesscontrolalloworiginlist=${CORS_ALLOWED_ORIGINS:-http://localhost}"
       - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowheaders=Authorization,Content-Type,Accept,X-Requested-With"
       - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowcredentials=true"

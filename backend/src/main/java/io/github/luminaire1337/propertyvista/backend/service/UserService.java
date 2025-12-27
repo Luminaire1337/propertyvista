@@ -21,9 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.UUID;
 
-@Service
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
+@Service
 public class UserService {
     private final UserRepository userRepository;
     private final VerificationTokenService verificationTokenService;

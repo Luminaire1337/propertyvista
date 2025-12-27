@@ -58,8 +58,10 @@ public class Property {
     @Column(nullable = false)
     private Boolean parking;
 
+    // TODO: Add listing duration field
+
     // Images
-    @OneToMany(mappedBy = "property", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "property", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<PropertyImage> images;
 
     // CreatedAt and UpdatedAt timestamps
@@ -99,5 +101,12 @@ public class Property {
 
     public boolean isPublished() {
         return status == PropertyStatus.VERIFIED;
+    }
+
+    public PropertyImage getPrimaryImage() {
+        return images != null ? images.stream()
+                .filter(PropertyImage::isPrimary)
+                .findFirst()
+                .orElse(null) : null;
     }
 }

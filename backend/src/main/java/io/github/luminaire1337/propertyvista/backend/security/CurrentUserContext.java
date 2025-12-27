@@ -7,8 +7,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
 @Component
 public class CurrentUserContext {
     public User getCurrentUser() {
@@ -31,11 +29,6 @@ public class CurrentUserContext {
         }
 
         return user;
-    }
-
-    public UUID getCurrentUserId() {
-        User user = getCurrentUser();
-        return user.getId();
     }
 
     public void ensureCurrentUserIsAdmin() {

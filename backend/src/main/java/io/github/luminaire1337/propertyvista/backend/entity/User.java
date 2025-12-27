@@ -59,7 +59,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Integer propertyPoints;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Property> properties;
 
     // CreatedAt and UpdatedAt timestamps

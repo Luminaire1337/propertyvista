@@ -29,11 +29,8 @@ public class PropertyImage {
     @Column(name = "image_path", unique = true, nullable = false)
     private String imagePath;
 
-    @Column(name = "alt_text")
-    private String altText;
-
     @Column(name = "is_primary", nullable = false)
-    private Boolean isPrimary;
+    private Boolean primary;
 
     // CreatedAt and UpdatedAt timestamps
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -52,5 +49,9 @@ public class PropertyImage {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    public Boolean isPrimary() {
+        return primary;
     }
 }
