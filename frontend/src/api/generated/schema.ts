@@ -4,57 +4,6 @@
  */
 
 export interface paths {
-    "/users/{id}/status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update user status by ID */
-        put: operations["updateUserStatus"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/{id}/role": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update user role by ID */
-        put: operations["updateUserRole"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/{id}/password": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update user password by ID or current user if no ID is provided */
-        put: operations["updateUserPassword"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/users/me/password": {
         parameters: {
             query?: never;
@@ -63,25 +12,8 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Update user password by ID or current user if no ID is provided */
-        put: operations["updateUserPassword_1"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/{id}/info": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update user information by ID or current user if no ID is provided */
-        put: operations["updateUserInfo"];
+        /** Update current user password */
+        put: operations["updateUserPassword"];
         post?: never;
         delete?: never;
         options?: never;
@@ -97,8 +29,8 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Update user information by ID or current user if no ID is provided */
-        put: operations["updateUserInfo_1"];
+        /** Update current user information */
+        put: operations["updateUserInfo"];
         post?: never;
         delete?: never;
         options?: never;
@@ -114,25 +46,8 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Update user email by ID or current user if no ID is provided */
+        /** Update current user email */
         put: operations["updateUserEmail"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/{id}/email": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update user email by ID or current user if no ID is provided */
-        put: operations["updateUserEmail_1"];
         post?: never;
         delete?: never;
         options?: never;
@@ -148,29 +63,11 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Update user avatar image by ID or current user if no ID is provided */
+        /** Update current user avatar image */
         put: operations["updateUserAvatarImage"];
         post?: never;
-        /** Delete user avatar image by ID or current user if no ID is provided */
+        /** Delete current user avatar image */
         delete: operations["deleteUserAvatarImage"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/{id}/avatar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update user avatar image by ID or current user if no ID is provided */
-        put: operations["updateUserAvatarImage_1"];
-        post?: never;
-        /** Delete user avatar image by ID or current user if no ID is provided */
-        delete: operations["deleteUserAvatarImage_1"];
         options?: never;
         head?: never;
         patch?: never;
@@ -204,6 +101,24 @@ export interface paths {
         put?: never;
         /** Verify user's email address */
         post: operations["verifyUserEmail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get paginated list of properties */
+        get: operations["getProperties"];
+        put?: never;
+        /** Create a new property */
+        post: operations["createProperty"];
         delete?: never;
         options?: never;
         head?: never;
@@ -268,30 +183,29 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get user information by ID or current user if no ID is provided */
+        /** Get current user information */
         get: operations["getUser"];
         put?: never;
         post?: never;
-        /** Delete user account by ID or current user if no ID is provided */
+        /** Delete current user account */
         delete: operations["deleteUser"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/users/{id}": {
+    "/properties/{slug}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get user information by ID or current user if no ID is provided */
-        get: operations["getUser_1"];
+        /** Get property by slug */
+        get: operations["getPropertyBySlug"];
         put?: never;
         post?: never;
-        /** Delete user account by ID or current user if no ID is provided */
-        delete: operations["deleteUser_1"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -320,22 +234,14 @@ export interface components {
             /** Format: date-time */
             updatedAt?: string;
         };
-        UpdateUserStatusRequest: {
-            /** @enum {string} */
-            status: "VERIFIED" | "UNVERIFIED" | "SUSPENDED";
+        UpdateUserPasswordRequest: {
+            password: string;
         };
         ErrorResponse: {
             message?: string;
             errors?: {
                 [key: string]: string;
             };
-        };
-        UpdateUserRoleRequest: {
-            /** @enum {string} */
-            role: "USER" | "ADMIN";
-        };
-        UpdateUserPasswordRequest: {
-            password: string;
         };
         UpdateUserInfoRequest: {
             firstName: string;
@@ -357,6 +263,41 @@ export interface components {
         TokenRequest: {
             token: string;
         };
+        PropertyResponse: {
+            /** Format: uuid */
+            id?: string;
+            slug?: string;
+            title?: string;
+            /** @enum {string} */
+            status?: "UNVERIFIED" | "VERIFIED" | "HIDDEN";
+            description?: string;
+            /** Format: double */
+            price?: number;
+            city?: string;
+            /** Format: double */
+            area?: number;
+            /** Format: int32 */
+            rooms?: number;
+            parking?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        CreatePropertyRequest: {
+            title: string;
+            description?: string;
+            /** Format: double */
+            price: number;
+            city: string;
+            /** Format: double */
+            area: number;
+            /** Format: int32 */
+            rooms: number;
+            parking: boolean;
+            images: string[];
+            primaryImagePath: string;
+        };
         AuthResponse: {
             accessToken?: string;
             refreshToken?: string;
@@ -368,6 +309,72 @@ export interface components {
             email: string;
             password: string;
         };
+        PropertyListingResponse: {
+            /** Format: uuid */
+            id?: string;
+            slug?: string;
+            title?: string;
+            /** @enum {string} */
+            status?: "UNVERIFIED" | "VERIFIED" | "HIDDEN";
+            /** Format: double */
+            price?: number;
+            city?: string;
+            /** Format: double */
+            area?: number;
+            /** Format: int32 */
+            rooms?: number;
+            parking?: boolean;
+            primaryImagePath?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        PropertyPaginationRequest: {
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            sortField?: string;
+            /** @enum {string} */
+            sortDirection?: "ASC" | "DESC";
+            city?: string;
+            /** Format: double */
+            minPrice?: number;
+            /** Format: double */
+            maxPrice?: number;
+            /** Format: int32 */
+            minRooms?: number;
+            /** Format: int32 */
+            maxRooms?: number;
+            /** Format: double */
+            minArea?: number;
+            /** Format: double */
+            maxArea?: number;
+            parking?: boolean;
+        };
+        PropertyDetailedResponse: {
+            /** Format: uuid */
+            id?: string;
+            slug?: string;
+            title?: string;
+            /** @enum {string} */
+            status?: "UNVERIFIED" | "VERIFIED" | "HIDDEN";
+            description?: string;
+            /** Format: double */
+            price?: number;
+            city?: string;
+            /** Format: double */
+            area?: number;
+            /** Format: int32 */
+            rooms?: number;
+            parking?: boolean;
+            imagePaths?: string[];
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -377,166 +384,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    updateUserStatus: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateUserStatusRequest"];
-            };
-        };
-        responses: {
-            /** @description User status updated successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserResponse"];
-                };
-            };
-            /** @description Invalid request payload */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Unauthorized access */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Forbidden access */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    updateUserRole: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateUserRoleRequest"];
-            };
-        };
-        responses: {
-            /** @description User role updated successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserResponse"];
-                };
-            };
-            /** @description Invalid request payload */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Unauthorized access */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Forbidden access */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
     updateUserPassword: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateUserPasswordRequest"];
-            };
-        };
-        responses: {
-            /** @description User password updated successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserResponse"];
-                };
-            };
-            /** @description Invalid request payload */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Unauthorized access */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Forbidden access */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    updateUserPassword_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -588,59 +436,6 @@ export interface operations {
         };
     };
     updateUserInfo: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateUserInfoRequest"];
-            };
-        };
-        responses: {
-            /** @description User information updated successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserResponse"];
-                };
-            };
-            /** @description Invalid request payload */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Unauthorized access */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Forbidden access */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    updateUserInfo_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -696,59 +491,6 @@ export interface operations {
             query?: never;
             header?: never;
             path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateUserEmailRequest"];
-            };
-        };
-        responses: {
-            /** @description User email updated successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserResponse"];
-                };
-            };
-            /** @description Invalid request payload */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Unauthorized access */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Forbidden access */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    updateUserEmail_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
             cookie?: never;
         };
         requestBody: {
@@ -896,111 +638,6 @@ export interface operations {
             };
         };
     };
-    updateUserAvatarImage_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "multipart/form-data": {
-                    /** Format: binary */
-                    avatarImage: string;
-                };
-            };
-        };
-        responses: {
-            /** @description User avatar image updated successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserResponse"];
-                };
-            };
-            /** @description Invalid request payload */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Unauthorized access */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Forbidden access */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    deleteUserAvatarImage_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User avatar image deleted successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserResponse"];
-                };
-            };
-            /** @description Invalid request payload */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Unauthorized access */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Forbidden access */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
     registerUser: {
         parameters: {
             query?: never;
@@ -1071,6 +708,106 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Invalid request payload */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized access */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden access */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getProperties: {
+        parameters: {
+            query: {
+                paginationRequest: components["schemas"]["PropertyPaginationRequest"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful retrieval of properties */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyListingResponse"];
+                };
+            };
+            /** @description Invalid request payload */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized access */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden access */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    createProperty: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePropertyRequest"];
+            };
+        };
+        responses: {
+            /** @description Property created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyResponse"];
+                };
             };
             /** @description Invalid request payload */
             400: {
@@ -1301,73 +1038,24 @@ export interface operations {
             };
         };
     };
-    getUser_1: {
+    getPropertyBySlug: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                id: string;
+                slug: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description User information retrieved successfully */
+            /** @description Successful retrieval of property */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UserResponse"];
-                };
-            };
-            /** @description Invalid request payload */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Unauthorized access */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Forbidden access */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    deleteUser_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User account deleted successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserResponse"];
+                    "application/json": components["schemas"]["PropertyDetailedResponse"];
                 };
             };
             /** @description Invalid request payload */

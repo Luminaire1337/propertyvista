@@ -8,8 +8,6 @@ import { useLogoutMutation } from './auth'
 type TokenRequest = components['schemas']['TokenRequest']
 type UpdateUserEmailRequest = components['schemas']['UpdateUserEmailRequest']
 type UpdateUserPasswordRequest = components['schemas']['UpdateUserPasswordRequest']
-type UpdateUserRoleRequest = components['schemas']['UpdateUserRoleRequest']
-type UpdateUserStatusRequest = components['schemas']['UpdateUserStatusRequest']
 type UpdateUserInfoRequest = components['schemas']['UpdateUserInfoRequest']
 
 export const useVerifyEmailMutation = () => {
@@ -31,12 +29,11 @@ export const useVerifyEmailMutation = () => {
 export const useDeleteUserMutation = () => {
   const logoutMutation = useLogoutMutation()
   return useMutation({
-    mutationFn: async (id: string | 'me' = 'me') => {
-      return await UserService.deleteUser(id)
+    mutationFn: async () => {
+      return await UserService.deleteUser()
     },
-    onSuccess: (_, id) => {
-      if (id === 'me') logoutMutation.mutate()
-
+    onSuccess: () => {
+      logoutMutation.mutate()
       toast.success('Konto zostało pomyślnie usunięte!')
     },
     onError: (error: Error) => {
@@ -48,17 +45,11 @@ export const useDeleteUserMutation = () => {
 export const useUpdateUserEmailMutation = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({
-      id = 'me',
-      emailData,
-    }: {
-      id?: string | 'me'
-      emailData: UpdateUserEmailRequest
-    }) => {
-      return await UserService.updateUserEmail(id, emailData)
+    mutationFn: async (emailData: UpdateUserEmailRequest) => {
+      return await UserService.updateUserEmail(emailData)
     },
-    onSuccess: async (_, data) => {
-      if (data.id === 'me') await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
       toast.success('E-mail został pomyślnie zaktualizowany!')
     },
     onError: (error: Error) => {
@@ -70,46 +61,12 @@ export const useUpdateUserEmailMutation = () => {
 export const useUpdateUserPasswordMutation = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({
-      id = 'me',
-      passwordData,
-    }: {
-      id?: string | 'me'
-      passwordData: UpdateUserPasswordRequest
-    }) => {
-      return await UserService.updateUserPassword(id, passwordData)
+    mutationFn: async (passwordData: UpdateUserPasswordRequest) => {
+      return await UserService.updateUserPassword(passwordData)
     },
-    onSuccess: async (_, data) => {
-      if (data.id === 'me') await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
       toast.success('Hasło zostało pomyślnie zmienione!')
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
-    },
-  })
-}
-
-export const useUpdateUserRoleMutation = () => {
-  return useMutation({
-    mutationFn: async ({ id, roleData }: { id: string; roleData: UpdateUserRoleRequest }) => {
-      return await UserService.updateUserRole(id, roleData)
-    },
-    onSuccess: () => {
-      toast.success('Rola użytkownika została pomyślnie zaktualizowana!')
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
-    },
-  })
-}
-
-export const useUpdateUserStatusMutation = () => {
-  return useMutation({
-    mutationFn: async ({ id, statusData }: { id: string; statusData: UpdateUserStatusRequest }) => {
-      return await UserService.updateUserStatus(id, statusData)
-    },
-    onSuccess: () => {
-      toast.success('Status użytkownika został pomyślnie zaktualizowany!')
     },
     onError: (error: Error) => {
       toast.error(error.message)
@@ -120,17 +77,11 @@ export const useUpdateUserStatusMutation = () => {
 export const useUpdateUserInfoMutation = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({
-      id = 'me',
-      infoData,
-    }: {
-      id?: string | 'me'
-      infoData: UpdateUserInfoRequest
-    }) => {
-      return await UserService.updateUserInfo(id, infoData)
+    mutationFn: async (infoData: UpdateUserInfoRequest) => {
+      return await UserService.updateUserInfo(infoData)
     },
-    onSuccess: async (_, data) => {
-      if (data.id === 'me') await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
       toast.success('Informacje zostały pomyślnie zaktualizowane!')
     },
     onError: (error: Error) => {
@@ -142,11 +93,11 @@ export const useUpdateUserInfoMutation = () => {
 export const useUpdateUserAvatarMutation = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ id = 'me', avatarImage }: { id?: string | 'me'; avatarImage: File }) => {
-      return await UserService.updateUserAvatar(id, avatarImage)
+    mutationFn: async (avatarImage: File) => {
+      return await UserService.updateUserAvatar(avatarImage)
     },
-    onSuccess: async (_, data) => {
-      if (data.id === 'me') await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
       toast.success('Awatar został pomyślnie zaktualizowany!')
     },
     onError: (error: Error) => {
@@ -158,11 +109,11 @@ export const useUpdateUserAvatarMutation = () => {
 export const useDeleteUserAvatarMutation = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (id: string | 'me' = 'me') => {
-      return await UserService.deleteUserAvatar(id)
+    mutationFn: async () => {
+      return await UserService.deleteUserAvatar()
     },
-    onSuccess: async (_, id) => {
-      if (id === 'me') await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
       toast.success('Awatar został pomyślnie usunięty!')
     },
     onError: (error: Error) => {

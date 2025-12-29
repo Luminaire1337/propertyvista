@@ -17,10 +17,7 @@ const handleEmailUpdate = (event: Event) => {
   event.preventDefault()
   updateEmailMutation.mutate(
     {
-      id: 'me',
-      emailData: {
-        email: newEmail.value,
-      },
+      email: newEmail.value,
     },
     {
       onSuccess: () => {
@@ -42,7 +39,7 @@ const closeDeleteModal = () => {
 
 const handleDeleteAccount = () => {
   if (deleteConfirmText.value === 'USUŃ KONTO') {
-    deleteUserMutation.mutate('me')
+    deleteUserMutation.mutate()
     closeDeleteModal()
   }
 }

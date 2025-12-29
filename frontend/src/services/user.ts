@@ -12,8 +12,6 @@ type RegisterRequest = components['schemas']['RegisterRequest']
 type TokenRequest = components['schemas']['TokenRequest']
 type UpdateUserEmailRequest = components['schemas']['UpdateUserEmailRequest']
 type UpdateUserPasswordRequest = components['schemas']['UpdateUserPasswordRequest']
-type UpdateUserRoleRequest = components['schemas']['UpdateUserRoleRequest']
-type UpdateUserStatusRequest = components['schemas']['UpdateUserStatusRequest']
 type UpdateUserInfoRequest = components['schemas']['UpdateUserInfoRequest']
 
 export abstract class UserService {
@@ -28,107 +26,52 @@ export abstract class UserService {
     if (error) throw new Error(normalizeError(error))
   }
 
-  static async getUser(id: string | 'me'): Promise<User> {
-    const response =
-      id === 'me'
-        ? await client.GET('/users/me')
-        : await client.GET('/users/{id}', { params: { path: { id } } })
-
-    if (response.error) throw new Error(normalizeError(response.error))
-    return response.data as User
-  }
-
-  static async deleteUser(id: string | 'me'): Promise<User> {
-    const response =
-      id === 'me'
-        ? await client.DELETE('/users/me')
-        : await client.DELETE('/users/{id}', { params: { path: { id } } })
-
-    if (response.error) throw new Error(normalizeError(response.error))
-    return response.data as User
-  }
-
-  static async updateUserEmail(
-    id: string | 'me',
-    emailData: UpdateUserEmailRequest,
-  ): Promise<User> {
-    const response =
-      id === 'me'
-        ? await client.PUT('/users/me/email', { body: emailData })
-        : await client.PUT('/users/{id}/email', { body: emailData, params: { path: { id } } })
-
-    if (response.error) throw new Error(normalizeError(response.error))
-    return response.data as User
-  }
-
-  static async updateUserPassword(
-    id: string | 'me',
-    passwordData: UpdateUserPasswordRequest,
-  ): Promise<User> {
-    const response =
-      id === 'me'
-        ? await client.PUT('/users/me/password', { body: passwordData })
-        : await client.PUT('/users/{id}/password', { body: passwordData, params: { path: { id } } })
-
-    if (response.error) throw new Error(normalizeError(response.error))
-    return response.data as User
-  }
-
-  static async updateUserRole(id: string, roleData: UpdateUserRoleRequest): Promise<User> {
-    const { data, error } = await client.PUT('/users/{id}/role', {
-      body: roleData,
-      params: { path: { id } },
-    })
+  static async getUser(): Promise<User> {
+    const { data, error } = await client.GET('/users/me')
     if (error) throw new Error(normalizeError(error))
     return data as User
   }
 
-  static async updateUserStatus(id: string, statusData: UpdateUserStatusRequest): Promise<User> {
-    const { data, error } = await client.PUT('/users/{id}/status', {
-      body: statusData,
-      params: { path: { id } },
-    })
+  static async deleteUser(): Promise<User> {
+    const { data, error } = await client.DELETE('/users/me')
     if (error) throw new Error(normalizeError(error))
     return data as User
   }
 
-  static async updateUserInfo(id: string | 'me', infoData: UpdateUserInfoRequest): Promise<User> {
-    const response =
-      id === 'me'
-        ? await client.PUT('/users/me/info', { body: infoData })
-        : await client.PUT('/users/{id}/info', { body: infoData, params: { path: { id } } })
-
-    if (response.error) throw new Error(normalizeError(response.error))
-    return response.data as User
+  static async updateUserEmail(emailData: UpdateUserEmailRequest): Promise<User> {
+    const { data, error } = await client.PUT('/users/me/email', { body: emailData })
+    if (error) throw new Error(normalizeError(error))
+    return data as User
   }
 
-  static async updateUserAvatar(id: string | 'me', avatarImage: File): Promise<User> {
+  static async updateUserPassword(passwordData: UpdateUserPasswordRequest): Promise<User> {
+    const { data, error } = await client.PUT('/users/me/password', { body: passwordData })
+    if (error) throw new Error(normalizeError(error))
+    return data as User
+  }
+
+  static async updateUserInfo(infoData: UpdateUserInfoRequest): Promise<User> {
+    const { data, error } = await client.PUT('/users/me/info', { body: infoData })
+    if (error) throw new Error(normalizeError(error))
+    return data as User
+  }
+
+  static async updateUserAvatar(avatarImage: File): Promise<User> {
     const formData = new FormData()
     formData.append('avatarImage', avatarImage)
 
-    const response =
-      id === 'me'
-        ? await client.PUT('/users/me/avatar', {
-            // @ts-expect-error - FormData is compatible but TypeScript doesn't recognize it
-            body: formData,
-          })
-        : await client.PUT('/users/{id}/avatar', {
-            // @ts-expect-error - FormData is compatible but TypeScript doesn't recognize it
-            body: formData,
-            params: { path: { id } },
-          })
+    const { data, error } = await client.PUT('/users/me/avatar', {
+      // @ts-expect-error - FormData is compatible but TypeScript doesn't recognize it
+      body: formData,
+    })
 
-    if (response.error) throw new Error(normalizeError(response.error))
-    return response.data as User
+    if (error) throw new Error(normalizeError(error))
+    return data as User
   }
 
-  static async deleteUserAvatar(id: string | 'me'): Promise<User> {
-    const response =
-      id === 'me'
-        ? await client.DELETE('/users/me/avatar')
-        : await client.DELETE('/users/{id}/avatar', { params: { path: { id } } })
-
-    if (response.error) throw new Error(normalizeError(response.error))
-    return response.data as User
+  static async deleteUserAvatar(): Promise<User> {
+    const { data, error } = await client.DELETE('/users/me/avatar')
+    if (error) throw new Error(normalizeError(error))
+    return data as User
   }
 }

@@ -25,10 +25,7 @@ const handleSubmit = (event: Event) => {
 
   updatePasswordMutation.mutate(
     {
-      id: 'me',
-      passwordData: {
-        password: newPassword.value,
-      },
+      password: newPassword.value,
     },
     {
       onSuccess: () => {

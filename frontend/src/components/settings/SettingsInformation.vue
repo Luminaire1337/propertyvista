@@ -26,12 +26,9 @@ watch(
 const handleSubmit = (event: Event) => {
   event.preventDefault()
   updateInfoMutation.mutate({
-    id: 'me',
-    infoData: {
-      firstName: firstName.value,
-      lastName: lastName.value,
-      phoneNumber: phoneNumber.value,
-    },
+    firstName: firstName.value,
+    lastName: lastName.value,
+    phoneNumber: phoneNumber.value,
   })
 }
 </script>

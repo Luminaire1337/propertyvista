@@ -29,21 +29,15 @@ const handleFileSelect = (event: Event) => {
 
 const handleUpload = () => {
   if (selectedFile.value) {
-    updateAvatarMutation.mutate(
-      {
-        id: 'me',
-        avatarImage: selectedFile.value,
+    updateAvatarMutation.mutate(selectedFile.value, {
+      onSuccess: () => {
+        selectedFile.value = null
+        previewUrl.value = null
+        if (fileInput.value) {
+          fileInput.value.value = ''
+        }
       },
-      {
-        onSuccess: () => {
-          selectedFile.value = null
-          previewUrl.value = null
-          if (fileInput.value) {
-            fileInput.value.value = ''
-          }
-        },
-      },
-    )
+    })
   }
 }
 
@@ -56,7 +50,7 @@ const closeDeleteModal = () => {
 }
 
 const handleDelete = () => {
-  deleteAvatarMutation.mutate('me')
+  deleteAvatarMutation.mutate()
   closeDeleteModal()
 }
 
