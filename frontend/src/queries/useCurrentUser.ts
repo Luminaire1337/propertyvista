@@ -8,7 +8,9 @@ const useCurrentUser = () => {
 
   const query = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => UserService.getUser(),
+    queryFn: async () => {
+      return (await UserService.getUser()) || null
+    },
     retry: false,
     staleTime: 1000 * 60 * 5, // Keep data fresh for 5 minutes
   })

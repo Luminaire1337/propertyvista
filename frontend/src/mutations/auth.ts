@@ -33,7 +33,7 @@ const saveStorageData = (data: Auth) => {
   const newData: AuthLocalStorageData = {
     accessToken: data.accessToken,
     refreshToken: data.refreshToken,
-    expirationDate: Date.now() / 1000 + data.expirationMs,
+    expirationDate: Date.now() + data.expirationMs,
   }
 
   localStorage.setItem('accessToken', newData.accessToken)
@@ -76,8 +76,7 @@ const refreshAccessToken = async (): Promise<string | null> => {
 export const getAccessToken = async () => {
   if (!authData) return null
 
-  const currentTime = Date.now() / 1000
-  if (currentTime < authData.expirationDate) {
+  if (Date.now() < authData.expirationDate) {
     return authData.accessToken
   }
 
