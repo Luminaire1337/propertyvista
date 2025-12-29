@@ -1,8 +1,9 @@
 package io.github.luminaire1337.propertyvista.backend.filter;
 
-import io.github.luminaire1337.propertyvista.backend.entity.User;
+import io.github.luminaire1337.propertyvista.backend.entity.JwtUser;
 import io.github.luminaire1337.propertyvista.backend.service.JwtService;
 import io.github.luminaire1337.propertyvista.backend.service.UserService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,12 +12,14 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -38,22 +41,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String jwt = authHeader.substring(7);
+        String token = authHeader.substring(7);
 
         try {
-            jwtService.ensureTokenValid(jwt);
-            UUID userId = jwtService.extractUserId(jwt);
-            User user = userService.getByUserId(userId);
+            Claims claims = jwtService.extractPayload(token);
+            UUID userId = jwtService.extractUserIdFromClaims(claims);
+            String email = jwtService.extractEmailFromClaims(claims);
+            List<String> roles = jwtService.extractRolesFromClaims(claims);
 
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                    user,
+            JwtUser principal = new JwtUser(userId, email, roles);
+
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                    principal,
                     null,
-                    user.getAuthorities()
+                    roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role)).toList()
             );
-            token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(token);
+            auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            log.info("Authenticated user {} for request {}", userId, request.getRequestURI());
+            SecurityContextHolder.getContext().setAuthentication(auth);
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
             log.info("Failed to authenticate JWT for request {}: {}", request.getRequestURI(), e.getMessage());

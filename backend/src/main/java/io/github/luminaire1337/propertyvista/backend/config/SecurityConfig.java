@@ -1,9 +1,11 @@
 package io.github.luminaire1337.propertyvista.backend.config;
 
+import io.github.luminaire1337.propertyvista.backend.entity.utility.UserRole;
 import io.github.luminaire1337.propertyvista.backend.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,7 +28,14 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() // Swagger endpoints
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll() // User registration
+                        .requestMatchers(HttpMethod.POST, "/users/verify-email").permitAll() // Email verification
+                        .requestMatchers(HttpMethod.GET, "/properties").permitAll() // Public property listings
+                        .requestMatchers(HttpMethod.GET, "/properties/{id}").permitAll() // Public property details
+                        .requestMatchers("/admin/**").hasRole(UserRole.ADMIN.toString())
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

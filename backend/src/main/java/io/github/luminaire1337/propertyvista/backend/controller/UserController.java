@@ -21,8 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -81,9 +79,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping({"/me", "/{id}"})
+    @GetMapping("/me")
     @Operation(
-            summary = "Get user information by ID or current user if no ID is provided",
+            summary = "Get current user information",
             responses = {
                     @ApiResponse(responseCode = "200", description = "User information retrieved successfully", content = {
                             @Content(mediaType = "application/json",
@@ -91,23 +89,14 @@ public class UserController {
                     })
             }
     )
-    public ResponseEntity<UserResponse> getUser(@PathVariable(required = false) UUID id) {
-        User user;
-
-        // Check if an ID was provided and if the current user is an admin
-        if (id != null) {
-            currentUserContext.ensureCurrentUserIsAdmin();
-            user = userService.getByUserId(id);
-        } else {
-            user = currentUserContext.getCurrentUser();
-        }
-
+    public ResponseEntity<UserResponse> getUser() {
+        User user = currentUserContext.getEntity();
         return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
     }
 
-    @DeleteMapping({"/me", "/{id}"})
+    @DeleteMapping("/me")
     @Operation(
-            summary = "Delete user account by ID or current user if no ID is provided",
+            summary = "Delete current user account",
             responses = {
                     @ApiResponse(responseCode = "200", description = "User account deleted successfully", content = {
                             @Content(mediaType = "application/json",
@@ -115,24 +104,15 @@ public class UserController {
                     })
             }
     )
-    public ResponseEntity<UserResponse> deleteUser(@PathVariable(required = false) UUID id) {
-        User user;
-
-        // Check if an ID was provided and if the current user is an admin
-        if (id != null) {
-            currentUserContext.ensureCurrentUserIsAdmin();
-            user = userService.getByUserId(id);
-        } else {
-            user = currentUserContext.getCurrentUser();
-        }
-
+    public ResponseEntity<UserResponse> deleteUser() {
+        User user = currentUserContext.getEntity();
         user = userService.deleteUser(user);
         return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
     }
 
-    @PutMapping({"/me/email", "/{id}/email"})
+    @PutMapping("/me/email")
     @Operation(
-            summary = "Update user email by ID or current user if no ID is provided",
+            summary = "Update current user email",
             responses = {
                     @ApiResponse(responseCode = "200", description = "User email updated successfully", content = {
                             @Content(mediaType = "application/json",
@@ -140,24 +120,15 @@ public class UserController {
                     })
             }
     )
-    public ResponseEntity<UserResponse> updateUserEmail(@PathVariable(required = false) UUID id, @Valid @RequestBody UpdateUserEmailRequest updateUserEmailRequest) {
-        User user;
-
-        // Check if an ID was provided and if the current user is an admin
-        if (id != null) {
-            currentUserContext.ensureCurrentUserIsAdmin();
-            user = userService.getByUserId(id);
-        } else {
-            user = currentUserContext.getCurrentUser();
-        }
-
+    public ResponseEntity<UserResponse> updateUserEmail(@Valid @RequestBody UpdateUserEmailRequest updateUserEmailRequest) {
+        User user = currentUserContext.getEntity();
         user = userService.updateUserEmail(user, updateUserEmailRequest.email());
         return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
     }
 
-    @PutMapping({"/me/password", "/{id}/password"})
+    @PutMapping("/me/password")
     @Operation(
-            summary = "Update user password by ID or current user if no ID is provided",
+            summary = "Update current user password",
             responses = {
                     @ApiResponse(responseCode = "200", description = "User password updated successfully", content = {
                             @Content(mediaType = "application/json",
@@ -165,58 +136,15 @@ public class UserController {
                     })
             }
     )
-    public ResponseEntity<UserResponse> updateUserPassword(@PathVariable(required = false) UUID id, @Valid @RequestBody UpdateUserPasswordRequest updateUserPasswordRequest) {
-        User user;
-
-        // Check if an ID was provided and if the current user is an admin
-        if (id != null) {
-            currentUserContext.ensureCurrentUserIsAdmin();
-            user = userService.getByUserId(id);
-        } else {
-            user = currentUserContext.getCurrentUser();
-        }
-
+    public ResponseEntity<UserResponse> updateUserPassword(@Valid @RequestBody UpdateUserPasswordRequest updateUserPasswordRequest) {
+        User user = currentUserContext.getEntity();
         user = userService.updateUserPassword(user, updateUserPasswordRequest.password());
         return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
     }
 
-    @PutMapping("/{id}/role")
+    @PutMapping("/me/info")
     @Operation(
-            summary = "Update user role by ID",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "User role updated successfully", content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = UserResponse.class))
-                    })
-            }
-    )
-    public ResponseEntity<UserResponse> updateUserRole(@PathVariable UUID id, @Valid @RequestBody UpdateUserRoleRequest updateUserRoleRequest) {
-        currentUserContext.ensureCurrentUserIsAdmin();
-        User user = userService.getByUserId(id);
-        user = userService.updateUserRole(user, updateUserRoleRequest.role());
-        return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
-    }
-
-    @PutMapping("/{id}/status")
-    @Operation(
-            summary = "Update user status by ID",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "User status updated successfully", content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = UserResponse.class))
-                    })
-            }
-    )
-    public ResponseEntity<UserResponse> updateUserStatus(@PathVariable UUID id, @Valid @RequestBody UpdateUserStatusRequest updateUserStatusRequest) {
-        currentUserContext.ensureCurrentUserIsAdmin();
-        User user = userService.getByUserId(id);
-        user = userService.updateUserStatus(user, updateUserStatusRequest.status());
-        return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
-    }
-
-    @PutMapping({"/me/info", "/{id}/info"})
-    @Operation(
-            summary = "Update user information by ID or current user if no ID is provided",
+            summary = "Update current user information",
             responses = {
                     @ApiResponse(responseCode = "200", description = "User information updated successfully", content = {
                             @Content(mediaType = "application/json",
@@ -224,17 +152,8 @@ public class UserController {
                     })
             }
     )
-    public ResponseEntity<UserResponse> updateUserInfo(@PathVariable(required = false) UUID id, @Valid @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
-        User user;
-
-        // Check if an ID was provided and if the current user is an admin
-        if (id != null) {
-            currentUserContext.ensureCurrentUserIsAdmin();
-            user = userService.getByUserId(id);
-        } else {
-            user = currentUserContext.getCurrentUser();
-        }
-
+    public ResponseEntity<UserResponse> updateUserInfo(@Valid @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
+        User user = currentUserContext.getEntity();
         user = userService.updateUserInfo(
                 user,
                 updateUserInfoRequest.firstName(),
@@ -244,9 +163,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
     }
 
-    @PutMapping(path = {"/me/avatar", "/{id}/avatar"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(path = "/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
-            summary = "Update user avatar image by ID or current user if no ID is provided",
+            summary = "Update current user avatar image",
             responses = {
                     @ApiResponse(responseCode = "200", description = "User avatar image updated successfully", content = {
                             @Content(mediaType = "application/json",
@@ -254,24 +173,15 @@ public class UserController {
                     })
             }
     )
-    public ResponseEntity<UserResponse> updateUserAvatarImage(@PathVariable(required = false) UUID id, @RequestParam("avatarImage") MultipartFile avatarImage) {
-        User user;
-
-        // Check if an ID was provided and if the current user is an admin
-        if (id != null) {
-            currentUserContext.ensureCurrentUserIsAdmin();
-            user = userService.getByUserId(id);
-        } else {
-            user = currentUserContext.getCurrentUser();
-        }
-
+    public ResponseEntity<UserResponse> updateUserAvatarImage(@RequestParam("avatarImage") MultipartFile avatarImage) {
+        User user = currentUserContext.getEntity();
         user = userService.updateUserAvatarImage(user, avatarImage);
         return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
     }
 
-    @DeleteMapping({"/me/avatar", "/{id}/avatar"})
+    @DeleteMapping("/me/avatar")
     @Operation(
-            summary = "Delete user avatar image by ID or current user if no ID is provided",
+            summary = "Delete current user avatar image",
             responses = {
                     @ApiResponse(responseCode = "200", description = "User avatar image deleted successfully", content = {
                             @Content(mediaType = "application/json",
@@ -279,17 +189,8 @@ public class UserController {
                     })
             }
     )
-    public ResponseEntity<UserResponse> deleteUserAvatarImage(@PathVariable(required = false) UUID id) {
-        User user;
-
-        // Check if an ID was provided and if the current user is an admin
-        if (id != null) {
-            currentUserContext.ensureCurrentUserIsAdmin();
-            user = userService.getByUserId(id);
-        } else {
-            user = currentUserContext.getCurrentUser();
-        }
-
+    public ResponseEntity<UserResponse> deleteUserAvatarImage() {
+        User user = currentUserContext.getEntity();
         user = userService.updateUserAvatarImage(user, null);
         return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
     }

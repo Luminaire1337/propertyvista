@@ -59,8 +59,7 @@ public class UserService {
         emailService.sendEmailAsync(new UserRegisteredEmail(user, token));
         return user;
     }
-
-    @Transactional
+    
     public User authenticateUser(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Konto o podanym adresie e-mail nie istnieje"));
@@ -69,11 +68,11 @@ public class UserService {
             throw new BadRequestException("Nieprawidłowe hasło");
         }
 
-        if (!user.isEnabled()) {
+        if (!user.isVerified()) {
             throw new ForbiddenAccessException("Twoje konto nie zostało zweryfikowane. Sprawdź swoją skrzynkę e-mail, aby zweryfikować konto.");
         }
 
-        if (!user.isAccountNonLocked()) {
+        if (user.isSuspended()) {
             throw new ForbiddenAccessException("Twoje konto zostało zablokowane. Skontaktuj się z administratorem.");
         }
 

@@ -76,7 +76,7 @@ public class PropertyController {
             }
     )
     public ResponseEntity<PropertyResponse> createProperty(@Valid @RequestBody CreatePropertyRequest createPropertyRequest) {
-        User user = currentUserContext.getCurrentUser();
+        User user = currentUserContext.getEntity();
         PropertyResponse property = propertyMapper.toDTO(propertyService.createProperty(createPropertyRequest, user));
         return ResponseEntity.status(HttpStatus.CREATED).body(property);
     }

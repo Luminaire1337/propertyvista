@@ -19,7 +19,7 @@ public class AuthService {
 
     @Transactional
     protected AuthResponse generateAuthResponse(User user, String userAgent) {
-        String accessToken = jwtService.generateAccessToken(user.getId());
+        String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = refreshTokenService.generateRefreshToken(user, userAgent);
         Long expirationMs = jwtService.getExpirationMs();
 
