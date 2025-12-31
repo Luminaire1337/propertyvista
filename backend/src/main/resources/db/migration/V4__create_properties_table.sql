@@ -11,6 +11,7 @@ CREATE TABLE properties
     area        DOUBLE        NOT NULL,
     rooms       INT UNSIGNED  NOT NULL,
     parking     BIT(1)        NOT NULL,
+    expiry_date DATETIME      NOT NULL,
     created_at  DATETIME      NOT NULL,
     updated_at  DATETIME      NOT NULL,
     CONSTRAINT uc_properties_title UNIQUE (slug),

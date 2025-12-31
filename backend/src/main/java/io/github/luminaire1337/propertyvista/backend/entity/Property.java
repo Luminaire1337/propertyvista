@@ -58,7 +58,8 @@ public class Property {
     @Column(nullable = false)
     private Boolean parking;
 
-    // TODO: Add listing duration field
+    @Column(name = "expiry_date", nullable = false)
+    private LocalDateTime expiryDate;
 
     // Images
     @OneToMany(mappedBy = "property", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -100,7 +101,7 @@ public class Property {
     }
 
     public boolean isPublished() {
-        return status == PropertyStatus.VERIFIED;
+        return status == PropertyStatus.PUBLISHED;
     }
 
     public PropertyImage getPrimaryImage() {

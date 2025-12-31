@@ -6,11 +6,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-// TODO: Add owner information
 public record PropertyDetailedResponse(
         UUID id,
         String slug,
         String title,
+        UserPropertyDetailedResponse user,
         PropertyStatus status,
         String description,
         Double price,

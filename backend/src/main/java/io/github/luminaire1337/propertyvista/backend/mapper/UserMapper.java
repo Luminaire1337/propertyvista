@@ -1,5 +1,6 @@
 package io.github.luminaire1337.propertyvista.backend.mapper;
 
+import io.github.luminaire1337.propertyvista.backend.dto.response.UserPropertyDetailedResponse;
 import io.github.luminaire1337.propertyvista.backend.dto.response.UserResponse;
 import io.github.luminaire1337.propertyvista.backend.entity.User;
 import io.github.luminaire1337.propertyvista.backend.helper.BucketNames;
@@ -16,6 +17,9 @@ public abstract class UserMapper {
 
     @Mapping(target = "avatarImagePath", expression = "java(mapAvatar(user.getAvatarImagePath()))")
     public abstract UserResponse toDTO(User user);
+
+    @Mapping(target = "avatarImagePath", expression = "java(mapAvatar(user.getAvatarImagePath()))")
+    public abstract UserPropertyDetailedResponse toPropertyDetailedDTO(User user);
 
     @Named("mapAvatar")
     protected String mapAvatar(String fileName) {

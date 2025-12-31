@@ -31,7 +31,7 @@ public class RefreshToken {
     @Column(name = "user_agent")
     private String userAgent;
 
-    @Column(nullable = false)
+    @Column(name = "expiry_date", nullable = false)
     private LocalDateTime expiryDate;
 
     @PrePersist

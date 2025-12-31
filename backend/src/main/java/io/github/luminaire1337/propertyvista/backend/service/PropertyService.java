@@ -11,6 +11,7 @@ import io.github.luminaire1337.propertyvista.backend.helper.BucketNames;
 import io.github.luminaire1337.propertyvista.backend.repository.PropertyImageRepository;
 import io.github.luminaire1337.propertyvista.backend.repository.PropertyRepository;
 import io.minio.ObjectWriteResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +36,19 @@ public class PropertyService {
     public Property getPropertyBySlug(String slug) {
         return propertyRepository.findBySlug(slug)
                 .orElseThrow(() -> new NotFoundException("Nie znaleziono nieruchomości o podanym identyfikatorze"));
+    }
+
+    public List<Property> findAllExpiredProperties() {
+        LocalDateTime now = LocalDateTime.now();
+        return propertyRepository.findAll().stream()
+                .filter(Property::isPublished)
+                .filter(property -> property.getExpiryDate().isBefore(now))
+                .toList();
+    }
+
+    @Transactional
+    public void bulkUpdateProperties(List<Property> properties) {
+        propertyRepository.saveAll(properties);
     }
 
     public List<Property> getProperties(PropertyPaginationRequest request) {

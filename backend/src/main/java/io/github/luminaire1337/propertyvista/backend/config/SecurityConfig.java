@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/users").permitAll() // User registration
                         .requestMatchers(HttpMethod.POST, "/users/verify-email").permitAll() // Email verification
                         .requestMatchers(HttpMethod.GET, "/properties").permitAll() // Public property listings
-                        .requestMatchers(HttpMethod.GET, "/properties/{id}").permitAll() // Public property details
+                        .requestMatchers(HttpMethod.GET, "/properties/{slug}").permitAll() // Public property details
                         .requestMatchers("/admin/**").hasRole(UserRole.ADMIN.toString())
                         .anyRequest().authenticated()
                 )
