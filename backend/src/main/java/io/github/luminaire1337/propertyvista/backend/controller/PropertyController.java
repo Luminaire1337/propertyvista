@@ -4,7 +4,7 @@ import io.github.luminaire1337.propertyvista.backend.dto.request.CreatePropertyR
 import io.github.luminaire1337.propertyvista.backend.dto.request.PropertyPaginationRequest;
 import io.github.luminaire1337.propertyvista.backend.dto.response.ErrorResponse;
 import io.github.luminaire1337.propertyvista.backend.dto.response.PropertyDetailedResponse;
-import io.github.luminaire1337.propertyvista.backend.dto.response.PropertyListingResponse;
+import io.github.luminaire1337.propertyvista.backend.dto.response.PropertyPageResponse;
 import io.github.luminaire1337.propertyvista.backend.dto.response.PropertyResponse;
 import io.github.luminaire1337.propertyvista.backend.entity.User;
 import io.github.luminaire1337.propertyvista.backend.mapper.PropertyMapper;
@@ -20,10 +20,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/properties")
@@ -54,18 +53,24 @@ public class PropertyController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successful retrieval of properties", content = {
                             @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = PropertyListingResponse.class))
+                                    schema = @Schema(implementation = PropertyPageResponse.class))
                     })
             }
     )
-    public ResponseEntity<List<PropertyListingResponse>> getProperties(@Valid @ModelAttribute() PropertyPaginationRequest paginationRequest) {
-        List<PropertyListingResponse> properties = propertyService.getProperties(paginationRequest).stream()
-                .map(propertyMapper::toListingDTO)
-                .toList();
-        return ResponseEntity.status(HttpStatus.OK).body(properties);
+    public ResponseEntity<PropertyPageResponse> getProperties(@Valid @ModelAttribute() PropertyPaginationRequest paginationRequest) {
+        var page = propertyService.getPaginatedProperties(paginationRequest.toSpecification(), paginationRequest.toPageable())
+                .map(propertyMapper::toListingDTO);
+        var pageResponse = new PropertyPageResponse(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(pageResponse);
     }
 
-    @PostMapping()
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "Create a new property",
             responses = {

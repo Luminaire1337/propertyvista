@@ -1,22 +1,22 @@
 package io.github.luminaire1337.propertyvista.backend.service;
 
 import io.github.luminaire1337.propertyvista.backend.dto.request.CreatePropertyRequest;
-import io.github.luminaire1337.propertyvista.backend.dto.request.PropertyPaginationRequest;
 import io.github.luminaire1337.propertyvista.backend.entity.Property;
 import io.github.luminaire1337.propertyvista.backend.entity.PropertyImage;
 import io.github.luminaire1337.propertyvista.backend.entity.User;
 import io.github.luminaire1337.propertyvista.backend.exception.BadRequestException;
 import io.github.luminaire1337.propertyvista.backend.exception.NotFoundException;
 import io.github.luminaire1337.propertyvista.backend.helper.BucketNames;
+import io.github.luminaire1337.propertyvista.backend.mapper.PropertyMapper;
 import io.github.luminaire1337.propertyvista.backend.repository.PropertyImageRepository;
 import io.github.luminaire1337.propertyvista.backend.repository.PropertyRepository;
 import io.minio.ObjectWriteResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -32,6 +32,7 @@ public class PropertyService {
     private final PropertyImageRepository propertyImageRepository;
     private final ImageService imageService;
     private final StorageService storageService;
+    private final PropertyMapper propertyMapper;
 
     public Property getPropertyBySlug(String slug) {
         return propertyRepository.findBySlug(slug)
@@ -51,16 +52,8 @@ public class PropertyService {
         propertyRepository.saveAll(properties);
     }
 
-    public List<Property> getProperties(PropertyPaginationRequest request) {
-        Pageable pageable = PageRequest.of(
-                request.page() == null || request.page() < 0 ? 0 : request.page(),
-                request.size() == null || request.size() <= 0 ? 10 : request.size(),
-                request.sortDirection() == null ? Sort.Direction.DESC : request.sortDirection(),
-                request.sortField() == null || request.sortField().isBlank() ? "createdAt" : request.sortField()
-                // TODO: outsource this to a separate file
-                // TODO: add rest of request filters
-        );
-        return propertyRepository.findAll(pageable).getContent();
+    public Page<Property> getPaginatedProperties(Specification<Property> spec, Pageable pageable) {
+        return propertyRepository.findAll(spec, pageable);
     }
 
     public Property createProperty(CreatePropertyRequest request, User owner) {
