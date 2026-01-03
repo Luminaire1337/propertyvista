@@ -252,6 +252,10 @@ export interface components {
             /** Format: email */
             email: string;
         };
+        UpdateUserAvatarRequest: {
+            /** Format: binary */
+            avatarImage: string;
+        };
         RegisterRequest: {
             /** Format: email */
             email: string;
@@ -269,7 +273,7 @@ export interface components {
             slug?: string;
             title?: string;
             /** @enum {string} */
-            status?: "UNVERIFIED" | "VERIFIED" | "HIDDEN";
+            status?: "PUBLISHED" | "UNVERIFIED" | "EXPIRED" | "HIDDEN";
             description?: string;
             /** Format: double */
             price?: number;
@@ -279,6 +283,8 @@ export interface components {
             /** Format: int32 */
             rooms?: number;
             parking?: boolean;
+            /** Format: date-time */
+            expiryDate?: string;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -297,6 +303,8 @@ export interface components {
             parking: boolean;
             images: string[];
             primaryImagePath: string;
+            /** Format: int32 */
+            daysValid: number;
         };
         AuthResponse: {
             accessToken?: string;
@@ -315,7 +323,7 @@ export interface components {
             slug?: string;
             title?: string;
             /** @enum {string} */
-            status?: "UNVERIFIED" | "VERIFIED" | "HIDDEN";
+            status?: "PUBLISHED" | "UNVERIFIED" | "EXPIRED" | "HIDDEN";
             /** Format: double */
             price?: number;
             city?: string;
@@ -329,6 +337,17 @@ export interface components {
             createdAt?: string;
             /** Format: date-time */
             updatedAt?: string;
+        };
+        PropertyPageResponse: {
+            content?: components["schemas"]["PropertyListingResponse"][];
+            /** Format: int32 */
+            pageNumber?: number;
+            /** Format: int32 */
+            pageSize?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
         };
         PropertyPaginationRequest: {
             /** Format: int32 */
@@ -358,8 +377,9 @@ export interface components {
             id?: string;
             slug?: string;
             title?: string;
+            user?: components["schemas"]["UserPropertyDetailedResponse"];
             /** @enum {string} */
-            status?: "UNVERIFIED" | "VERIFIED" | "HIDDEN";
+            status?: "PUBLISHED" | "UNVERIFIED" | "EXPIRED" | "HIDDEN";
             description?: string;
             /** Format: double */
             price?: number;
@@ -374,6 +394,15 @@ export interface components {
             createdAt?: string;
             /** Format: date-time */
             updatedAt?: string;
+        };
+        UserPropertyDetailedResponse: {
+            /** Format: uuid */
+            id?: string;
+            email?: string;
+            firstName?: string;
+            lastName?: string;
+            phoneNumber?: string;
+            avatarImagePath?: string;
         };
     };
     responses: never;
@@ -546,10 +575,7 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "multipart/form-data": {
-                    /** Format: binary */
-                    avatarImage: string;
-                };
+                "multipart/form-data": components["schemas"]["UpdateUserAvatarRequest"];
             };
         };
         responses: {
@@ -755,7 +781,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PropertyListingResponse"];
+                    "application/json": components["schemas"]["PropertyPageResponse"];
                 };
             };
             /** @description Invalid request payload */
@@ -794,9 +820,9 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody: {
+        requestBody?: {
             content: {
-                "application/json": components["schemas"]["CreatePropertyRequest"];
+                "multipart/form-data": components["schemas"]["CreatePropertyRequest"];
             };
         };
         responses: {

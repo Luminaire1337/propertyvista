@@ -1,14 +1,15 @@
-import type { components } from '@/api/generated/schema'
 import router from '@/router'
-import { UserService } from '@/services/user'
+import {
+  UserService,
+  type TokenRequest,
+  type UpdateUserAvatarRequest,
+  type UpdateUserEmailRequest,
+  type UpdateUserInfoRequest,
+  type UpdateUserPasswordRequest,
+} from '@/services/user'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
 import { useLogoutMutation } from './auth'
-
-type TokenRequest = components['schemas']['TokenRequest']
-type UpdateUserEmailRequest = components['schemas']['UpdateUserEmailRequest']
-type UpdateUserPasswordRequest = components['schemas']['UpdateUserPasswordRequest']
-type UpdateUserInfoRequest = components['schemas']['UpdateUserInfoRequest']
 
 export const useVerifyEmailMutation = () => {
   return useMutation({
@@ -93,8 +94,8 @@ export const useUpdateUserInfoMutation = () => {
 export const useUpdateUserAvatarMutation = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (avatarImage: File) => {
-      return await UserService.updateUserAvatar(avatarImage)
+    mutationFn: async (avatarData: UpdateUserAvatarRequest) => {
+      return await UserService.updateUserAvatar(avatarData)
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['currentUser'] })

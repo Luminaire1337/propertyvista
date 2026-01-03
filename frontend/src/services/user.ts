@@ -1,18 +1,24 @@
 import type { components } from '@/api/generated/schema'
 import client, { normalizeError } from '@/api/client'
 
-type User = {
+export type User = {
   [K in keyof Omit<components['schemas']['UserResponse'], 'avatarImagePath'>]-?: Required<
     components['schemas']['UserResponse'][K]
   >
 } & {
   avatarImagePath: string | null
 }
-type RegisterRequest = components['schemas']['RegisterRequest']
-type TokenRequest = components['schemas']['TokenRequest']
-type UpdateUserEmailRequest = components['schemas']['UpdateUserEmailRequest']
-type UpdateUserPasswordRequest = components['schemas']['UpdateUserPasswordRequest']
-type UpdateUserInfoRequest = components['schemas']['UpdateUserInfoRequest']
+export type RegisterRequest = components['schemas']['RegisterRequest']
+export type TokenRequest = components['schemas']['TokenRequest']
+export type UpdateUserEmailRequest = components['schemas']['UpdateUserEmailRequest']
+export type UpdateUserPasswordRequest = components['schemas']['UpdateUserPasswordRequest']
+export type UpdateUserInfoRequest = components['schemas']['UpdateUserInfoRequest']
+export type UpdateUserAvatarRequest = Omit<
+  components['schemas']['UpdateUserAvatarRequest'],
+  'avatarImage'
+> & {
+  avatarImage: File
+}
 
 export abstract class UserService {
   static async register(userData: RegisterRequest): Promise<User> {
@@ -56,9 +62,9 @@ export abstract class UserService {
     return data as User
   }
 
-  static async updateUserAvatar(avatarImage: File): Promise<User> {
+  static async updateUserAvatar(avatarData: UpdateUserAvatarRequest): Promise<User> {
     const formData = new FormData()
-    formData.append('avatarImage', avatarImage)
+    formData.append('avatarImage', avatarData.avatarImage)
 
     const { data, error } = await client.PUT('/users/me/avatar', {
       // @ts-expect-error - FormData is compatible but TypeScript doesn't recognize it

@@ -29,15 +29,18 @@ const handleFileSelect = (event: Event) => {
 
 const handleUpload = () => {
   if (selectedFile.value) {
-    updateAvatarMutation.mutate(selectedFile.value, {
-      onSuccess: () => {
-        selectedFile.value = null
-        previewUrl.value = null
-        if (fileInput.value) {
-          fileInput.value.value = ''
-        }
+    updateAvatarMutation.mutate(
+      { avatarImage: selectedFile.value },
+      {
+        onSuccess: () => {
+          selectedFile.value = null
+          previewUrl.value = null
+          if (fileInput.value) {
+            fileInput.value.value = ''
+          }
+        },
       },
-    })
+    )
   }
 }
 

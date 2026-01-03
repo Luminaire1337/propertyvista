@@ -1,7 +1,6 @@
-import type { components } from '@/api/generated/schema'
 import router from '@/router'
-import AuthService, { type Auth } from '@/services/auth'
-import { UserService } from '@/services/user'
+import AuthService, { type Auth, type LoginRequest } from '@/services/auth'
+import { UserService, type RegisterRequest } from '@/services/user'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
 
@@ -84,13 +83,12 @@ export const getAccessToken = async () => {
 }
 
 // Vue Query mutations
-type LoginCredentials = components['schemas']['LoginRequest']
 export const useLoginMutation = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (credentials: LoginCredentials) => {
+    mutationFn: async (loginData: LoginRequest) => {
       if (isAuthenticated()) throw new Error('Jesteś już zalogowany')
-      const response = await AuthService.login(credentials)
+      const response = await AuthService.login(loginData)
       return response
     },
     onSuccess: async (data) => {
@@ -106,12 +104,11 @@ export const useLoginMutation = () => {
   })
 }
 
-type RegisterCredentials = components['schemas']['RegisterRequest']
 export const useRegisterMutation = () => {
   return useMutation({
-    mutationFn: async (credentials: RegisterCredentials) => {
+    mutationFn: async (registerData: RegisterRequest) => {
       if (isAuthenticated()) throw new Error('Jesteś już zalogowany')
-      const response = await UserService.register(credentials)
+      const response = await UserService.register(registerData)
       return response
     },
     onSuccess: () => {

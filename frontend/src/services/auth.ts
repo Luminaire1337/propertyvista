@@ -2,8 +2,8 @@ import client, { normalizeError } from '@/api/client'
 import type { components } from '../api/generated/schema'
 
 export type Auth = Required<components['schemas']['AuthResponse']>
-type LoginRequest = components['schemas']['LoginRequest']
-type TokenRequest = components['schemas']['TokenRequest']
+export type LoginRequest = components['schemas']['LoginRequest']
+export type TokenRequest = components['schemas']['TokenRequest']
 
 export default abstract class AuthService {
   static async login(loginData: LoginRequest): Promise<Auth> {
