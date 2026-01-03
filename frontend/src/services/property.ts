@@ -12,6 +12,10 @@ export type CreatePropertyRequest = Omit<
 > & {
   images: File[]
 }
+export type SearchFilters = Omit<
+  PropertyPaginationRequest,
+  'page' | 'size' | 'sortField' | 'sortDirection'
+>
 
 export abstract class PropertyService {
   static async getProperties(paginationData: PropertyPaginationRequest): Promise<PropertyPage> {

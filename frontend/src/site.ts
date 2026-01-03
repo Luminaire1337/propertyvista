@@ -1,2 +1,2 @@
 export const siteName = 'Property Vista'
-export const siteDescription = 'Znajdź swoją wymarzoną nieruchomość!'
+export const siteDescription = 'Twoja wymarzona nieruchomość w zasięgu ręki.'
