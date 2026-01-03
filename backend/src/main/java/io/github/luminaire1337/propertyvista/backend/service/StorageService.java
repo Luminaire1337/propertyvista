@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -19,28 +21,23 @@ public class StorageService {
     @Value("${PROPERTYVISTA_PUBLIC_STORAGE_URL}")
     private String publicStorageUrl;
 
-    public void deleteFileIfExists(String bucketName, String fileName) {
+    public void deleteFile(String bucketName, String fileName) {
         try {
-            boolean found = minioClient.statObject(
-                    StatObjectArgs.builder()
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
                             .bucket(bucketName)
                             .object(fileName)
                             .build()
-            ) != null;
-
-            if (found) {
-                minioClient.removeObject(
-                        RemoveObjectArgs.builder()
-                                .bucket(bucketName)
-                                .object(fileName)
-                                .build()
-                );
-                log.info("Deleted object '{}' from bucket '{}'", fileName, bucketName);
-            } else {
-                log.info("Object '{}' not found in bucket '{}', no deletion performed", fileName, bucketName);
-            }
+            );
+            log.info("Deleted object '{}' from bucket '{}'", fileName, bucketName);
         } catch (Exception e) {
             log.error("Error while checking or deleting object '{}' from bucket '{}': {}", fileName, bucketName, e.getMessage());
+        }
+    }
+
+    public void deleteFilesInBatch(String bucketName, List<String> fileNames) {
+        for (String fileName : fileNames) {
+            deleteFile(bucketName, fileName);
         }
     }
 
@@ -87,6 +84,12 @@ public class StorageService {
             log.info("Moved object '{}' from bucket '{}' to bucket '{}'", fileName, sourceBucket, destinationBucket);
         } catch (Exception e) {
             log.error("Error while moving object '{}' from bucket '{}' to bucket '{}': {}", fileName, sourceBucket, destinationBucket, e.getMessage());
+        }
+    }
+
+    public void moveFilesBetweenBucketsInBatch(String sourceBucket, String destinationBucket, List<String> fileNames) {
+        for (String fileName : fileNames) {
+            moveFileBetweenBuckets(sourceBucket, destinationBucket, fileName);
         }
     }
 

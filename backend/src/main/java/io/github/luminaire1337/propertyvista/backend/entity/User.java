@@ -1,5 +1,6 @@
 package io.github.luminaire1337.propertyvista.backend.entity;
 
+import io.github.luminaire1337.propertyvista.backend.entity.listener.UserListener;
 import io.github.luminaire1337.propertyvista.backend.entity.utility.UserRole;
 import io.github.luminaire1337.propertyvista.backend.entity.utility.UserStatus;
 import jakarta.persistence.*;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EntityListeners(UserListener.class)
 public class User {
     // Core fields
     @Id

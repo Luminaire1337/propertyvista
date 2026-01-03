@@ -3,8 +3,10 @@ package io.github.luminaire1337.propertyvista.backend.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public record CreatePropertyRequest(
         @NotBlank(message = "Tytuł ogłoszenia jest wymagany")
@@ -31,10 +33,14 @@ public record CreatePropertyRequest(
         Boolean parking,
 
         @NotNull(message = "Zdjęcia nieruchomości są wymagane")
-        @Length(min = 1, max = 15, message = "Można dodać od 1 do 15 zdjęć nieruchomości")
-        MultipartFile[] images,
+        @Size(min = 1, max = 15, message = "Można dodać od 1 do 15 zdjęć nieruchomości")
+        List<MultipartFile> images,
 
         @NotBlank(message = "Ścieżka do głównego zdjęcia jest wymagana")
-        String primaryImagePath
+        String primaryImagePath,
+
+        @NotNull(message = "Ważność ogłoszenia jest wymagana")
+        @Range(min = 1, max = 90, message = "Ogłoszenie może być ważne od 1 do 90 dni")
+        Integer daysValid
 ) {
 }

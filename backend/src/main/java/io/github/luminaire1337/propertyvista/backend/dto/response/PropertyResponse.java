@@ -16,6 +16,7 @@ public record PropertyResponse(
         Double area,
         Integer rooms,
         Boolean parking,
+        LocalDateTime expiryDate,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

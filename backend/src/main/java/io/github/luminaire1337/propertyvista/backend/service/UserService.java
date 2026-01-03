@@ -59,7 +59,7 @@ public class UserService {
         emailService.sendEmailAsync(new UserRegisteredEmail(user, token));
         return user;
     }
-    
+
     public User authenticateUser(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Konto o podanym adresie e-mail nie istnieje"));
@@ -81,7 +81,6 @@ public class UserService {
 
     @Transactional
     public User deleteUser(User user) {
-        deleteUserOldAvatar(user);
         userRepository.delete(user);
         log.info("Deleted user with ID {}", user.getId());
 
@@ -137,7 +136,7 @@ public class UserService {
     private void deleteUserOldAvatar(User user) {
         String currentAvatarPath = user.getAvatarImagePath();
         if (currentAvatarPath != null && !currentAvatarPath.isBlank()) {
-            storageService.deleteFileIfExists(BucketNames.PUBLIC_AVATAR_IMAGES, currentAvatarPath);
+            storageService.deleteFile(BucketNames.PUBLIC_AVATAR_IMAGES, currentAvatarPath);
         }
     }
 
@@ -175,15 +174,16 @@ public class UserService {
         imageService.validateImagesContentAsync(List.of(uploadResponse), (success) -> {
             User finalUser = userRepository.findById(userId).orElse(null);
 
-            if (finalUser != null && success) {
-                // Move image from private to public bucket after processing
-                storageService.moveFileBetweenBuckets(BucketNames.PRIVATE_AVATAR_IMAGES, BucketNames.PUBLIC_AVATAR_IMAGES, newFileName);
-                finalUser.setAvatarImagePath(newFileName);
-                userRepository.save(finalUser);
-                log.info("User's avatar image is now available in public bucket for user ID {}", userId);
-            } else {
-                log.error("Failed to process avatar image for user ID {}", userId);
-                storageService.deleteFileIfExists(BucketNames.PRIVATE_AVATAR_IMAGES, newFileName);
+            if (finalUser != null) {
+                if (success) {
+                    storageService.moveFileBetweenBuckets(BucketNames.PRIVATE_AVATAR_IMAGES, BucketNames.PUBLIC_AVATAR_IMAGES, newFileName);
+                    finalUser.setAvatarImagePath(newFileName);
+                    userRepository.save(finalUser);
+                    log.info("User's avatar image is now available in public bucket for user ID {}", userId);
+                } else {
+                    log.error("Failed to process avatar image for user ID {}", userId);
+                    storageService.deleteFile(BucketNames.PRIVATE_AVATAR_IMAGES, newFileName);
+                }
             }
         });
         return user;
@@ -193,5 +193,30 @@ public class UserService {
     public void verifyUser(String token) {
         User user = verificationTokenService.verifyToken(token);
         updateUserStatus(user, UserStatus.VERIFIED);
+    }
+
+    @Transactional
+    protected void setUserPropertyPoints(User user, int points) {
+        user.setPropertyPoints(points);
+        user = userRepository.save(user);
+        log.info("Set property points for user with ID {} to {}", user.getId(), points);
+    }
+
+    @Transactional
+    public boolean takeUserPropertyPoints(User user, int points) {
+        if (user.getPropertyPoints() < points) {
+            return false;
+        }
+        user.setPropertyPoints(user.getPropertyPoints() - points);
+        userRepository.save(user);
+        log.info("Took {} property points from user with ID {}", points, user.getId());
+        return true;
+    }
+
+    @Transactional
+    public void giveUserPropertyPoints(User user, int points) {
+        user.setPropertyPoints(user.getPropertyPoints() + points);
+        userRepository.save(user);
+        log.info("Gave {} property points to user with ID {}", points, user.getId());
     }
 }

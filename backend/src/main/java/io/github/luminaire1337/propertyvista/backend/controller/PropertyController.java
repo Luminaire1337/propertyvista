@@ -80,9 +80,21 @@ public class PropertyController {
                     })
             }
     )
-    public ResponseEntity<PropertyResponse> createProperty(@Valid @RequestBody CreatePropertyRequest createPropertyRequest) {
+    public ResponseEntity<PropertyResponse> createProperty(@Valid @ModelAttribute CreatePropertyRequest createPropertyRequest) {
         User user = currentUserContext.getEntity();
-        PropertyResponse property = propertyMapper.toDTO(propertyService.createProperty(createPropertyRequest, user));
+        PropertyResponse property = propertyMapper.toDTO(propertyService.createProperty(
+                createPropertyRequest.title(),
+                createPropertyRequest.description(),
+                createPropertyRequest.price(),
+                createPropertyRequest.city(),
+                createPropertyRequest.area(),
+                createPropertyRequest.rooms(),
+                createPropertyRequest.parking(),
+                createPropertyRequest.images(),
+                createPropertyRequest.primaryImagePath(),
+                createPropertyRequest.daysValid(),
+                user
+        ));
         return ResponseEntity.status(HttpStatus.CREATED).body(property);
     }
 

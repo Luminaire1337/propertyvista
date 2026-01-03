@@ -1,13 +1,14 @@
 package io.github.luminaire1337.propertyvista.backend.service;
 
-import io.github.luminaire1337.propertyvista.backend.dto.request.CreatePropertyRequest;
+import io.github.luminaire1337.propertyvista.backend.dto.email.PropertyApprovedEmail;
+import io.github.luminaire1337.propertyvista.backend.dto.email.PropertyRejectedEmail;
 import io.github.luminaire1337.propertyvista.backend.entity.Property;
 import io.github.luminaire1337.propertyvista.backend.entity.PropertyImage;
 import io.github.luminaire1337.propertyvista.backend.entity.User;
+import io.github.luminaire1337.propertyvista.backend.entity.utility.PropertyStatus;
 import io.github.luminaire1337.propertyvista.backend.exception.BadRequestException;
 import io.github.luminaire1337.propertyvista.backend.exception.NotFoundException;
 import io.github.luminaire1337.propertyvista.backend.helper.BucketNames;
-import io.github.luminaire1337.propertyvista.backend.mapper.PropertyMapper;
 import io.github.luminaire1337.propertyvista.backend.repository.PropertyImageRepository;
 import io.github.luminaire1337.propertyvista.backend.repository.PropertyRepository;
 import io.minio.ObjectWriteResponse;
@@ -18,10 +19,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -32,7 +35,8 @@ public class PropertyService {
     private final PropertyImageRepository propertyImageRepository;
     private final ImageService imageService;
     private final StorageService storageService;
-    private final PropertyMapper propertyMapper;
+    private final UserService userService;
+    private final EmailService emailService;
 
     public Property getPropertyBySlug(String slug) {
         return propertyRepository.findBySlug(slug)
@@ -48,7 +52,7 @@ public class PropertyService {
     }
 
     @Transactional
-    public void bulkUpdateProperties(List<Property> properties) {
+    public void updatePropertiesInBatch(List<Property> properties) {
         propertyRepository.saveAll(properties);
     }
 
@@ -56,23 +60,51 @@ public class PropertyService {
         return propertyRepository.findAll(spec, pageable);
     }
 
-    public Property createProperty(CreatePropertyRequest request, User owner) {
-        // Check all images first
-        for (var image : request.images()) {
+    public Property createProperty(
+            String title,
+            String description,
+            Double price,
+            String city,
+            Double area,
+            Integer rooms,
+            Boolean parking,
+            List<MultipartFile> images,
+            String primaryImagePath,
+            Integer daysValid,
+            User user
+    ) {
+
+        // Check if user has enough property points
+        if (user.getPropertyPoints() < daysValid) {
+            throw new BadRequestException("Niewystarczająca liczba Property Points do utworzenia nowej oferty");
+        }
+
+        // Check all images
+        for (var image : images) {
             if (!imageService.isImageValid(image)) {
                 throw new BadRequestException("Jedno lub więcej zdjęć jest nieprawidłowych");
             }
         }
 
+        // Take user's property points
+        var success = userService.takeUserPropertyPoints(user, daysValid);
+        if (!success) {
+            throw new BadRequestException("Nie udało się pobrać Property Points z twojego konta");
+        }
+
+        // Calculate expiry date
+        LocalDateTime expiryDate = LocalDateTime.now().plusDays(daysValid);
+
         Property property = Property.builder()
-                .title(request.title())
-                .description(request.description())
-                .price(request.price())
-                .city(request.city())
-                .area(request.area())
-                .rooms(request.rooms())
-                .parking(request.parking())
-                .user(owner)
+                .title(title)
+                .description(description)
+                .price(price)
+                .city(city)
+                .area(area)
+                .rooms(rooms)
+                .parking(parking)
+                .expiryDate(expiryDate)
+                .user(user)
                 .build();
 
         property = propertyRepository.save(property);
@@ -80,9 +112,9 @@ public class PropertyService {
         // Now upload images
         boolean isPrimarySet = false;
         List<ObjectWriteResponse> uploadedImages = new ArrayList<>();
-        for (var image : request.images()) {
+        for (var image : images) {
             String newImageName = imageService.generateImageFileName(image);
-            Boolean isPrimary = image.getName().equals(request.primaryImagePath());
+            Boolean isPrimary = Objects.equals(image.getOriginalFilename(), primaryImagePath);
             var uploadResponse = storageService.uploadFile(
                     BucketNames.PRIVATE_PROPERTY_IMAGES,
                     newImageName,
@@ -103,7 +135,7 @@ public class PropertyService {
             }
         }
 
-        if (uploadedImages.size() != request.images().length)
+        if (uploadedImages.size() != images.size())
             log.warn("Not all images were uploaded successfully for property ID {}", property.getId());
 
         if (!isPrimarySet && !uploadedImages.isEmpty()) {
@@ -119,11 +151,33 @@ public class PropertyService {
         UUID propertyId = property.getId();
         imageService.validateImagesContentAsync(uploadedImages, (allValid) -> {
                     Property finalProperty = propertyRepository.findById(propertyId).orElse(null);
-                    // TODO: publish the property if all images are valid, send an email to the user etc.
+                    if (finalProperty != null) {
+                        if (allValid) {
+                            storageService.moveFilesBetweenBucketsInBatch(
+                                    BucketNames.PRIVATE_PROPERTY_IMAGES,
+                                    BucketNames.PUBLIC_PROPERTY_IMAGES,
+                                    uploadedImages.stream().map(ObjectWriteResponse::object).toList()
+                            );
+                            finalProperty.setStatus(PropertyStatus.PUBLISHED);
+                            propertyRepository.save(finalProperty);
+                            log.info("Property {} is now available to the public", propertyId);
+
+                            emailService.sendEmailAsync(new PropertyApprovedEmail(finalProperty, finalProperty.getUser()));
+                        } else {
+                            // Refund property points to user
+                            User finalUser = finalProperty.getUser();
+                            userService.giveUserPropertyPoints(finalUser, daysValid);
+                            
+                            finalProperty.setStatus(PropertyStatus.HIDDEN);
+                            propertyRepository.save(finalProperty);
+                            log.error("Image validation failed for property {}", propertyId);
+
+                            emailService.sendEmailAsync(new PropertyRejectedEmail(finalProperty, finalProperty.getUser()));
+                        }
+                    }
                 }
         );
 
-        // TODO: take Property Points out of user's account
         return property;
     }
 }

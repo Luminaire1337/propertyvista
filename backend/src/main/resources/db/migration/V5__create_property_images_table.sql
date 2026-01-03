@@ -7,7 +7,6 @@ CREATE TABLE property_images
     created_at  DATETIME     NOT NULL,
     updated_at  DATETIME     NOT NULL,
     CONSTRAINT uc_property_images_image_path UNIQUE (image_path),
-    CONSTRAINT uc_property_images_property_primary UNIQUE (property_id, is_primary),
     CONSTRAINT fk_property_images_on_property FOREIGN KEY (property_id) REFERENCES properties (id),
     INDEX idx_property_images_property_id (property_id)
 );

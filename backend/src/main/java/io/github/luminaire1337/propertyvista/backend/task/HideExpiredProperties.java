@@ -23,6 +23,6 @@ public class HideExpiredProperties {
 
         List<Property> expiredProperties = propertyService.findAllExpiredProperties();
         expiredProperties.forEach(property -> property.setStatus(PropertyStatus.EXPIRED));
-        propertyService.bulkUpdateProperties(expiredProperties);
+        propertyService.updatePropertiesInBatch(expiredProperties);
     }
 }

@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/users")
@@ -173,9 +172,9 @@ public class UserController {
                     })
             }
     )
-    public ResponseEntity<UserResponse> updateUserAvatarImage(@RequestParam("avatarImage") MultipartFile avatarImage) {
+    public ResponseEntity<UserResponse> updateUserAvatarImage(@Valid @ModelAttribute UpdateUserAvatarRequest updateUserAvatarRequest) {
         User user = currentUserContext.getEntity();
-        user = userService.updateUserAvatarImage(user, avatarImage);
+        user = userService.updateUserAvatarImage(user, updateUserAvatarRequest.avatarImage());
         return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
     }
 

@@ -22,7 +22,6 @@ import java.util.function.Consumer;
 public class ImageService {
     private final StorageService storageService;
 
-    private final long maxFileSize = 5 * 1024 * 1024; // 5 MB
     private final String[] allowedImageTypes = {
             "image/jpeg",
             "image/png",
@@ -39,10 +38,6 @@ public class ImageService {
 
     public boolean isImageValid(MultipartFile image) {
         if (image == null || image.isEmpty()) {
-            return false;
-        }
-
-        if (image.getSize() > maxFileSize) {
             return false;
         }
 
