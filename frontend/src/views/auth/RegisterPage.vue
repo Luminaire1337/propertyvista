@@ -32,7 +32,7 @@ const handleRegister = (event: Event) => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+  <div class="grow flex flex-col items-center justify-center text-center px-4">
     <template v-if="page === 'email-verification'">
       <h1 class="text-4xl font-bold mb-4">Weryfikacja e-mail</h1>
       <p class="text-lg mb-6 max-w-2xl">

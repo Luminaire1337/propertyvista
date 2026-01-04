@@ -15,7 +15,7 @@ const handleLogin = (event: Event) => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+  <div class="grow flex flex-col items-center justify-center text-center px-4">
     <h1 class="text-4xl font-bold mb-4">Zaloguj się</h1>
     <form @submit="handleLogin" class="w-full max-w-sm bg-white p-6 rounded shadow-md">
       <div class="mb-4 text-left">

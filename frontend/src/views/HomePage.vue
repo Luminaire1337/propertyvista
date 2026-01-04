@@ -10,7 +10,7 @@ const handleSearch = (filters: SearchFilters) => {
 </script>
 
 <template>
-  <div class="container mx-auto px-4 py-12">
+  <div class="grow flex flex-col items-center justify-center text-center px-4">
     <div class="text-center mb-12">
       <h1 class="text-4xl font-bold text-gray-900 mb-4">Znajdź swoją wymarzoną nieruchomość</h1>
       <p class="text-xl text-gray-600">

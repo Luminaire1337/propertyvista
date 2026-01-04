@@ -17,7 +17,7 @@ if (token) {
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+  <div class="grow flex flex-col items-center justify-center text-center px-4">
     <h1 class="text-4xl font-bold mb-4">Proszę czekać na weryfikację adresu email...</h1>
   </div>
 </template>

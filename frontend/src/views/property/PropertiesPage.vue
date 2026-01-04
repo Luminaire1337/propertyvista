@@ -108,8 +108,8 @@ const searchFilters = computed<SearchFilters>(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="container mx-auto px-4 py-8 max-w-6xl">
+  <div class="grow flex flex-col items-center justify-center text-center px-4">
+    <div class="w-full max-w-6xl py-8 text-left">
       <!-- Search Form -->
       <div class="mb-8">
         <PropertySearchForm :initial-filters="searchFilters" @search="handleSearch" />

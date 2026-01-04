@@ -15,7 +15,7 @@ if (user && !isStale) invalidateCurrentUser.mutate()
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+  <div class="grow flex flex-col items-center justify-center text-center px-4 py-8">
     <div class="max-w-4xl w-full bg-white p-6 rounded shadow-md text-left">
       <h1 class="text-4xl font-bold mb-6 text-center">Ustawienia konta</h1>
       <TabGroup>
