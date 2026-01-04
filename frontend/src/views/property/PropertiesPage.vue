@@ -31,7 +31,7 @@ const paginationData = computed<PropertyPaginationRequest>(() => {
   }
 })
 
-const { data, isPending, isError, error } = usePropertyPage(paginationData.value)
+const { data, isPending, isError } = usePropertyPage(paginationData.value)
 
 const handleSearch = (filters: SearchFilters) => {
   router.replace({ path: route.path, query: filters as LocationQueryRaw })
@@ -117,10 +117,8 @@ const searchFilters = computed<SearchFilters>(() => {
 
       <!-- Error State -->
       <div v-if="isError" class="text-center py-12">
-        <div class="bg-white rounded shadow-md p-6 max-w-md mx-auto">
-          <h2 class="text-xl font-semibold text-red-800 mb-2">Wystąpił błąd</h2>
-          <p class="text-red-600">{{ error?.message || 'Nie udało się pobrać nieruchomości' }}</p>
-        </div>
+        <h2 class="text-lg font-medium text-gray-900 mb-2">Wystąpił błąd</h2>
+        <p class="text-gray-600">Nie udało się pobrać nieruchomości</p>
       </div>
 
       <!-- Loading Skeleton -->
@@ -128,9 +126,9 @@ const searchFilters = computed<SearchFilters>(() => {
         <div
           v-for="i in 8"
           :key="i"
-          class="bg-white rounded-lg shadow-md overflow-hidden flex h-52"
+          class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col sm:flex-row h-auto sm:h-52"
         >
-          <div class="w-80 h-full bg-gray-300 animate-pulse shrink-0"></div>
+          <div class="w-full sm:w-80 h-48 sm:h-full bg-gray-300 animate-pulse shrink-0"></div>
           <div class="flex-1 p-5 space-y-3">
             <div class="h-6 bg-gray-300 rounded animate-pulse w-3/4"></div>
             <div class="h-4 bg-gray-300 rounded animate-pulse w-1/2"></div>
@@ -173,10 +171,8 @@ const searchFilters = computed<SearchFilters>(() => {
 
         <!-- No Results -->
         <div v-if="data.content.length === 0" class="text-center py-12">
-          <div class="bg-white rounded shadow-md p-8 max-w-md mx-auto">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-2">Brak wyników</h2>
-            <p class="text-gray-600">Nie znaleziono nieruchomości spełniających wybrane kryteria</p>
-          </div>
+          <h2 class="text-lg font-medium text-gray-900 mb-2">Brak wyników</h2>
+          <p class="text-gray-600">Nie znaleziono nieruchomości spełniających wybrane kryteria</p>
         </div>
 
         <!-- Properties List -->
@@ -185,10 +181,10 @@ const searchFilters = computed<SearchFilters>(() => {
             v-for="property in data.content"
             :key="property.id"
             :to="`/property/${property.slug}`"
-            class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 flex"
+            class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 flex flex-col sm:flex-row"
           >
             <!-- Property Image -->
-            <div class="relative w-80 h-52 bg-gray-200 shrink-0">
+            <div class="relative w-full sm:w-80 h-48 sm:h-52 bg-gray-200 shrink-0">
               <img
                 v-if="property.primaryImagePath"
                 :src="property.primaryImagePath"
@@ -217,9 +213,11 @@ const searchFilters = computed<SearchFilters>(() => {
               </div>
 
               <!-- Property Features and Price -->
-              <div class="flex justify-between items-end flex-1">
+              <div
+                class="flex flex-col sm:flex-row justify-between items-start sm:items-end flex-1 gap-4 sm:gap-0"
+              >
                 <!-- Features -->
-                <div class="flex items-center gap-6 text-gray-700">
+                <div class="flex flex-wrap items-center gap-4 sm:gap-6 text-gray-700">
                   <div v-if="property.rooms" class="flex items-center gap-2">
                     <DoorOpen class="w-5 h-5 text-gray-500" />
                     <span class="text-sm font-medium"
@@ -237,8 +235,8 @@ const searchFilters = computed<SearchFilters>(() => {
                 </div>
 
                 <!-- Price Section -->
-                <div class="text-right">
-                  <div class="text-3xl font-bold text-primary mb-1">
+                <div class="text-left sm:text-right w-full sm:w-auto">
+                  <div class="text-2xl sm:text-3xl font-bold text-primary mb-1">
                     {{ formatPrice(property.price) }}
                   </div>
                   <div v-if="property.area" class="text-sm text-gray-500">
