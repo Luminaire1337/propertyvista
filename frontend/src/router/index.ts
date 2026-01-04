@@ -7,6 +7,12 @@ const routes: RouteRecordRaw[] = [
     name: 'home',
     component: () => import('@/views/HomePage.vue'),
   },
+  // Property routes
+  {
+    path: '/properties',
+    name: 'properties',
+    component: () => import('@/views/property/PropertiesPage.vue'),
+  },
   // Auth routes
   {
     path: '/login',

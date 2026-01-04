@@ -21,7 +21,8 @@ export abstract class PropertyService {
   static async getProperties(paginationData: PropertyPaginationRequest): Promise<PropertyPage> {
     const { data, error } = await client.GET('/properties', {
       params: {
-        query: { paginationRequest: paginationData },
+        // @ts-expect-error - TypeScript cannot infer the correct type here
+        query: { ...paginationData },
       },
     })
     if (error) throw new Error(normalizeError(error))

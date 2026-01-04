@@ -4,14 +4,25 @@ import { MapPin, Search } from 'lucide-vue-next'
 import PrimaryButton from './PrimaryButton.vue'
 import type { SearchFilters } from '@/services/property'
 
+const props = defineProps<{
+  initialFilters?: SearchFilters
+}>()
+
 const emit = defineEmits<{
   search: [filters: SearchFilters]
 }>()
 
-const filters = ref<SearchFilters>({})
+const filters = ref<SearchFilters>({ ...props.initialFilters })
 
 const handleSearch = () => {
-  emit('search', filters.value)
+  // Remove undefined, null, or empty string values from filters
+  const cleanedFilters = Object.fromEntries(
+    Object.entries(filters.value).filter(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ([_, value]) => value !== undefined && value !== null && value !== '',
+    ),
+  ) as SearchFilters
+  emit('search', cleanedFilters)
 }
 
 const handleKeyDown = (event: KeyboardEvent) => {
