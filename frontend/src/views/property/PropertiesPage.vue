@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 import { useRoute, type LocationQueryRaw } from 'vue-router'
 import { MapPin, Maximize2, DoorOpen, Car } from 'lucide-vue-next'
 import usePropertyPage from '@/queries/usePropertyPage'
@@ -31,18 +31,15 @@ const paginationData = computed<PropertyPaginationRequest>(() => {
   }
 })
 
-const { data, isPending, isError, error, refetch } = usePropertyPage(paginationData.value)
-
-watch(paginationData, () => {
-  refetch()
-})
+const { data, isPending, isError, error } = usePropertyPage(paginationData.value)
 
 const handleSearch = (filters: SearchFilters) => {
-  router.push({ query: filters as LocationQueryRaw })
+  router.replace({ path: route.path, query: filters as LocationQueryRaw })
 }
 
 const changePage = (page: number) => {
-  router.push({
+  router.replace({
+    path: route.path,
     query: {
       ...route.query,
       page,

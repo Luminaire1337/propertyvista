@@ -12,7 +12,7 @@ const isDev = import.meta.env.DEV
     <NavBar />
     <RouterView v-slot="{ Component, route }">
       <transition name="fade" mode="out-in">
-        <main :key="route.path" class="py-8">
+        <main :key="route.fullPath" class="py-8">
           <component :is="Component" />
         </main>
       </transition>
