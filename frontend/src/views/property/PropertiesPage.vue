@@ -57,6 +57,49 @@ const getPropertiesLabel = (count: number) => {
   return count === 1 ? 'nieruchomość' : 'nieruchomości'
 }
 
+const currentSort = computed(() => {
+  const { sortField, sortDirection } = paginationData.value
+  if (sortField === 'price' && sortDirection === 'ASC') return 'cheapest'
+  if (sortField === 'price' && sortDirection === 'DESC') return 'expensive'
+  if (sortField === 'createdAt' && sortDirection === 'ASC') return 'oldest'
+  return 'newest'
+})
+
+const handleSortChange = (event: Event) => {
+  const value = (event.target as HTMLSelectElement).value
+  let sortField = 'createdAt'
+  let sortDirection = 'DESC'
+
+  switch (value) {
+    case 'cheapest':
+      sortField = 'price'
+      sortDirection = 'ASC'
+      break
+    case 'expensive':
+      sortField = 'price'
+      sortDirection = 'DESC'
+      break
+    case 'oldest':
+      sortField = 'createdAt'
+      sortDirection = 'ASC'
+      break
+    case 'newest':
+    default:
+      sortField = 'createdAt'
+      sortDirection = 'DESC'
+      break
+  }
+
+  router.replace({
+    path: route.path,
+    query: {
+      ...route.query,
+      sortField,
+      sortDirection,
+    },
+  })
+}
+
 const searchFilters = computed<SearchFilters>(() => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { page, size, sortField, sortDirection, ...filters } = paginationData.value
@@ -103,12 +146,29 @@ const searchFilters = computed<SearchFilters>(() => {
 
       <!-- Properties Grid -->
       <div v-else-if="data">
-        <!-- Results Count -->
-        <div class="mb-4 text-gray-600">
-          <p>
+        <!-- Results Count & Sort -->
+        <div
+          class="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+        >
+          <p class="text-gray-600">
             Znaleziono <span class="font-semibold">{{ data.totalElements }}</span>
             {{ getPropertiesLabel(data.totalElements) }}
           </p>
+
+          <div class="flex items-center gap-2">
+            <label for="sort" class="text-sm text-gray-600">Sortuj:</label>
+            <select
+              id="sort"
+              :value="currentSort"
+              @change="handleSortChange"
+              class="focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-1.5"
+            >
+              <option value="newest">Najnowsze</option>
+              <option value="oldest">Najstarsze</option>
+              <option value="cheapest">Najtańsze</option>
+              <option value="expensive">Najdroższe</option>
+            </select>
+          </div>
         </div>
 
         <!-- No Results -->
