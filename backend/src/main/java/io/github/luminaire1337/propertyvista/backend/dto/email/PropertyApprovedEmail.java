@@ -23,7 +23,7 @@ public record PropertyApprovedEmail(
         return """
                 <p>Szanowny Użytkowniku,</p>
                 <p>Z przyjemnością informujemy, że Twoja nieruchomość '<strong>%s</strong>' została zweryfikowana i jest teraz dostępna publicznie na naszej platformie.</p>
-                <p><a href="{FRONTEND_URL}/property/%s">Przejdź do oferty</a></p>
+                <p><a href="{FRONTEND_URL}/properties/%s">Przejdź do oferty</a></p>
                 <p>Pozdrawiamy,<br/>Zespół Property Vista</p>
                 <br/>
                 <p>Prosimy nie odpowiadać na tę wiadomość, ponieważ jest to automatycznie generowany e-mail.</p>

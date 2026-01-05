@@ -5,7 +5,7 @@ import { MapPin, Maximize2, DoorOpen, Car } from 'lucide-vue-next'
 import usePropertyPage from '@/queries/usePropertyPage'
 import type { PropertyPaginationRequest, SearchFilters } from '@/services/property'
 import PropertySearchForm from '@/components/PropertySearchForm.vue'
-import { formatPrice } from '@/utils'
+import { formatPrice, getRoomsLabel, getPropertiesLabel } from '@/utils'
 import router from '@/router'
 
 const route = useRoute()
@@ -45,16 +45,6 @@ const changePage = (page: number) => {
       page,
     },
   })
-}
-
-const getRoomsLabel = (count: number) => {
-  if (count === 1) return 'pokój'
-  if (count >= 2 && count <= 4) return 'pokoje'
-  return 'pokoi'
-}
-
-const getPropertiesLabel = (count: number) => {
-  return count === 1 ? 'nieruchomość' : 'nieruchomości'
 }
 
 const currentSort = computed(() => {
@@ -180,7 +170,7 @@ const searchFilters = computed<SearchFilters>(() => {
           <RouterLink
             v-for="property in data.content"
             :key="property.id"
-            :to="`/property/${property.slug}`"
+            :to="`/properties/${property.slug}`"
             class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 flex flex-col sm:flex-row"
           >
             <!-- Property Image -->
@@ -240,7 +230,7 @@ const searchFilters = computed<SearchFilters>(() => {
                     {{ formatPrice(property.price) }}
                   </div>
                   <div v-if="property.area" class="text-sm text-gray-500">
-                    {{ Math.round(property.price / property.area).toLocaleString('pl-PL') }} zł/m²
+                    {{ formatPrice(property.price / property.area) }}/m²
                   </div>
                 </div>
               </div>

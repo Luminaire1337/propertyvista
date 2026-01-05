@@ -13,6 +13,11 @@ const routes: RouteRecordRaw[] = [
     name: 'properties',
     component: () => import('@/views/property/PropertiesPage.vue'),
   },
+  {
+    path: '/properties/:slug',
+    name: 'property-details',
+    component: () => import('@/views/property/PropertyDetailsPage.vue'),
+  },
   // Auth routes
   {
     path: '/login',

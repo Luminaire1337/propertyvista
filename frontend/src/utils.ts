@@ -7,7 +7,17 @@ export const formatPrice = (price: number) => {
   return new Intl.NumberFormat('pl-PL', {
     style: 'currency',
     currency: 'PLN',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    minimumFractionDigits: price % 1 === 0 ? 0 : 2,
+    maximumFractionDigits: price % 1 === 0 ? 0 : 2,
   }).format(price)
+}
+
+export const getRoomsLabel = (count: number) => {
+  if (count === 1) return 'pokój'
+  if (count >= 2 && count <= 4) return 'pokoje'
+  return 'pokoi'
+}
+
+export const getPropertiesLabel = (count: number) => {
+  return count === 1 ? 'nieruchomość' : 'nieruchomości'
 }

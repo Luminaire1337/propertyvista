@@ -3,13 +3,14 @@ import { useVerifyEmailMutation } from '@/mutations/user'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 import { toast } from 'vue-sonner'
+import { computed } from 'vue'
 
 const route = useRoute()
-const token = route.query.token as string | undefined
+const token = computed(() => route.query.token as string)
 
-if (token) {
+if (token.value) {
   const verifyEmailMutation = useVerifyEmailMutation()
-  verifyEmailMutation.mutate({ token })
+  verifyEmailMutation.mutate({ token: token.value })
 } else {
   toast.error('Brak tokenu weryfikacyjnego w URL.')
   router.push({ name: 'home' })
