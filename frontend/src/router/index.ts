@@ -18,6 +18,12 @@ const routes: RouteRecordRaw[] = [
     name: 'property-details',
     component: () => import('@/views/property/PropertyDetailsPage.vue'),
   },
+  {
+    path: '/new-property',
+    name: 'new-property',
+    component: () => import('@/views/property/NewPropertyPage.vue'),
+    meta: { requiresAuth: true },
+  },
   // Auth routes
   {
     path: '/login',

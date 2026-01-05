@@ -56,7 +56,7 @@ const closeLightbox = () => {
 </script>
 
 <template>
-  <div class="grow flex flex-col items-center justify-center text-center px-4">
+  <div class="grow flex flex-col items-center px-4">
     <div v-if="isPending" class="w-full max-w-7xl py-8 text-left">
       <!-- Image Skeleton -->
       <div class="w-full h-100 md:h-125 bg-gray-300 rounded-xl mb-8 animate-pulse"></div>
@@ -98,7 +98,7 @@ const closeLightbox = () => {
     <div v-else class="w-full max-w-7xl py-8 text-left">
       <!-- Image Carousel -->
       <div
-        class="relative h-100 md:h-125 bg-gray-100 rounded-xl overflow-hidden mb-8 group cursor-pointer"
+        class="relative h-100 md:h-125 bg-gray-100 rounded overflow-hidden mb-8 group cursor-pointer"
         @click="openLightbox"
       >
         <img
@@ -179,19 +179,19 @@ const closeLightbox = () => {
           <div>
             <h2 class="text-xl font-bold text-gray-900 mb-4">Szczegóły</h2>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div class="flex flex-col p-4 bg-gray-50 rounded-xl border border-gray-100">
+              <div class="flex flex-col p-4 bg-gray-50 rounded border border-gray-100">
                 <Maximize2 class="w-6 h-6 text-gray-400 mb-2" />
                 <span class="text-sm text-gray-500">Powierzchnia</span>
                 <span class="font-semibold text-lg">{{ data.area }} m²</span>
               </div>
-              <div class="flex flex-col p-4 bg-gray-50 rounded-xl border border-gray-100">
+              <div class="flex flex-col p-4 bg-gray-50 rounded border border-gray-100">
                 <DoorOpen class="w-6 h-6 text-gray-400 mb-2" />
                 <span class="text-sm text-gray-500 capitalize">{{
                   getRoomsLabel(data.rooms)
                 }}</span>
                 <span class="font-semibold text-lg">{{ data.rooms }}</span>
               </div>
-              <div class="flex flex-col p-4 bg-gray-50 rounded-xl border border-gray-100">
+              <div class="flex flex-col p-4 bg-gray-50 rounded border border-gray-100">
                 <Car class="w-6 h-6 text-gray-400 mb-2" />
                 <span class="text-sm text-gray-500">Miejsce postojowe</span>
                 <span class="font-semibold text-lg">{{ data.parking ? 'Dostępne' : 'Brak' }}</span>
@@ -210,7 +210,7 @@ const closeLightbox = () => {
 
         <!-- Sidebar -->
         <div class="lg:col-span-1">
-          <div class="bg-white border border-gray-200 rounded-xl p-6 top-24 shadow-sm">
+          <div class="bg-white border border-gray-200 rounded p-6 top-24 shadow-sm">
             <div class="flex items-center space-x-4 mb-6 pb-6 border-b border-gray-100">
               <AvatarImage
                 :src="data.user?.avatarImagePath"
@@ -229,13 +229,13 @@ const closeLightbox = () => {
               <button
                 v-if="!showContactInfo"
                 @click="showContactInfo = true"
-                class="w-full bg-primary text-white py-3 px-4 rounded-lg font-semibold hover:bg-primary-dark transition-colors flex items-center justify-center shadow-sm hover:shadow-md cursor-pointer"
+                class="w-full bg-primary text-white py-3 px-4 rounded font-semibold hover:bg-primary-dark transition-colors flex items-center justify-center shadow-sm hover:shadow-md cursor-pointer"
               >
                 Skontaktuj się ze sprzedającym
               </button>
 
               <div v-else class="space-y-3">
-                <div class="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <div class="flex items-center p-3 bg-gray-50 rounded border border-gray-100">
                   <Phone class="w-5 h-5 text-primary mr-3" />
                   <div class="flex flex-col">
                     <span class="text-xs text-gray-500">Numer telefonu</span>
@@ -249,7 +249,7 @@ const closeLightbox = () => {
                     <span v-else class="font-medium text-gray-900">Nie podano</span>
                   </div>
                 </div>
-                <div class="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <div class="flex items-center p-3 bg-gray-50 rounded border border-gray-100">
                   <Mail class="w-5 h-5 text-primary mr-3" />
                   <div class="flex flex-col">
                     <span class="text-xs text-gray-500">Adres email</span>
@@ -293,7 +293,7 @@ const closeLightbox = () => {
             leave-from="opacity-100 scale-100"
             leave-to="opacity-0 scale-95"
           >
-            <DialogPanel class="w-full max-w-7xl rounded-lg p-6">
+            <DialogPanel class="w-full max-w-7xl rounded p-6">
               <div class="relative flex items-center justify-center h-[80vh]">
                 <img
                   v-if="data?.imagePaths && data.imagePaths.length > 0"
@@ -333,7 +333,7 @@ const closeLightbox = () => {
                   v-for="(_, index) in data?.imagePaths"
                   :key="index"
                   @click="setImage(index)"
-                  class="w-16 h-16 shrink-0 rounded-md overflow-hidden border-2 transition-all"
+                  class="w-16 h-16 shrink-0 rounded overflow-hidden border-2 transition-all"
                   :class="
                     index === currentImageIndex
                       ? 'border-white opacity-100'

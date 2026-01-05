@@ -68,9 +68,6 @@ const triggerFileInput = () => {
 
     <!-- Current Avatar Section -->
     <div class="mb-8">
-      <h3 class="text-lg font-semibold mb-4">
-        {{ previewUrl ? 'Podgląd nowego awatara' : 'Obecny awatar' }}
-      </h3>
       <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-4">
         <div class="flex items-center space-x-6">
           <AvatarImage
@@ -82,9 +79,7 @@ const triggerFileInput = () => {
           />
           <div class="flex-1">
             <p class="text-sm text-gray-600 mb-3">
-              {{
-                previewUrl ? 'To jest podgląd Twojego nowego awatara' : 'To jest Twój obecny awatar'
-              }}
+              {{ previewUrl ? 'Nowy awatar' : 'Obecny awatar' }}
             </p>
             <button
               v-if="user?.avatarImagePath && !previewUrl"
@@ -108,9 +103,8 @@ const triggerFileInput = () => {
       <!-- Info Notice -->
       <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
         <p class="text-sm text-blue-800">
-          <strong>Informacja:</strong> Po przesłaniu nowego awatara, jest on przekazywany do usługi
-          zewnętrznej do przetwarzania obrazów. Może to chwilę potrwać, zanim nowy awatar będzie
-          widoczny na Twoim profilu.
+          <strong>Informacja:</strong> Po przesłaniu nowego awatara, jest on przekazywany do
+          zewnętrznej usługi do przetwarzania obrazów. Weryfikacja może potrwać kilka minut.
         </p>
       </div>
 

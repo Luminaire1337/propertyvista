@@ -33,7 +33,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
 </script>
 
 <template>
-  <div class="w-full max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+  <div class="w-full max-w-5xl mx-auto p-6 bg-white rounded shadow-lg">
     <h2 class="text-2xl font-bold mb-6 text-gray-800">Znajdź swoją nieruchomość</h2>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
@@ -49,7 +49,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
             v-model="filters.city"
             type="text"
             placeholder="np. Warszawa"
-            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            class="w-full pl-10 pr-4 py-2 border rounded focus:outline-none focus:ring focus:border-green-300"
             @keydown="handleKeyDown"
           />
         </div>
@@ -65,7 +65,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
           v-model.number="filters.minPrice"
           type="number"
           placeholder="np. 200 000"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          class="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:border-green-300"
           @keydown="handleKeyDown"
         />
       </div>
@@ -80,7 +80,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
           v-model.number="filters.maxPrice"
           type="number"
           placeholder="np. 500 000"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          class="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:border-green-300"
           @keydown="handleKeyDown"
         />
       </div>
@@ -96,7 +96,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
           type="number"
           min="0"
           placeholder="np. 2"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          class="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:border-green-300"
           @keydown="handleKeyDown"
         />
       </div>
@@ -112,7 +112,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
           type="number"
           min="0"
           placeholder="np. 4"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          class="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:border-green-300"
           @keydown="handleKeyDown"
         />
       </div>
@@ -129,7 +129,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
           min="0"
           step="0.1"
           placeholder="np. 50"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          class="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:border-green-300"
           @keydown="handleKeyDown"
         />
       </div>
@@ -146,7 +146,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
           min="0"
           step="0.1"
           placeholder="np. 100"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          class="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:border-green-300"
           @keydown="handleKeyDown"
         />
       </div>
@@ -159,7 +159,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
         <select
           id="parking"
           v-model="filters.parking"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none bg-white"
+          class="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:border-green-300 appearance-none bg-white"
         >
           <option :value="undefined">-</option>
           <option :value="true">Dostępne</option>
