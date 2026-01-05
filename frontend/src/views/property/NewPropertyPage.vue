@@ -190,15 +190,17 @@ const isFormValid = computed(() => {
               @change="handleFileSelect"
               class="hidden"
             />
-            <PrimaryButton
+            <button
               v-if="canAddMore"
               @click="triggerFileInput"
               type="button"
-              custom-class="w-full sm:w-auto"
+              class="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded hover:border-primary hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 text-gray-700 hover:text-primary"
             >
-              <ImagePlus class="w-5 h-5 mr-2" />
-              {{ imagePreviews.length === 0 ? 'Dodaj zdjęcia' : 'Dodaj więcej zdjęć' }}
-            </PrimaryButton>
+              <ImagePlus class="w-5 h-5" />
+              <span class="font-medium">
+                {{ imagePreviews.length === 0 ? 'Dodaj zdjęcia' : 'Dodaj więcej zdjęć' }}
+              </span>
+            </button>
             <p v-else class="text-sm text-gray-600">Osiągnięto limit {{ MAX_IMAGES }} zdjęć</p>
             <p class="text-xs text-gray-500 mt-2">
               Obsługiwane formaty: PNG, JPG. Maksymalnie {{ MAX_IMAGES }} zdjęć.
