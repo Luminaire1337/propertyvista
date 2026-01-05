@@ -10,8 +10,8 @@ import MobileMenu from './MobileMenu.vue'
 
 const navLinks = [
   { name: 'Nieruchomości', path: '/properties' },
-  { name: 'Dodaj ogłoszenie', path: '/new-listing' },
-  { name: 'Kup PropertyPoints', path: '/buy-points' },
+  { name: 'Dodaj ogłoszenie', path: '/new-property' },
+  { name: 'Kup Property Points', path: '/buy-property-points' },
 ]
 
 const { data: user, isPending } = useCurrentUser()

@@ -16,7 +16,7 @@ const handleLogout = (event: Event) => {
 const dropDownLinks = [
   {
     name: 'Moje ogłoszenia',
-    path: '/my-listings',
+    path: '/my-properties',
   },
   {
     name: 'Ustawienia konta',
