@@ -18,6 +18,7 @@ public record PropertyDetailedResponse(
         Double area,
         Integer rooms,
         Boolean parking,
+        LocalDateTime expiryDate,
         List<String> imagePaths,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

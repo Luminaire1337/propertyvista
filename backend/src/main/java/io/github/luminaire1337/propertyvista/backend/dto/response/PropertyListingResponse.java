@@ -15,6 +15,7 @@ public record PropertyListingResponse(
         Double area,
         Integer rooms,
         Boolean parking,
+        LocalDateTime expiryDate,
         String primaryImagePath,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
