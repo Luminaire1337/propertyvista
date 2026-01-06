@@ -5,73 +5,73 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
-    component: () => import('@/views/HomePage.vue'),
+    component: () => import('@/pages/HomePage.vue'),
   },
   // Property routes
   {
     path: '/properties',
     name: 'properties',
-    component: () => import('@/views/property/PropertiesPage.vue'),
+    component: () => import('@/pages/property/PropertiesPage.vue'),
   },
   {
     path: '/properties/me',
     name: 'user-properties',
-    component: () => import('@/views/property/UserPropertiesPage.vue'),
+    component: () => import('@/pages/property/UserPropertiesPage.vue'),
     meta: { requiresAuth: true },
   },
   {
     path: '/properties/new',
     name: 'new-property',
-    component: () => import('@/views/property/NewPropertyPage.vue'),
+    component: () => import('@/pages/property/NewPropertyPage.vue'),
     meta: { requiresAuth: true },
   },
   {
     path: '/properties/:slug',
     name: 'property-details',
-    component: () => import('@/views/property/PropertyDetailsPage.vue'),
+    component: () => import('@/pages/property/PropertyDetailsPage.vue'),
   },
   // Auth routes
   {
     path: '/login',
     name: 'login',
-    component: () => import('@/views/auth/LoginPage.vue'),
+    component: () => import('@/pages/auth/LoginPage.vue'),
     meta: { requiresGuest: true },
   },
   {
     path: '/register',
     name: 'register',
-    component: () => import('@/views/auth/RegisterPage.vue'),
+    component: () => import('@/pages/auth/RegisterPage.vue'),
     meta: { requiresGuest: true },
   },
   // User routes
   {
     path: '/verify-email',
     name: 'verify-email',
-    component: () => import('@/views/user/VerifyEmailPage.vue'),
+    component: () => import('@/pages/user/VerifyEmailPage.vue'),
     meta: { requiresGuest: true },
   },
   {
     path: '/settings',
     name: 'settings',
-    component: () => import('@/views/user/SettingsPage.vue'),
+    component: () => import('@/pages/user/SettingsPage.vue'),
     meta: { requiresAuth: true },
   },
   // Other routes
   {
     path: '/terms-of-service',
     name: 'tos',
-    component: () => import('@/views/other/TosPage.vue'),
+    component: () => import('@/pages/other/TosPage.vue'),
   },
   {
     path: '/privacy-policy',
     name: 'privacy-policy',
-    component: () => import('@/views/other/PrivacyPolicyPage.vue'),
+    component: () => import('@/pages/other/PrivacyPolicyPage.vue'),
   },
   // Catch 404 errors
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: () => import('@/views/ErrorPage.vue'),
+    component: () => import('@/pages/ErrorPage.vue'),
   },
 ]
 
