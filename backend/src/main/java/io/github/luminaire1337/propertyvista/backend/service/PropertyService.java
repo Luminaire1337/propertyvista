@@ -60,6 +60,15 @@ public class PropertyService {
         return propertyRepository.findAll(spec, pageable);
     }
 
+    public Page<Property> getUserPaginatedProperties(User user, Specification<Property> spec, Pageable pageable) {
+        return propertyRepository.findAll(
+                Specification.where(spec).and((root, cq, cb) ->
+                        cb.equal(root.get("user"), user)
+                ),
+                pageable
+        );
+    }
+
     public Property createProperty(
             String title,
             String description,
@@ -167,7 +176,7 @@ public class PropertyService {
                             // Refund property points to user
                             User finalUser = finalProperty.getUser();
                             userService.giveUserPropertyPoints(finalUser, daysValid);
-                            
+
                             finalProperty.setStatus(PropertyStatus.HIDDEN);
                             propertyRepository.save(finalProperty);
                             log.error("Image validation failed for property {}", propertyId);

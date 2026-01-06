@@ -70,6 +70,33 @@ public class PropertyController {
         return ResponseEntity.status(HttpStatus.OK).body(pageResponse);
     }
 
+    @GetMapping("/me")
+    @Operation(
+            summary = "Get paginated list of properties for the current user",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successful retrieval of user's properties", content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = PropertyPageResponse.class))
+                    })
+            }
+    )
+    public ResponseEntity<PropertyPageResponse> getMyProperties(@Valid @ModelAttribute() PropertyPaginationRequest paginationRequest) {
+        User user = currentUserContext.getEntity();
+        var page = propertyService.getUserPaginatedProperties(
+                        user,
+                        paginationRequest.toSpecification(),
+                        paginationRequest.toPageable())
+                .map(propertyMapper::toListingDTO);
+        var pageResponse = new PropertyPageResponse(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(pageResponse);
+    }
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "Create a new property",
