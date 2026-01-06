@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import usePropertyDetails from '@/queries/usePropertyDetails'
-import { formatPrice, getRoomsLabel } from '@/utils'
+import { formatDate, formatPrice, getRoomsLabel } from '@/utils'
 import {
   MapPin,
   Maximize2,
@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Clock,
 } from 'lucide-vue-next'
 import AvatarImage from '@/components/AvatarImage.vue'
 import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessui/vue'
@@ -195,6 +196,11 @@ const closeLightbox = () => {
                 <Car class="w-6 h-6 text-gray-400 mb-2" />
                 <span class="text-sm text-gray-500">Miejsce postojowe</span>
                 <span class="font-semibold text-lg">{{ data.parking ? 'Dostępne' : 'Brak' }}</span>
+              </div>
+              <div class="flex flex-col p-4 bg-gray-50 rounded border border-gray-100">
+                <Clock class="w-6 h-6 text-gray-400 mb-2" />
+                <span class="text-sm text-gray-500">Data dodania</span>
+                <span class="font-semibold text-lg">{{ formatDate(data.createdAt) }}</span>
               </div>
             </div>
           </div>

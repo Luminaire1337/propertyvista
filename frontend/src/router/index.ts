@@ -14,6 +14,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/property/PropertiesPage.vue'),
   },
   {
+    path: '/properties/me',
+    name: 'user-properties',
+    component: () => import('@/views/property/UserPropertiesPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/properties/new',
     name: 'new-property',
     component: () => import('@/views/property/NewPropertyPage.vue'),

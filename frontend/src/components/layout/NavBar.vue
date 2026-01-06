@@ -30,7 +30,7 @@ const navLinks: NavLink[] = [
 ]
 
 const dropDownLinks: NavLink[] = [
-  { name: 'Moje nieruchomości', path: '/properties/me' },
+  { name: 'Moje ogłoszenia', path: '/properties/me' },
   { name: 'Ustawienia konta', path: '/settings' },
   { name: 'Wyloguj się', action: handleLogout },
 ]

@@ -211,6 +211,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/properties/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get paginated list of properties for the current user */
+        get: operations["getMyProperties"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -332,6 +349,8 @@ export interface components {
             /** Format: int32 */
             rooms?: number;
             parking?: boolean;
+            /** Format: date-time */
+            expiryDate?: string;
             primaryImagePath?: string;
             /** Format: date-time */
             createdAt?: string;
@@ -389,6 +408,8 @@ export interface components {
             /** Format: int32 */
             rooms?: number;
             parking?: boolean;
+            /** Format: date-time */
+            expiryDate?: string;
             imagePaths?: string[];
             /** Format: date-time */
             createdAt?: string;
@@ -1082,6 +1103,55 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PropertyDetailedResponse"];
+                };
+            };
+            /** @description Invalid request payload */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized access */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden access */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getMyProperties: {
+        parameters: {
+            query: {
+                paginationRequest: components["schemas"]["PropertyPaginationRequest"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful retrieval of user's properties */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyPageResponse"];
                 };
             };
             /** @description Invalid request payload */

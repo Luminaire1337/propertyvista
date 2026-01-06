@@ -12,6 +12,10 @@ export const formatPrice = (price: number) => {
   }).format(price)
 }
 
+export const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('pl-PL')
+}
+
 export const getRoomsLabel = (count: number) => {
   if (count === 1) return 'pokój'
   if (count >= 2 && count <= 4) return 'pokoje'

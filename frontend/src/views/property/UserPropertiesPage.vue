@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute, type LocationQueryRaw } from 'vue-router'
-import usePropertyPage from '@/queries/usePropertyPage'
-import type { PropertyPaginationRequest, SearchFilters } from '@/services/property'
-import PropertySearchForm from '@/components/PropertySearchForm.vue'
+import { useRoute } from 'vue-router'
+import useUserProperties from '@/queries/useUserProperties'
+import type { PropertyPaginationRequest } from '@/services/property'
 import PropertiesList from '@/components/PropertiesList.vue'
 import router from '@/router'
 
@@ -12,29 +11,16 @@ const route = useRoute()
 const paginationData = computed<PropertyPaginationRequest>(() => {
   const q = route.query
   const toNumber = (val: unknown) => (val ? Number(val) : undefined)
-  const toBool = (val: unknown) => (val === 'true' ? true : val === 'false' ? false : undefined)
 
   return {
     page: toNumber(q.page) || 0,
     size: toNumber(q.size) || 20,
     sortField: q.sortField as string | undefined,
     sortDirection: q.sortDirection as 'ASC' | 'DESC' | undefined,
-    city: q.city as string | undefined,
-    minPrice: toNumber(q.minPrice),
-    maxPrice: toNumber(q.maxPrice),
-    minRooms: toNumber(q.minRooms),
-    maxRooms: toNumber(q.maxRooms),
-    minArea: toNumber(q.minArea),
-    maxArea: toNumber(q.maxArea),
-    parking: toBool(q.parking),
   }
 })
 
-const { data, isPending, isError } = usePropertyPage(paginationData.value)
-
-const handleSearch = (filters: SearchFilters) => {
-  router.replace({ path: route.path, query: filters as LocationQueryRaw })
-}
+const { data, isPending, isError } = useUserProperties(paginationData.value)
 
 const changePage = (page: number) => {
   router.replace({
@@ -88,20 +74,14 @@ const handleSortChange = (event: Event) => {
     },
   })
 }
-
-const searchFilters = computed<SearchFilters>(() => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { page, size, sortField, sortDirection, ...filters } = paginationData.value
-  return filters as SearchFilters
-})
 </script>
 
 <template>
   <div class="grow flex flex-col items-center text-center px-4">
     <div class="w-full max-w-6xl py-8 text-left">
-      <!-- Search Form -->
+      <!-- Page Header -->
       <div class="mb-8">
-        <PropertySearchForm :initial-filters="searchFilters" @search="handleSearch" />
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Moje ogłoszenia</h1>
       </div>
 
       <!-- Properties List Component -->
@@ -110,6 +90,7 @@ const searchFilters = computed<SearchFilters>(() => {
         :is-pending="isPending"
         :is-error="isError"
         :current-sort="currentSort"
+        :show-badges="true"
         @change-page="changePage"
         @sort-change="handleSortChange"
       />
