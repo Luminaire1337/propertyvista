@@ -136,7 +136,7 @@ public class PropertyController {
             }
     )
     public ResponseEntity<PropertyDetailedResponse> getPropertyBySlug(@PathVariable @NotBlank(message = "Identyfikator jest wymagany") String slug) {
-        PropertyDetailedResponse property = propertyMapper.toDetailedDTO(propertyService.getPropertyBySlug(slug));
+        PropertyDetailedResponse property = propertyMapper.toDetailedDTO(propertyService.getPublishedPropertyBySlug(slug));
         return ResponseEntity.status(HttpStatus.OK).body(property);
     }
 }
