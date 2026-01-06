@@ -20,6 +20,10 @@ public class RemoveExpiredRefreshTokens {
         log.info("Running 'removeExpiredRefreshTokens' task");
 
         List<RefreshToken> expiredTokens = refreshTokenService.findAllExpiredTokens();
+        if (expiredTokens.isEmpty()) {
+            return;
+        }
+
         refreshTokenService.deleteRefreshTokens(expiredTokens);
     }
 }

@@ -24,6 +24,10 @@ public class RemoveUnverifiedUsers {
         log.info("Running 'removeUnverifiedUsers' task");
 
         List<VerificationToken> expiredTokens = verificationTokenService.findAllExpiredTokens();
+        if (expiredTokens.isEmpty()) {
+            return;
+        }
+
         for (VerificationToken token : expiredTokens) {
             User user = token.getUser();
             if (user.getStatus() == UserStatus.UNVERIFIED) {

@@ -22,6 +22,10 @@ public class HideExpiredProperties {
         log.info("Running 'hideExpiredProperties' task");
 
         List<Property> expiredProperties = propertyService.findAllExpiredProperties();
+        if (expiredProperties.isEmpty()) {
+            return;
+        }
+        
         expiredProperties.forEach(property -> property.setStatus(PropertyStatus.EXPIRED));
         propertyService.updatePropertiesInBatch(expiredProperties);
     }

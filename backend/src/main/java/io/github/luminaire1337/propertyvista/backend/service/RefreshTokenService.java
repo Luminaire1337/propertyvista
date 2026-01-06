@@ -66,6 +66,5 @@ public class RefreshTokenService {
     @Transactional
     public void deleteRefreshTokens(List<RefreshToken> tokens) {
         refreshTokenRepository.deleteAll(tokens);
-        log.info("Deleted {} expired refresh tokens", tokens.size());
     }
 }
