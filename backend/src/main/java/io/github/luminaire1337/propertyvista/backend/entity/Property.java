@@ -62,7 +62,7 @@ public class Property {
     private LocalDateTime expiryDate;
 
     // Images
-    @OneToMany(mappedBy = "property", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "property", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<PropertyImage> images;
 
     // CreatedAt and UpdatedAt timestamps
