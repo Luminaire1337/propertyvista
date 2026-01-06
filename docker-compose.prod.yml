@@ -43,7 +43,6 @@ services:
       - SPRING_MAIL_PORT=${MAIL_PORT}
       - SPRING_MAIL_USERNAME=${MAIL_USERNAME}
       - SPRING_MAIL_PASSWORD=${MAIL_PASSWORD}
-      - SPRING_REDIS_URL=redis://:${CACHE_PASSWORD}@cache:6379
       # Custom variables
       - PROPERTYVISTA_JWT_SECRET=${JWT_SECRET}
       - PROPERTYVISTA_JWT_EXPIRATION_MS=${JWT_EXPIRATION_MS}
@@ -58,8 +57,6 @@ services:
       database:
         condition: service_healthy
       storage:
-        condition: service_healthy
-      cache:
         condition: service_healthy
     labels:
       - "traefik.enable=true"
