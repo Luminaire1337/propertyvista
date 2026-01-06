@@ -2,6 +2,7 @@ package io.github.luminaire1337.propertyvista.backend.controller;
 
 import io.github.luminaire1337.propertyvista.backend.dto.request.CreatePropertyRequest;
 import io.github.luminaire1337.propertyvista.backend.dto.request.PropertyPaginationRequest;
+import io.github.luminaire1337.propertyvista.backend.dto.request.UpdatePropertyRequest;
 import io.github.luminaire1337.propertyvista.backend.dto.response.ErrorResponse;
 import io.github.luminaire1337.propertyvista.backend.dto.response.PropertyDetailedResponse;
 import io.github.luminaire1337.propertyvista.backend.dto.response.PropertyPageResponse;
@@ -137,6 +138,42 @@ public class PropertyController {
     )
     public ResponseEntity<PropertyDetailedResponse> getPropertyBySlug(@PathVariable @NotBlank(message = "Identyfikator jest wymagany") String slug) {
         PropertyDetailedResponse property = propertyMapper.toDetailedDTO(propertyService.getPublishedPropertyBySlug(slug));
+        return ResponseEntity.status(HttpStatus.OK).body(property);
+    }
+
+    @PatchMapping(value = "/{slug}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(
+            summary = "Update property by slug",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Property updated successfully", content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = PropertyResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "404", description = "Property not found", content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    })
+            }
+    )
+    public ResponseEntity<PropertyResponse> updateProperty(
+            @PathVariable @NotBlank(message = "Identyfikator jest wymagany") String slug,
+            @Valid @ModelAttribute UpdatePropertyRequest updatePropertyRequest
+    ) {
+        User user = currentUserContext.getEntity();
+        PropertyResponse property = propertyMapper.toDTO(propertyService.updateProperty(
+                slug,
+                updatePropertyRequest.title(),
+                updatePropertyRequest.description(),
+                updatePropertyRequest.price(),
+                updatePropertyRequest.city(),
+                updatePropertyRequest.area(),
+                updatePropertyRequest.rooms(),
+                updatePropertyRequest.parking(),
+                updatePropertyRequest.images(),
+                updatePropertyRequest.primaryImagePath(),
+                updatePropertyRequest.daysValid(),
+                user
+        ));
         return ResponseEntity.status(HttpStatus.OK).body(property);
     }
 }

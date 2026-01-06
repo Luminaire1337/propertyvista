@@ -204,4 +204,174 @@ public class PropertyService {
 
         return property;
     }
+
+    @Transactional
+    public Property updateProperty(
+            String slug,
+            String title,
+            String description,
+            Double price,
+            String city,
+            Double area,
+            Integer rooms,
+            Boolean parking,
+            List<MultipartFile> images,
+            String primaryImagePath,
+            Integer daysValid,
+            User user
+    ) {
+        Property property = getPropertyBySlug(slug);
+
+        // Check if user owns the property
+        if (!property.getUser().getId().equals(user.getId())) {
+            throw new BadRequestException("Nie masz uprawnień do edycji tej nieruchomości");
+        }
+
+        // Update only fields that are not null
+        if (title != null && !title.isBlank()) {
+            property.setTitle(title);
+        }
+        if (description != null) {
+            property.setDescription(description);
+        }
+        if (price != null) {
+            property.setPrice(price);
+        }
+        if (city != null && !city.isBlank()) {
+            property.setCity(city);
+        }
+        if (area != null) {
+            property.setArea(area);
+        }
+        if (rooms != null) {
+            property.setRooms(rooms);
+        }
+        if (parking != null) {
+            property.setParking(parking);
+        }
+
+        // Handle daysValid extension
+        if (daysValid != null) {
+            // Check if user has enough property points
+            if (user.getPropertyPoints() < daysValid) {
+                throw new BadRequestException("Niewystarczająca liczba Property Points do przedłużenia ogłoszenia");
+            }
+
+            // Take user's property points
+            var success = userService.takeUserPropertyPoints(user, daysValid);
+            if (!success) {
+                throw new BadRequestException("Nie udało się pobrać Property Points z twojego konta");
+            }
+
+            // Extend expiry date
+            LocalDateTime newExpiryDate = property.getExpiryDate().plusDays(daysValid);
+            property.setExpiryDate(newExpiryDate);
+        }
+
+        // Handle images update
+        if (images != null && !images.isEmpty()) {
+            // Check all images
+            for (var image : images) {
+                if (!imageService.isImageValid(image)) {
+                    throw new BadRequestException("Jedno lub więcej zdjęć jest nieprawidłowych");
+                }
+            }
+
+            // Remove existing images in batch
+            propertyImageRepository.deleteAll(property.getImages());
+
+            // Upload new images
+            boolean isPrimarySet = false;
+            List<ObjectWriteResponse> uploadedImages = new ArrayList<>();
+
+            for (var image : images) {
+                String newImageName = imageService.generateImageFileName(image);
+                Boolean isPrimary = primaryImagePath != null && Objects.equals(image.getOriginalFilename(), primaryImagePath);
+
+                var uploadResponse = storageService.uploadFile(
+                        BucketNames.PRIVATE_PROPERTY_IMAGES,
+                        newImageName,
+                        image
+                );
+
+                if (uploadResponse != null) {
+                    PropertyImage propertyImage = PropertyImage.builder()
+                            .property(property)
+                            .imagePath(newImageName)
+                            .primary(isPrimary)
+                            .build();
+                    propertyImageRepository.save(propertyImage);
+
+                    if (isPrimary)
+                        isPrimarySet = true;
+
+                    uploadedImages.add(uploadResponse);
+                }
+            }
+
+            if (uploadedImages.size() != images.size())
+                log.warn("Not all images were uploaded successfully for property ID {}", property.getId());
+
+            // If no primary was set in new images, keep existing primary or set first new image
+            if (!isPrimarySet && !uploadedImages.isEmpty()) {
+                log.info("No primary image specified in new images for property ID {}", property.getId());
+                PropertyImage firstImage = propertyImageRepository.findFirstByProperty(property).orElse(null);
+                if (firstImage != null) {
+                    firstImage.setPrimary(true);
+                    propertyImageRepository.save(firstImage);
+                }
+            }
+
+
+            // Set property status back to UNVERIFIED after update
+            property.setStatus(PropertyStatus.UNVERIFIED);
+
+            // Validate new images content asynchronously
+            UUID propertyId = property.getId();
+            imageService.validateImagesContentAsync(uploadedImages, (allValid) -> {
+                Property finalProperty = propertyRepository.findById(propertyId).orElse(null);
+                if (finalProperty != null) {
+                    if (allValid) {
+                        storageService.moveFilesBetweenBucketsInBatch(
+                                BucketNames.PRIVATE_PROPERTY_IMAGES,
+                                BucketNames.PUBLIC_PROPERTY_IMAGES,
+                                uploadedImages.stream().map(ObjectWriteResponse::object).toList()
+                        );
+                        finalProperty.setStatus(PropertyStatus.PUBLISHED);
+                        propertyRepository.save(finalProperty);
+                        log.info("New images validated and moved to public bucket for property {}", propertyId);
+                    } else {
+                        finalProperty.setStatus(PropertyStatus.HIDDEN);
+                        propertyRepository.save(finalProperty);
+                        log.error("Image validation failed for new images in property {}", propertyId);
+                    }
+                }
+            });
+        } else if (primaryImagePath != null && !primaryImagePath.isBlank()) {
+            // Update primary image if only primaryImagePath is specified (without new images)
+            // First, remove primary flag from all images
+            property.getImages().forEach(img -> {
+                if (img.isPrimary()) {
+                    img.setPrimary(false);
+                    propertyImageRepository.save(img);
+                }
+            });
+
+            // Set new primary image
+            property.getImages().stream()
+                    .filter(img -> img.getImagePath().equals(primaryImagePath))
+                    .findFirst()
+                    .ifPresentOrElse(
+                            img -> {
+                                img.setPrimary(true);
+                                propertyImageRepository.save(img);
+                            },
+                            () -> {
+                                throw new BadRequestException("Nie znaleziono zdjęcia o podanej ścieżce");
+                            }
+                    );
+        }
+
+        return propertyRepository.save(property);
+    }
 }
