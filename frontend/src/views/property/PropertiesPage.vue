@@ -98,7 +98,7 @@ const searchFilters = computed<SearchFilters>(() => {
 </script>
 
 <template>
-  <div class="grow flex flex-col items-center justify-center text-center px-4">
+  <div class="grow flex flex-col items-center text-center px-4">
     <div class="w-full max-w-6xl py-8 text-left">
       <!-- Search Form -->
       <div class="mb-8">
