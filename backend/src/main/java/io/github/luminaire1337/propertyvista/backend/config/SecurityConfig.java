@@ -29,6 +29,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() // Swagger endpoints
+                        .requestMatchers("/actuator/**").permitAll() // Actuator endpoints
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll() // User registration
                         .requestMatchers(HttpMethod.POST, "/users/verify-email").permitAll() // Email verification
