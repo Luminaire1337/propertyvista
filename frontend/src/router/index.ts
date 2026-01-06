@@ -14,15 +14,15 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/property/PropertiesPage.vue'),
   },
   {
-    path: '/properties/:slug',
-    name: 'property-details',
-    component: () => import('@/views/property/PropertyDetailsPage.vue'),
-  },
-  {
-    path: '/new-property',
+    path: '/properties/new',
     name: 'new-property',
     component: () => import('@/views/property/NewPropertyPage.vue'),
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/properties/:slug',
+    name: 'property-details',
+    component: () => import('@/views/property/PropertyDetailsPage.vue'),
   },
   // Auth routes
   {

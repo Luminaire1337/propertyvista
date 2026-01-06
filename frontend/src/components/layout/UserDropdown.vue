@@ -1,32 +1,15 @@
 <script setup lang="ts">
 import useCurrentUser from '@/queries/useCurrentUser'
-import { useLogoutMutation } from '@/mutations/auth'
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { ChevronDown } from 'lucide-vue-next'
 import AvatarImage from '../AvatarImage.vue'
+import type { NavLink } from './NavBar.vue'
+
+defineProps<{
+  dropDownLinks: NavLink[]
+}>()
 
 const { data: user } = useCurrentUser()
-const logoutMutation = useLogoutMutation()
-
-const handleLogout = (event: Event) => {
-  event.preventDefault()
-  logoutMutation.mutate()
-}
-
-const dropDownLinks = [
-  {
-    name: 'Moje ogłoszenia',
-    path: '/my-properties',
-  },
-  {
-    name: 'Ustawienia konta',
-    path: '/settings',
-  },
-  {
-    name: 'Wyloguj się',
-    action: handleLogout,
-  },
-]
 </script>
 
 <template>

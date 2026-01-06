@@ -7,11 +7,32 @@ import useCurrentUser from '@/queries/useCurrentUser'
 import UserDropdown from './UserDropdown.vue'
 import PrimaryButton from '../PrimaryButton.vue'
 import MobileMenu from './MobileMenu.vue'
+import { useLogoutMutation } from '@/mutations/auth'
 
-const navLinks = [
+const logoutMutation = useLogoutMutation()
+
+const handleLogout = (event: Event) => {
+  event.preventDefault()
+  logoutMutation.mutate()
+  isMobileMenuOpen.value = false
+}
+
+export type NavLink = {
+  name: string
+  path?: string
+  action?: (event: Event) => void
+}
+
+const navLinks: NavLink[] = [
   { name: 'Nieruchomości', path: '/properties' },
-  { name: 'Dodaj ogłoszenie', path: '/new-property' },
-  { name: 'Kup Property Points', path: '/buy-property-points' },
+  { name: 'Dodaj ogłoszenie', path: '/properties/new' },
+  { name: 'Kup Property Points', path: '/property-points' },
+]
+
+const dropDownLinks: NavLink[] = [
+  { name: 'Moje nieruchomości', path: '/properties/me' },
+  { name: 'Ustawienia konta', path: '/settings' },
+  { name: 'Wyloguj się', action: handleLogout },
 ]
 
 const { data: user, isPending } = useCurrentUser()
@@ -39,7 +60,7 @@ const isMobileMenuOpen = ref(false)
             <RouterLink
               v-for="link in navLinks"
               :key="link.path"
-              :to="link.path"
+              :to="link.path!"
               class="text-gray-700 hover:text-gray-900 transition-colors font-medium"
             >
               {{ link.name }}
@@ -57,7 +78,7 @@ const isMobileMenuOpen = ref(false)
             </div>
           </template>
           <template v-else-if="user">
-            <UserDropdown />
+            <UserDropdown :drop-down-links="dropDownLinks" />
           </template>
           <template v-else>
             <RouterLink to="/login">
@@ -80,6 +101,11 @@ const isMobileMenuOpen = ref(false)
     </div>
 
     <!-- Mobile menu -->
-    <MobileMenu v-if="isMobileMenuOpen" :nav-links="navLinks" @close="isMobileMenuOpen = false" />
+    <MobileMenu
+      v-if="isMobileMenuOpen"
+      :nav-links="navLinks"
+      :drop-down-links="dropDownLinks"
+      @close="isMobileMenuOpen = false"
+    />
   </header>
 </template>

@@ -3,23 +3,14 @@ import { RouterLink } from 'vue-router'
 import PrimaryButton from '../PrimaryButton.vue'
 import AvatarImage from '../AvatarImage.vue'
 import useCurrentUser from '@/queries/useCurrentUser'
-import { useLogoutMutation } from '@/mutations/auth'
+import type { NavLink } from './NavBar.vue'
 
 defineProps<{
-  navLinks: { name: string; path: string }[]
-}>()
-
-const emit = defineEmits<{
-  (e: 'close'): void
+  navLinks: NavLink[]
+  dropDownLinks: NavLink[]
 }>()
 
 const { data: user, isPending } = useCurrentUser()
-const logoutMutation = useLogoutMutation()
-
-const handleLogout = () => {
-  logoutMutation.mutate()
-  emit('close')
-}
 </script>
 
 <template>
@@ -28,9 +19,8 @@ const handleLogout = () => {
       <RouterLink
         v-for="link in navLinks"
         :key="link.path"
-        :to="link.path"
+        :to="link.path!"
         class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-        @click="emit('close')"
       >
         {{ link.name }}
       </RouterLink>
@@ -61,32 +51,28 @@ const handleLogout = () => {
               </div>
             </div>
             <div class="space-y-1">
-              <RouterLink
-                to="/my-listings"
-                class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-                @click="emit('close')"
-              >
-                Moje ogłoszenia
-              </RouterLink>
-              <RouterLink
-                to="/settings"
-                class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-                @click="emit('close')"
-              >
-                Ustawienia konta
-              </RouterLink>
-              <button
-                @click="handleLogout"
-                class="block w-full text-left px-4 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-              >
-                Wyloguj się
-              </button>
+              <template v-for="link in dropDownLinks" :key="link.name">
+                <RouterLink
+                  v-if="link.path"
+                  :to="link.path"
+                  class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                >
+                  {{ link.name }}
+                </RouterLink>
+                <button
+                  v-else-if="link.action"
+                  @click="link.action"
+                  class="block w-full text-left px-4 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                >
+                  {{ link.name }}
+                </button>
+              </template>
             </div>
           </div>
         </template>
         <template v-else>
           <div class="px-4">
-            <RouterLink to="/login" @click="emit('close')" class="block w-full">
+            <RouterLink to="/login" class="block w-full">
               <PrimaryButton class="w-full justify-center">Zaloguj się</PrimaryButton>
             </RouterLink>
           </div>
