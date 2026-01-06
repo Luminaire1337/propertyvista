@@ -3,7 +3,7 @@ package io.github.luminaire1337.propertyvista.backend.dto.email;
 import io.github.luminaire1337.propertyvista.backend.entity.Property;
 import io.github.luminaire1337.propertyvista.backend.entity.User;
 
-public record PropertyRejectedEmail(
+public record PropertyExpiredEmail(
         Property property,
         User user
 ) implements EmailDetails {
@@ -14,18 +14,19 @@ public record PropertyRejectedEmail(
 
     @Override
     public String getSubject() {
-        return "Twoje ogłoszenie '%s' zostało odrzucone".formatted(property.getTitle());
+        return "Twoje ogłoszenie '%s' wygasło".formatted(property.getTitle());
     }
 
     @Override
     public String getBody() {
         return """
                 <p>Szanowny Użytkowniku,</p>
-                <p>Niestety, Twoje ogłoszenie '<strong>%s</strong>' nie spełniło naszych kryteriów weryfikacji i zostało odrzucone.</p>
-                <p>Zachęcamy do zapoznania się z naszymi wytycznymi dotyczącymi dodawania nieruchomości i ponownego przesłania oferty po wprowadzeniu niezbędnych poprawek.</p>
+                <p>Informujemy, że Twoje ogłoszenie '<strong>%s</strong>' wygasło i nie jest już widoczne na naszej platformie.</p>
+                <p>Jeśli chcesz odnowić swoje ogłoszenie, zaloguj się na swoje konto i przedłuż jego ważność.</p>
                 <p>Pozdrawiamy,<br/>Zespół Property Vista</p>
                 <br/>
                 <p>Prosimy nie odpowiadać na tę wiadomość, ponieważ jest to automatycznie generowany e-mail.</p>
                 """.formatted(property.getTitle());
     }
+
 }

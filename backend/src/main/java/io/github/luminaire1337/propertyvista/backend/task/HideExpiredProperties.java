@@ -25,8 +25,9 @@ public class HideExpiredProperties {
         if (expiredProperties.isEmpty()) {
             return;
         }
-        
+
         expiredProperties.forEach(property -> property.setStatus(PropertyStatus.EXPIRED));
         propertyService.updatePropertiesInBatch(expiredProperties);
+        propertyService.notifyExpiredPropertiesOwners(expiredProperties);
     }
 }

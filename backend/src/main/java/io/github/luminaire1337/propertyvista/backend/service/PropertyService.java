@@ -1,6 +1,7 @@
 package io.github.luminaire1337.propertyvista.backend.service;
 
 import io.github.luminaire1337.propertyvista.backend.dto.email.PropertyApprovedEmail;
+import io.github.luminaire1337.propertyvista.backend.dto.email.PropertyExpiredEmail;
 import io.github.luminaire1337.propertyvista.backend.dto.email.PropertyRejectedEmail;
 import io.github.luminaire1337.propertyvista.backend.entity.Property;
 import io.github.luminaire1337.propertyvista.backend.entity.PropertyImage;
@@ -43,6 +44,14 @@ public class PropertyService {
                 .orElseThrow(() -> new NotFoundException("Nie znaleziono nieruchomości o podanym identyfikatorze"));
     }
 
+    public Property getPublishedPropertyBySlug(String slug) {
+        Property property = getPropertyBySlug(slug);
+        if (!property.isPublished()) {
+            throw new NotFoundException("Nie znaleziono nieruchomości o podanym identyfikatorze");
+        }
+        return property;
+    }
+
     public List<Property> findAllExpiredProperties() {
         LocalDateTime now = LocalDateTime.now();
         return propertyRepository.findAll().stream()
@@ -54,6 +63,12 @@ public class PropertyService {
     @Transactional
     public void updatePropertiesInBatch(List<Property> properties) {
         propertyRepository.saveAll(properties);
+    }
+
+    public void notifyExpiredPropertiesOwners(List<Property> expiredProperties) {
+        for (var property : expiredProperties) {
+            emailService.sendEmailAsync(new PropertyExpiredEmail(property, property.getUser()));
+        }
     }
 
     public Page<Property> getPaginatedProperties(Specification<Property> spec, Pageable pageable) {
