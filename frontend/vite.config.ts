@@ -20,7 +20,10 @@ export default defineConfig({
         chunkFileNames: 'assets/[hash].js',
         entryFileNames: 'assets/[hash].js',
         manualChunks: {
+          'vue-vendor': ['vue', 'vue-router'],
           'vue-query': ['@tanstack/vue-query'],
+          'ui-libs': ['@headlessui/vue', 'vue-sonner'],
+          icons: ['lucide-vue-next'],
         },
       },
     },
