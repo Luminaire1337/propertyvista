@@ -236,6 +236,8 @@ public class PropertyService {
         // Update only fields that are not null
         if (title != null && !title.isBlank()) {
             property.setTitle(title);
+            // Regenerate slug by setting it to null
+            property.setSlug(null);
         }
         if (description != null) {
             property.setDescription(description);
