@@ -14,7 +14,7 @@ public class PropertyImageListener {
 
     @PreRemove()
     public void preRemove(PropertyImage propertyImage) {
-        storageService.deleteFile(propertyImage.getProperty().isPublished()
+        storageService.deleteFile(propertyImage.getProperty().areImagesPublic()
                         ? BucketNames.PUBLIC_PROPERTY_IMAGES
                         : BucketNames.PRIVATE_PROPERTY_IMAGES,
                 propertyImage.getImagePath()

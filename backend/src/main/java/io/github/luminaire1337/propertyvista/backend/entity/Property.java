@@ -104,6 +104,10 @@ public class Property {
         return status == PropertyStatus.PUBLISHED;
     }
 
+    public boolean areImagesPublic() {
+        return status == PropertyStatus.PUBLISHED || status == PropertyStatus.EXPIRED;
+    }
+
     public PropertyImage getPrimaryImage() {
         return images != null ? images.stream()
                 .filter(PropertyImage::isPrimary)
