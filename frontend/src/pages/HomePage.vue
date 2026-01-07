@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import PropertySearchForm from '@/components/PropertySearchForm.vue'
-import router from '@/router'
+import { useRouter, type LocationQueryRaw } from 'vue-router'
 import type { SearchFilters } from '@/services/property'
-import type { LocationQueryRaw } from 'vue-router'
+
+const router = useRouter()
 
 const handleSearch = (filters: SearchFilters) => {
-  router.push({ path: '/properties', query: filters as LocationQueryRaw })
+  router.push({ name: 'properties', query: filters as LocationQueryRaw })
 }
 </script>
 

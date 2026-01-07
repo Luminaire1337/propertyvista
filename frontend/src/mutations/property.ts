@@ -1,4 +1,3 @@
-import router from '@/router'
 import {
   PropertyService,
   type CreatePropertyRequest,
@@ -6,9 +5,16 @@ import {
 } from '@/services/property'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
+import { useRouter } from 'vue-router'
+
+export type PartialUpdatePropertyMutationParameters = {
+  slug: string
+  updateData: UpdatePropertyRequest
+}
 
 export const useCreatePropertyMutation = () => {
   const queryClient = useQueryClient()
+  const router = useRouter()
   return useMutation({
     mutationFn: async (propertyData: CreatePropertyRequest) => {
       return await PropertyService.createProperty(propertyData)
@@ -26,15 +32,13 @@ export const useCreatePropertyMutation = () => {
 
 export const usePartiallyUpdatePropertyMutation = () => {
   const queryClient = useQueryClient()
+  const router = useRouter()
   return useMutation({
-    mutationFn: async ({
-      slug,
-      updateData,
-    }: {
-      slug: string
-      updateData: UpdatePropertyRequest
-    }) => {
-      return await PropertyService.partiallyUpdateProperty(slug, updateData)
+    mutationFn: async (partialUpdateData: PartialUpdatePropertyMutationParameters) => {
+      return await PropertyService.partiallyUpdateProperty(
+        partialUpdateData.slug,
+        partialUpdateData.updateData,
+      )
     },
     onSuccess: (_, { slug }) => {
       queryClient.invalidateQueries({ queryKey: ['property', slug] })

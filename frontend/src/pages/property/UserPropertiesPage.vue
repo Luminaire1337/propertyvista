@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import useUserProperties from '@/queries/useUserProperties'
 import type { PropertyPaginationRequest } from '@/services/property'
 import PropertiesList from '@/components/PropertiesList.vue'
-import router from '@/router'
 
 const route = useRoute()
+const router = useRouter()
 
 const paginationData = computed<PropertyPaginationRequest>(() => {
   const q = route.query

@@ -1,8 +1,8 @@
-import router from '@/router'
 import AuthService, { type Auth, type LoginRequest } from '@/services/auth'
 import { UserService, type RegisterRequest } from '@/services/user'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
+import { useRouter } from 'vue-router'
 
 type AuthLocalStorageData = {
   accessToken: string
@@ -85,6 +85,7 @@ export const getAccessToken = async () => {
 // Vue Query mutations
 export const useLoginMutation = () => {
   const queryClient = useQueryClient()
+  const router = useRouter()
   return useMutation({
     mutationFn: async (loginData: LoginRequest) => {
       if (isAuthenticated()) throw new Error('Jesteś już zalogowany')
@@ -122,6 +123,7 @@ export const useRegisterMutation = () => {
 
 export const useLogoutMutation = () => {
   const queryClient = useQueryClient()
+  const router = useRouter()
   return useMutation({
     mutationFn: async () => {
       if (!isAuthenticated()) throw new Error('Nie jesteś zalogowany')

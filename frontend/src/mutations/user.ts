@@ -1,4 +1,3 @@
-import router from '@/router'
 import {
   UserService,
   type TokenRequest,
@@ -9,9 +8,11 @@ import {
 } from '@/services/user'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
+import { useRouter } from 'vue-router'
 import { useLogoutMutation } from './auth'
 
 export const useVerifyEmailMutation = () => {
+  const router = useRouter()
   return useMutation({
     mutationFn: async (tokenData: TokenRequest) => {
       await UserService.verifyEmail(tokenData)

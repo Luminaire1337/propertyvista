@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useVerifyEmailMutation } from '@/mutations/user'
-import router from '@/router'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 import { computed } from 'vue'
 
 const route = useRoute()
+const router = useRouter()
 const token = computed(() => route.query.token as string)
 
 if (token.value) {
