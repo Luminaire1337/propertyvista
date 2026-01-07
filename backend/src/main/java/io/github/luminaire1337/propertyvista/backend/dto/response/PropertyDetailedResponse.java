@@ -20,6 +20,7 @@ public record PropertyDetailedResponse(
         Boolean parking,
         LocalDateTime expiryDate,
         List<String> imagePaths,
+        String primaryImagePath,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

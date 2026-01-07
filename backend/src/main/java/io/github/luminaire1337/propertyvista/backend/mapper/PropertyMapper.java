@@ -23,6 +23,7 @@ public abstract class PropertyMapper {
     public abstract PropertyListingResponse toListingDTO(Property property);
 
     @Mapping(target = "imagePaths", expression = "java(property.areImagesPublic() ? property.getImages().stream().map(this::mapImage).toList() : java.util.Collections.emptyList())")
+    @Mapping(target = "primaryImagePath", expression = "java(property.areImagesPublic() ? mapImage(property.getPrimaryImage()) : null)")
     public abstract PropertyDetailedResponse toDetailedDTO(Property property);
 
     @Named("mapImage")
