@@ -16,6 +16,24 @@ export type SearchFilters = Omit<
   PropertyPaginationRequest,
   'page' | 'size' | 'sortField' | 'sortDirection'
 >
+export type UpdatePropertyRequest = Omit<
+  components['schemas']['UpdatePropertyRequest'],
+  'images'
+> & {
+  images?: File[]
+}
+
+const preparePropertyFormData = (data: Record<string, unknown>) => {
+  const formData = new FormData()
+  for (const [key, value] of Object.entries(data)) {
+    if (key === 'images' && Array.isArray(value)) {
+      value.forEach((file) => formData.append('images', file))
+    } else {
+      formData.append(key, String(value))
+    }
+  }
+  return formData
+}
 
 export abstract class PropertyService {
   static async getProperties(paginationData: PropertyPaginationRequest): Promise<PropertyPage> {
@@ -41,15 +59,7 @@ export abstract class PropertyService {
   }
 
   static async createProperty(propertyData: CreatePropertyRequest): Promise<Property> {
-    const formData = new FormData()
-    for (const [key, value] of Object.entries(propertyData)) {
-      if (key === 'images' && Array.isArray(value)) {
-        value.forEach((file) => formData.append('images', file))
-      } else {
-        formData.append(key, String(value))
-      }
-    }
-
+    const formData = preparePropertyFormData(propertyData)
     const { data, error } = await client.POST('/properties', {
       // @ts-expect-error - FormData is compatible but TypeScript doesn't recognize it
       body: formData,
@@ -66,5 +76,21 @@ export abstract class PropertyService {
     })
     if (error) throw new Error(normalizeError(error))
     return data as PropertyDetails
+  }
+
+  static async partiallyUpdateProperty(
+    slug: string,
+    updateData: UpdatePropertyRequest,
+  ): Promise<Property> {
+    const formData = preparePropertyFormData(updateData)
+    const { data, error } = await client.PATCH('/properties/{slug}', {
+      params: {
+        path: { slug },
+      },
+      // @ts-expect-error - FormData is compatible but TypeScript doesn't recognize it
+      body: formData,
+    })
+    if (error) throw new Error(normalizeError(error))
+    return data as Property
   }
 }
