@@ -72,7 +72,13 @@ public class PropertyService {
     }
 
     public Page<Property> getPaginatedProperties(Specification<Property> spec, Pageable pageable) {
-        return propertyRepository.findAll(spec, pageable);
+        return propertyRepository.findAll(
+                // Only published properties
+                Specification.where(spec).and((root, cq, cb) ->
+                        cb.equal(root.get("status"), PropertyStatus.PUBLISHED)
+                ),
+                pageable
+        );
     }
 
     public Page<Property> getUserPaginatedProperties(User user, Specification<Property> spec, Pageable pageable) {
