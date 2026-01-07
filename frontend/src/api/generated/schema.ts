@@ -428,6 +428,7 @@ export interface components {
             /** Format: date-time */
             expiryDate?: string;
             imagePaths?: string[];
+            primaryImagePath?: string;
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */

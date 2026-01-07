@@ -2,22 +2,20 @@
 import { MapPin, Maximize2, DoorOpen, Car, Clock } from 'lucide-vue-next'
 import type { PropertyPage } from '@/services/property'
 import { formatPrice, getRoomsLabel, getPropertiesLabel, formatDate } from '@/utils'
+import PrimaryButton from '@/components/PrimaryButton.vue'
 
-interface Props {
+defineProps<{
   data?: PropertyPage
   isPending: boolean
   isError: boolean
   currentSort?: string
   showBadges?: boolean
-}
+}>()
 
-interface Emits {
-  (e: 'changePage', page: number): void
-  (e: 'sortChange', event: Event): void
-}
-
-defineProps<Props>()
-defineEmits<Emits>()
+defineEmits<{
+  changePage: [page: number]
+  sortChange: [event: Event]
+}>()
 
 const getStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
@@ -145,9 +143,22 @@ const getStatusColor = (status: string) => {
         <div class="flex-1 p-5 flex flex-col">
           <!-- Header with Title -->
           <div class="mb-3">
-            <h3 class="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">
-              {{ property.title }}
-            </h3>
+            <!-- Header with Title and Edit Button -->
+            <div class="flex justify-between items-start gap-4 mb-2">
+              <!-- Title -->
+              <h3 class="text-xl font-semibold text-gray-900 line-clamp-2">
+                {{ property.title }}
+              </h3>
+
+              <!-- Edit button aligned with title -->
+              <RouterLink
+                v-if="showBadges"
+                :to="`/properties/${property.slug}/edit`"
+                class="shrink-0"
+              >
+                <PrimaryButton>Edytuj ogłoszenie</PrimaryButton>
+              </RouterLink>
+            </div>
 
             <!-- Location -->
             <div class="flex items-center gap-2 text-gray-600">

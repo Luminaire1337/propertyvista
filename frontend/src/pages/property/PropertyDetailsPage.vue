@@ -27,17 +27,29 @@ const showContactInfo = ref(false)
 const currentImageIndex = ref(0)
 const isLightboxOpen = ref(false)
 
+const imagePaths = computed(() => {
+  // Set primary image first
+  if (
+    !data.value?.imagePaths ||
+    !data.value?.primaryImagePath ||
+    data.value.imagePaths.length === 0
+  )
+    return []
+  const primaryImage = data.value.primaryImagePath
+  return [primaryImage, ...data.value.imagePaths.filter((img) => img !== primaryImage)]
+})
+
 const nextImage = (e?: Event) => {
   e?.stopPropagation()
-  if (!data.value?.imagePaths?.length) return
-  currentImageIndex.value = (currentImageIndex.value + 1) % data.value.imagePaths.length
+  if (!imagePaths.value.length) return
+  currentImageIndex.value = (currentImageIndex.value + 1) % imagePaths.value.length
 }
 
 const prevImage = (e?: Event) => {
   e?.stopPropagation()
-  if (!data.value?.imagePaths?.length) return
+  if (!imagePaths.value.length) return
   currentImageIndex.value =
-    (currentImageIndex.value - 1 + data.value.imagePaths.length) % data.value.imagePaths.length
+    (currentImageIndex.value - 1 + imagePaths.value.length) % imagePaths.value.length
 }
 
 const setImage = (index: number, e?: Event) => {
@@ -46,7 +58,7 @@ const setImage = (index: number, e?: Event) => {
 }
 
 const openLightbox = () => {
-  if (data.value?.imagePaths?.length) {
+  if (imagePaths.value.length) {
     isLightboxOpen.value = true
   }
 }
@@ -103,10 +115,10 @@ const closeLightbox = () => {
         @click="openLightbox"
       >
         <img
-          v-if="data.imagePaths && data.imagePaths.length > 0"
-          :src="data.imagePaths[currentImageIndex]"
+          v-if="imagePaths && imagePaths.length > 0"
+          :src="imagePaths[currentImageIndex]"
           class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          :alt="data.title"
+          :alt="`Zdjęcie-${currentImageIndex + 1}`"
           loading="lazy"
         />
         <div
@@ -120,7 +132,7 @@ const closeLightbox = () => {
         </div>
 
         <!-- Navigation Arrows -->
-        <template v-if="data.imagePaths && data.imagePaths.length > 1">
+        <template v-if="imagePaths && imagePaths.length > 1">
           <button
             @click="prevImage"
             class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full hover:bg-white transition-colors shadow-lg opacity-0 group-hover:opacity-100 focus:opacity-100 z-10"
@@ -137,7 +149,7 @@ const closeLightbox = () => {
           <!-- Thumbnails/Dots -->
           <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10" @click.stop>
             <button
-              v-for="(_, index) in data.imagePaths"
+              v-for="(_, index) in imagePaths"
               :key="index"
               @click="setImage(index, $event)"
               class="w-2.5 h-2.5 rounded-full transition-all"
@@ -302,10 +314,10 @@ const closeLightbox = () => {
             <DialogPanel class="w-full max-w-7xl rounded p-6">
               <div class="relative flex items-center justify-center h-[80vh]">
                 <img
-                  v-if="data?.imagePaths && data.imagePaths.length > 0"
-                  :src="data.imagePaths[currentImageIndex]"
+                  v-if="imagePaths && imagePaths.length > 0"
+                  :src="imagePaths[currentImageIndex]"
                   class="max-h-full max-w-full object-contain"
-                  :alt="data.title"
+                  :alt="`Zdjęcie-${currentImageIndex + 1}`"
                   loading="lazy"
                 />
 
@@ -317,7 +329,7 @@ const closeLightbox = () => {
                 </button>
 
                 <button
-                  v-if="data?.imagePaths && data.imagePaths.length > 1"
+                  v-if="imagePaths && imagePaths.length > 1"
                   @click="prevImage"
                   class="absolute left-0 top-1/2 -translate-y-1/2 p-4 text-white hover:text-gray-300 transition-colors"
                 >
@@ -325,7 +337,7 @@ const closeLightbox = () => {
                 </button>
 
                 <button
-                  v-if="data?.imagePaths && data.imagePaths.length > 1"
+                  v-if="imagePaths && imagePaths.length > 1"
                   @click="nextImage"
                   class="absolute right-0 top-1/2 -translate-y-1/2 p-4 text-white hover:text-gray-300 transition-colors"
                 >
@@ -336,7 +348,7 @@ const closeLightbox = () => {
               <!-- Thumbnails in Lightbox -->
               <div class="mt-4 flex justify-center gap-2 overflow-x-auto py-2">
                 <button
-                  v-for="(_, index) in data?.imagePaths"
+                  v-for="(_, index) in imagePaths"
                   :key="index"
                   @click="setImage(index)"
                   class="w-16 h-16 shrink-0 rounded overflow-hidden border-2 transition-all"
@@ -346,11 +358,7 @@ const closeLightbox = () => {
                       : 'border-transparent opacity-50 hover:opacity-80'
                   "
                 >
-                  <img
-                    :src="data?.imagePaths?.[index]"
-                    class="w-full h-full object-cover"
-                    loading="lazy"
-                  />
+                  <img :src="imagePaths[index]" class="w-full h-full object-cover" loading="lazy" />
                 </button>
               </div>
             </DialogPanel>

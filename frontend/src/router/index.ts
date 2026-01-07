@@ -26,6 +26,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/properties/:slug/edit',
+    name: 'edit-property',
+    component: () => import('@/pages/property/UpdatePropertyPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/properties/:slug',
     name: 'property-details',
     component: () => import('@/pages/property/PropertyDetailsPage.vue'),
