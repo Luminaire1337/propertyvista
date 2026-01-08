@@ -496,9 +496,10 @@ watch(
         <p v-if="formData.daysValid > 0" class="text-sm text-blue-700 mt-2">
           <span class="font-medium">Nowa data wygaśnięcia:</span>
           {{
+            // If the expiryDate is in the past, calculate from today
             formatDate(
               new Date(
-                new Date(props.initialData.expiryDate).getTime() +
+                Math.max(new Date().getTime(), new Date(props.initialData.expiryDate).getTime()) +
                   formData.daysValid * 24 * 60 * 60 * 1000,
               ).toISOString(),
             )
