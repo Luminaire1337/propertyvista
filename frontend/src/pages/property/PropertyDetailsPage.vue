@@ -17,11 +17,19 @@ import {
 } from 'lucide-vue-next'
 import AvatarImage from '@/components/AvatarImage.vue'
 import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessui/vue'
+import useCurrentUser from '@/queries/useCurrentUser'
 
 const route = useRoute()
 const slug = computed(() => route.params.slug as string)
 
 const { data, isPending, isError } = usePropertyDetails(slug.value)
+const { data: currentUser } = useCurrentUser()
+
+// Check if current user owns this property
+const isOwner = computed(() => {
+  if (!data.value || !currentUser.value) return false
+  return data.value.user.id === currentUser.value.id
+})
 
 const showContactInfo = ref(false)
 const currentImageIndex = ref(0)
@@ -104,8 +112,13 @@ const closeLightbox = () => {
     <div v-else-if="isError || !data" class="text-center py-12">
       <h2 class="text-2xl font-bold text-gray-900">Nie znaleziono ogłoszenia</h2>
       <p class="text-gray-600 mt-2">
-        Ogłoszenie, którego szukasz, nie istnieje lub zostało usunięte.
+        Ogłoszenie którego szukasz nie istnieje lub zostało usunięte.
       </p>
+    </div>
+
+    <div v-else-if="data.status !== 'PUBLISHED' && !isOwner" class="text-center py-12">
+      <h2 class="text-2xl font-bold text-gray-900">Ogłoszenie niedostępne</h2>
+      <p class="text-gray-600 mt-2">Ogłoszenie którego szukasz nie jest już dostępne.</p>
     </div>
 
     <div v-else class="w-full max-w-7xl py-8 text-left">
