@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import { X, ImagePlus, Check, AlertCircle, Clock } from 'lucide-vue-next'
 import type {
@@ -53,7 +53,10 @@ const fileInput = ref<HTMLInputElement | null>(null)
 
 const MAX_IMAGES = 15
 
-async function loadInitialImages() {
+// Load selectedImages from initialImages in edit mode
+onMounted(async () => {
+  if (props.mode !== 'edit' || initialImages.value.length === 0) return
+
   selectedImages.value = await Promise.all(
     initialImages.value.map(async (url) => {
       const file = await urlToFile(url)
@@ -67,10 +70,7 @@ async function loadInitialImages() {
       return file
     }),
   )
-}
-if (props.mode === 'edit' && initialImages.value.length > 0) {
-  loadInitialImages()
-}
+})
 
 const handleFileSelect = (event: Event) => {
   const target = event.target as HTMLInputElement
