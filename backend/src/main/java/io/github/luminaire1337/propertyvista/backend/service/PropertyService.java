@@ -374,4 +374,18 @@ public class PropertyService {
 
         return propertyRepository.save(property);
     }
+
+    @Transactional
+    public Property deleteProperty(String slug, User user) {
+        Property property = getPropertyBySlug(slug);
+
+        // Check if user owns the property
+        if (!property.getUser().getId().equals(user.getId())) {
+            throw new BadRequestException("Nie masz uprawnień do usunięcia tej nieruchomości");
+        }
+
+        propertyRepository.delete(property);
+        log.info("Deleted property with ID {}", property.getId());
+        return property;
+    }
 }

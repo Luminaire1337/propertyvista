@@ -7,6 +7,7 @@ import io.github.luminaire1337.propertyvista.backend.dto.response.ErrorResponse;
 import io.github.luminaire1337.propertyvista.backend.dto.response.PropertyDetailedResponse;
 import io.github.luminaire1337.propertyvista.backend.dto.response.PropertyPageResponse;
 import io.github.luminaire1337.propertyvista.backend.dto.response.PropertyResponse;
+import io.github.luminaire1337.propertyvista.backend.entity.Property;
 import io.github.luminaire1337.propertyvista.backend.entity.User;
 import io.github.luminaire1337.propertyvista.backend.mapper.PropertyMapper;
 import io.github.luminaire1337.propertyvista.backend.security.CurrentUserContext;
@@ -110,7 +111,7 @@ public class PropertyController {
     )
     public ResponseEntity<PropertyResponse> createProperty(@Valid @ModelAttribute CreatePropertyRequest createPropertyRequest) {
         User user = currentUserContext.getEntity();
-        PropertyResponse property = propertyMapper.toDTO(propertyService.createProperty(
+        Property property = propertyService.createProperty(
                 createPropertyRequest.title(),
                 createPropertyRequest.description(),
                 createPropertyRequest.price(),
@@ -122,8 +123,8 @@ public class PropertyController {
                 createPropertyRequest.primaryImagePath(),
                 createPropertyRequest.daysValid(),
                 user
-        ));
-        return ResponseEntity.status(HttpStatus.CREATED).body(property);
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(propertyMapper.toDTO(property));
     }
 
     @GetMapping("/{slug}")
@@ -137,8 +138,8 @@ public class PropertyController {
             }
     )
     public ResponseEntity<PropertyDetailedResponse> getPropertyBySlug(@PathVariable @NotBlank(message = "Identyfikator jest wymagany") String slug) {
-        PropertyDetailedResponse property = propertyMapper.toDetailedDTO(propertyService.getPropertyBySlug(slug));
-        return ResponseEntity.status(HttpStatus.OK).body(property);
+        Property property = propertyService.getPropertyBySlug(slug);
+        return ResponseEntity.status(HttpStatus.OK).body(propertyMapper.toDetailedDTO(property));
     }
 
     @PatchMapping(value = "/{slug}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -160,7 +161,7 @@ public class PropertyController {
             @Valid @ModelAttribute UpdatePropertyRequest updatePropertyRequest
     ) {
         User user = currentUserContext.getEntity();
-        PropertyResponse property = propertyMapper.toDTO(propertyService.updateProperty(
+        Property property = propertyService.updateProperty(
                 slug,
                 updatePropertyRequest.title(),
                 updatePropertyRequest.description(),
@@ -173,7 +174,27 @@ public class PropertyController {
                 updatePropertyRequest.primaryImagePath(),
                 updatePropertyRequest.daysValid(),
                 user
-        ));
-        return ResponseEntity.status(HttpStatus.OK).body(property);
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(propertyMapper.toDTO(property));
+    }
+
+    @DeleteMapping("/{slug}")
+    @Operation(
+            summary = "Delete property by slug",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Property deleted successfully", content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = PropertyResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "404", description = "Property not found", content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    })
+            }
+    )
+    public ResponseEntity<PropertyResponse> deleteProperty(@PathVariable @NotBlank(message = "Identyfikator jest wymagany") String slug) {
+        User user = currentUserContext.getEntity();
+        Property property = propertyService.deleteProperty(slug, user);
+        return ResponseEntity.status(HttpStatus.OK).body(propertyMapper.toDTO(property));
     }
 }
