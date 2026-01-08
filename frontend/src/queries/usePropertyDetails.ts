@@ -1,13 +1,14 @@
 import { PropertyService } from '@/services/property'
 import { useQuery } from '@tanstack/vue-query'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 
-const usePropertyDetails = (slug: string) => {
+const usePropertyDetails = (slug: MaybeRefOrGetter<string>) => {
+  const slugValue = computed(() => toValue(slug))
   return useQuery({
-    queryKey: ['property', slug],
+    queryKey: computed(() => ['property', slugValue.value]),
     queryFn: async () => {
-      return await PropertyService.getPropertyDetails(slug)
+      return await PropertyService.getPropertyDetails(slugValue.value)
     },
-    staleTime: 1000 * 60 * 0.5, // Keep data fresh for 30 seconds
   })
 }
 

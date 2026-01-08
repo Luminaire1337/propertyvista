@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onBeforeUnmount } from 'vue'
 import useCurrentUser from '@/queries/useCurrentUser'
 import { useUpdateUserAvatarMutation, useDeleteUserAvatarMutation } from '@/mutations/user'
 import PrimaryButton from '@/components/PrimaryButton.vue'
@@ -22,6 +22,10 @@ const handleFileSelect = (event: Event) => {
   const file = target.files?.[0]
 
   if (file) {
+    // Revoke old preview URL if it exists to prevent memory leak
+    if (previewUrl.value) {
+      URL.revokeObjectURL(previewUrl.value)
+    }
     selectedFile.value = file
     previewUrl.value = URL.createObjectURL(file)
   }
@@ -33,6 +37,10 @@ const handleUpload = () => {
       { avatarImage: selectedFile.value },
       {
         onSuccess: () => {
+          // Clean up object URL
+          if (previewUrl.value) {
+            URL.revokeObjectURL(previewUrl.value)
+          }
           selectedFile.value = null
           previewUrl.value = null
           if (fileInput.value) {
@@ -43,6 +51,13 @@ const handleUpload = () => {
     )
   }
 }
+
+// Cleanup: Revoke object URL when component unmounts to prevent memory leak
+onBeforeUnmount(() => {
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value)
+  }
+})
 
 const openDeleteModal = () => {
   isDeleteModalOpen.value = true

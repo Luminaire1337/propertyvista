@@ -55,10 +55,12 @@ loadStorageData()
 export const isAuthenticated = () => !!authData
 
 // Access token handling
+let isRefreshing = false
 const refreshAccessToken = async (): Promise<string | null> => {
-  if (!authData) return null
+  if (!authData || isRefreshing) return null
 
   try {
+    isRefreshing = true
     const response = await AuthService.refreshToken({
       token: authData.refreshToken,
     })
@@ -66,9 +68,10 @@ const refreshAccessToken = async (): Promise<string | null> => {
     return response.accessToken
   } catch (error: Error | unknown) {
     console.error('Error refreshing access token:', error)
-    // log the user out on token refresh failure
-    useLogoutMutation().mutate()
+    clearStorageData()
     return null
+  } finally {
+    isRefreshing = false
   }
 }
 

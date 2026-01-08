@@ -30,7 +30,7 @@ const paginationData = computed<PropertyPaginationRequest>(() => {
   }
 })
 
-const { data, isPending, isError } = usePropertyPage(paginationData.value)
+const { data, isPending, isError } = usePropertyPage(paginationData)
 
 const handleSearch = (filters: SearchFilters) => {
   router.replace({ path: route.path, query: filters as LocationQueryRaw })

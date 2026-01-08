@@ -20,7 +20,7 @@ const paginationData = computed<PropertyPaginationRequest>(() => {
   }
 })
 
-const { data, isPending, isError } = useUserProperties(paginationData.value)
+const { data, isPending, isError } = useUserProperties(paginationData)
 
 const changePage = (page: number) => {
   router.replace({

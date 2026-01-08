@@ -10,7 +10,18 @@ import router from './router'
 const app = createApp(App)
 
 app.use(VueQueryPlugin, {
-  enableDevtoolsV6Plugin: true,
+  queryClientConfig: {
+    defaultOptions: {
+      queries: {
+        // Run garbage collection every 5 minutes
+        gcTime: 1000 * 60 * 5,
+        // Stale data after 30 seconds
+        staleTime: 1000 * 30,
+      },
+    },
+  },
+  // Only enable devtools in development
+  enableDevtoolsV6Plugin: import.meta.env.DEV,
 })
 app.use(router)
 

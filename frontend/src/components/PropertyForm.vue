@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import { X, ImagePlus, Check, AlertCircle, Clock } from 'lucide-vue-next'
 import type {
@@ -246,6 +246,13 @@ watch(
   },
   { deep: true },
 )
+
+// Cleanup: Revoke all object URLs when component unmounts to prevent memory leaks
+onBeforeUnmount(() => {
+  imagePreviews.value.forEach((preview) => {
+    URL.revokeObjectURL(preview.url)
+  })
+})
 </script>
 
 <template>

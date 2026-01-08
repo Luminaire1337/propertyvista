@@ -1,7 +1,7 @@
 import { UserService } from '@/services/user'
 import { useQuery } from '@tanstack/vue-query'
 import { isAuthenticated, useLogoutMutation } from '@/mutations/auth'
-import { watch } from 'vue'
+import { watch, onScopeDispose } from 'vue'
 
 const useCurrentUser = () => {
   const logoutMutation = useLogoutMutation()
@@ -16,7 +16,7 @@ const useCurrentUser = () => {
   })
 
   // Logout user when fetch fails (e.g., 401 Unauthorized)
-  watch(
+  const stopWatcher = watch(
     () => query.isError.value,
     (isError) => {
       if (isError && isAuthenticated()) {
@@ -24,6 +24,11 @@ const useCurrentUser = () => {
       }
     },
   )
+
+  // Clean up watcher when component is destroyed to prevent memory leaks
+  onScopeDispose(() => {
+    stopWatcher()
+  })
 
   return query
 }

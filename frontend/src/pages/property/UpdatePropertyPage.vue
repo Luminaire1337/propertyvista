@@ -14,7 +14,7 @@ import PrimaryButton from '@/components/PrimaryButton.vue'
 const route = useRoute()
 const slug = computed(() => route.params.slug as string)
 
-const { data: property, isPending } = usePropertyDetails(slug.value)
+const { data: property, isPending } = usePropertyDetails(slug)
 const { data: currentUser } = useCurrentUser()
 const updatePropertyMutation = usePartiallyUpdatePropertyMutation()
 

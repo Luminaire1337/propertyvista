@@ -1,13 +1,14 @@
 import { PropertyService, type PropertyPaginationRequest } from '@/services/property'
 import { useQuery } from '@tanstack/vue-query'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 
-const usePropertyPage = (paginationData: PropertyPaginationRequest) => {
+const usePropertyPage = (paginationData: MaybeRefOrGetter<PropertyPaginationRequest>) => {
+  const params = computed(() => toValue(paginationData))
   return useQuery({
-    queryKey: ['properties', paginationData],
+    queryKey: computed(() => ['properties', params.value]),
     queryFn: async () => {
-      return await PropertyService.getProperties(paginationData)
+      return await PropertyService.getProperties(params.value)
     },
-    staleTime: 1000 * 60 * 0.5, // Keep data fresh for 30 seconds
   })
 }
 

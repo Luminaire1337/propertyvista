@@ -22,7 +22,7 @@ import useCurrentUser from '@/queries/useCurrentUser'
 const route = useRoute()
 const slug = computed(() => route.params.slug as string)
 
-const { data, isPending, isError } = usePropertyDetails(slug.value)
+const { data, isPending, isError } = usePropertyDetails(slug)
 const { data: currentUser } = useCurrentUser()
 
 // Check if current user owns this property
