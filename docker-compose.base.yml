@@ -13,7 +13,7 @@ services:
       - MARIADB_PASSWORD=${DB_PASSWORD}
       - MARIADB_RANDOM_ROOT_PASSWORD=1
     healthcheck: # https://mariadb.com/docs/server/server-management/automated-mariadb-deployment-and-administration/docker-and-mariadb/using-healthcheck-sh#compose-file-example
-      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       start_period: 10s
       interval: 10s
       timeout: 5s
@@ -32,7 +32,7 @@ services:
       - RUSTFS_ACCESS_KEY=${STORAGE_ACCESS_KEY}
       - RUSTFS_SECRET_KEY=${STORAGE_SECRET_KEY}
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:9000/health" ]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
       interval: 10s
       timeout: 5s
       retries: 3

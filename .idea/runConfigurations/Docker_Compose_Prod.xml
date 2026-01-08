@@ -11,6 +11,7 @@
         <option name="commandLineOptions" value="--build" />
         <option name="secondarySourceFiles">
           <list>
+            <option value="docker-compose.mailpit.yml" />
             <option value="docker-compose.prod.yml" />
           </list>
         </option>
