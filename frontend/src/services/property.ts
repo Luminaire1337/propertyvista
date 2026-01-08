@@ -93,4 +93,14 @@ export abstract class PropertyService {
     if (error) throw new Error(normalizeError(error))
     return data as Property
   }
+
+  static async deleteProperty(slug: string): Promise<Property> {
+    const { data, error } = await client.DELETE('/properties/{slug}', {
+      params: {
+        path: { slug },
+      },
+    })
+    if (error) throw new Error(normalizeError(error))
+    return data as Property
+  }
 }

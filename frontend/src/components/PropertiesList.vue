@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { MapPin, Maximize2, DoorOpen, Car, Clock } from 'lucide-vue-next'
 import type { PropertyPage } from '@/services/property'
 import { formatPrice, getRoomsLabel, getPropertiesLabel, formatDate } from '@/utils'
 import PrimaryButton from '@/components/PrimaryButton.vue'
+import ConfirmationModal from '@/components/ConfirmationModal.vue'
+import { useDeletePropertyMutation } from '@/mutations/property'
 
 defineProps<{
   data?: PropertyPage
@@ -16,6 +19,27 @@ defineEmits<{
   changePage: [page: number]
   sortChange: [event: Event]
 }>()
+
+const deletePropertyMutation = useDeletePropertyMutation()
+const isDeleteModalOpen = ref(false)
+const propertyToDelete = ref<{ slug: string; title: string } | null>(null)
+
+const openDeleteModal = (slug: string, title: string) => {
+  propertyToDelete.value = { slug, title }
+  isDeleteModalOpen.value = true
+}
+
+const closeDeleteModal = () => {
+  isDeleteModalOpen.value = false
+  propertyToDelete.value = null
+}
+
+const handleDelete = () => {
+  if (propertyToDelete.value) {
+    deletePropertyMutation.mutate(propertyToDelete.value.slug)
+    closeDeleteModal()
+  }
+}
 
 const getStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
@@ -42,7 +66,7 @@ const getStatusColor = (status: string) => {
   <!-- Error State -->
   <div v-if="isError" class="text-center py-12">
     <h2 class="text-lg font-medium text-gray-900 mb-2">Wystąpił błąd</h2>
-    <p class="text-gray-600">Nie udało się pobrać nieruchomości</p>
+    <p class="text-gray-600">Nie udało się pobrać listy ogłoszeń. Spróbuj ponownie później.</p>
   </div>
 
   <!-- Loading Skeleton -->
@@ -94,7 +118,7 @@ const getStatusColor = (status: string) => {
     <!-- No Results -->
     <div v-if="data.content.length === 0" class="text-center py-12">
       <h2 class="text-lg font-medium text-gray-900 mb-2">Brak wyników</h2>
-      <p class="text-gray-600">Nie znaleziono nieruchomości spełniających wybrane kryteria</p>
+      <p class="text-gray-600">Nie znaleziono ogłoszeń spełniających podane kryteria.</p>
     </div>
 
     <!-- Properties List -->
@@ -150,14 +174,18 @@ const getStatusColor = (status: string) => {
                 {{ property.title }}
               </h3>
 
-              <!-- Edit button aligned with title -->
-              <RouterLink
-                v-if="showBadges"
-                :to="`/properties/${property.slug}/edit`"
-                class="shrink-0"
-              >
-                <PrimaryButton>Edytuj ogłoszenie</PrimaryButton>
-              </RouterLink>
+              <!-- Edit and Delete buttons aligned with title -->
+              <div v-if="showBadges" class="flex gap-2 shrink-0">
+                <RouterLink :to="`/properties/${property.slug}/edit`">
+                  <PrimaryButton>Edytuj</PrimaryButton>
+                </RouterLink>
+                <PrimaryButton
+                  @click.prevent="openDeleteModal(property.slug, property.title)"
+                  custom-class="!bg-red-600 hover:!bg-red-700"
+                >
+                  Usuń
+                </PrimaryButton>
+              </div>
             </div>
 
             <!-- Location -->
@@ -238,5 +266,18 @@ const getStatusColor = (status: string) => {
         Następna
       </button>
     </div>
+
+    <!-- Delete Property Modal -->
+    <ConfirmationModal
+      :is-open="isDeleteModalOpen"
+      title="Usuń ogłoszenie"
+      :description="`Czy na pewno chcesz usunąć ogłoszenie: ${propertyToDelete?.title}? Ta operacja jest nieodwracalna.`"
+      :confirm-text="deletePropertyMutation.isPending.value ? 'Usuwanie...' : 'Usuń ogłoszenie'"
+      cancel-text="Anuluj"
+      :is-pending="deletePropertyMutation.isPending.value"
+      variant="danger"
+      @close="closeDeleteModal"
+      @confirm="handleDelete"
+    />
   </div>
 </template>

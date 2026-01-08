@@ -24,7 +24,7 @@ export type NavLink = {
 }
 
 const navLinks: NavLink[] = [
-  { name: 'Nieruchomości', path: '/properties' },
+  { name: 'Ogłoszenia', path: '/properties' },
   { name: 'Dodaj ogłoszenie', path: '/properties/new' },
   { name: 'Kup Property Points', path: '/property-points' },
 ]

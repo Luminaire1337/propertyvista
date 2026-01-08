@@ -34,12 +34,10 @@ const handleKeyDown = (event: KeyboardEvent) => {
 
 <template>
   <div class="w-full max-w-5xl mx-auto p-6 bg-white rounded shadow-lg">
-    <h2 class="text-2xl font-bold mb-6 text-gray-800">Znajdź swoją nieruchomość</h2>
-
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
       <!-- City -->
       <div class="relative">
-        <label for="city" class="block text-sm font-medium text-gray-700 mb-1"> Miasto </label>
+        <label for="city" class="block text-sm font-medium text-gray-700 mb-1">Miasto</label>
         <div class="relative">
           <MapPin
             class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"
@@ -175,7 +173,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
           @click="handleSearch"
         >
           <Search class="w-5 h-5" />
-          Szukaj nieruchomości
+          Szukaj ogłoszeń
         </PrimaryButton>
       </div>
     </div>

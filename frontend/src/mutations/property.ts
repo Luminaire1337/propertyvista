@@ -21,7 +21,7 @@ export const useCreatePropertyMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['userProperties'] })
-      toast.success('Nieruchomość została pomyślnie dodana!')
+      toast.success('Ogłoszenie zostało pomyślnie dodane!')
       router.push({ name: 'user-properties' })
     },
     onError: (error: Error) => {
@@ -43,7 +43,25 @@ export const usePartiallyUpdatePropertyMutation = () => {
     onSuccess: (_, { slug }) => {
       queryClient.invalidateQueries({ queryKey: ['property', slug] })
       queryClient.invalidateQueries({ queryKey: ['userProperties'] })
-      toast.success('Nieruchomość została pomyślnie zaktualizowana!')
+      toast.success('Ogłoszenie zostało pomyślnie zaktualizowane!')
+      router.push({ name: 'user-properties' })
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useDeletePropertyMutation = () => {
+  const queryClient = useQueryClient()
+  const router = useRouter()
+  return useMutation({
+    mutationFn: async (slug: string) => {
+      return await PropertyService.deleteProperty(slug)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userProperties'] })
+      toast.success('Ogłoszenie zostało pomyślnie usunięte!')
       router.push({ name: 'user-properties' })
     },
     onError: (error: Error) => {

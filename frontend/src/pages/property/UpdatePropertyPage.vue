@@ -114,7 +114,7 @@ const handleSubmit = (updateData: CreatePropertyRequest | UpdatePropertyRequest)
 
       <!-- Error State -->
       <div v-else class="bg-red-50 border border-red-200 rounded p-4 text-center mt-8">
-        <p class="text-red-700">Nie udało się załadować danych nieruchomości</p>
+        <p class="text-red-700">Nie udało się załadować danych ogłoszenia.</p>
       </div>
     </div>
   </div>

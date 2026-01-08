@@ -23,7 +23,7 @@ export const getRoomsLabel = (count: number): string => {
 }
 
 export const getPropertiesLabel = (count: number): string => {
-  return count === 1 ? 'nieruchomość' : 'nieruchomości'
+  return count === 1 ? 'ogłoszenie' : 'ogłoszeń'
 }
 
 export const urlToFile = async (url: string): Promise<File> => {
