@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { MapPin, Search } from 'lucide-vue-next'
-import PrimaryButton from './PrimaryButton.vue'
+import PrimaryButton from '@/components/PrimaryButton.vue'
 import type { SearchFilters } from '@/services/property'
 
 const props = defineProps<{

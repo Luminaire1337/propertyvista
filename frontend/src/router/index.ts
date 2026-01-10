@@ -62,6 +62,19 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/user/SettingsPage.vue'),
     meta: { requiresAuth: true },
   },
+  // Payment routes
+  {
+    path: '/property-points',
+    name: 'property-points',
+    component: () => import('@/pages/payment/PropertyPointsPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/property-points/complete',
+    name: 'property-points-complete',
+    component: () => import('@/pages/payment/PropertyPointsCompletePage.vue'),
+    meta: { requiresAuth: true },
+  },
   // Other routes
   {
     path: '/terms-of-service',
