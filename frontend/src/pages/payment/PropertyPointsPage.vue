@@ -3,12 +3,14 @@ import { ref, computed } from 'vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import StripePayment from '@/components/payment/StripePayment.vue'
 import useCurrentPaymentRate from '@/queries/useCurrentPaymentRate'
+import useCurrentUser from '@/queries/useCurrentUser'
 import { formatPrice } from '@/utils'
 
 const propertyPoints = ref(7)
 const showPayment = ref(false)
 
 const { data: paymentRate, isPending: isLoadingRate } = useCurrentPaymentRate()
+const { data: user } = useCurrentUser()
 
 const totalPrice = computed(() => {
   if (!paymentRate.value?.currentRate) return 0
@@ -31,6 +33,10 @@ const handleCancel = () => {
   <div class="grow flex flex-col items-center justify-center text-center px-4">
     <div v-if="!showPayment" class="w-full max-w-md">
       <h1 class="text-4xl font-bold text-gray-900 mb-2">Kup Property Points</h1>
+      <p class="text-sm text-gray-500 mb-8">
+        Dostępne punkty:
+        <span class="font-semibold text-green-600">{{ user?.propertyPoints ?? 0 }}</span>
+      </p>
 
       <!-- Skeleton loader -->
       <div v-if="isLoadingRate" class="bg-white p-8 rounded-lg shadow-md">
