@@ -5,6 +5,8 @@ WORKDIR /app
 # Set up environment variables (https://stackoverflow.com/a/77490465)
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
+ARG VITE_STRIPE_PUBLISHABLE_KEY
+ENV VITE_STRIPE_PUBLISHABLE_KEY=$VITE_STRIPE_PUBLISHABLE_KEY
 
 # Set up corepack with pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate

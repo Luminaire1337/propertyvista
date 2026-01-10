@@ -11,7 +11,14 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "verification_tokens")
+@Table(name = "verification_tokens",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uc_verification_tokens_token_user_id",
+                        columnNames = {"token", "user_id"}
+                )
+        }
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

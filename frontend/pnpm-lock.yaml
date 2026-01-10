@@ -11,12 +11,18 @@ importers:
       '@headlessui/vue':
         specifier: ^1.7.23
         version: 1.7.23(vue@3.5.26(typescript@5.9.3))
+      '@stripe/stripe-js':
+        specifier: ^8.6.1
+        version: 8.6.1
       '@tailwindcss/vite':
         specifier: ^4.1.18
         version: 4.1.18(vite@7.3.1(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2))
       '@tanstack/vue-query':
         specifier: ^5.92.5
         version: 5.92.5(vue@3.5.26(typescript@5.9.3))
+      '@vue-stripe/vue-stripe':
+        specifier: ^5.3.0
+        version: 5.3.0(@stripe/stripe-js@8.6.1)(vue@3.5.26(typescript@5.9.3))
       lucide-vue-next:
         specifier: ^0.555.0
         version: 0.555.0(vue@3.5.26(typescript@5.9.3))
@@ -616,6 +622,10 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@stripe/stripe-js@8.6.1':
+    resolution: {integrity: sha512-UJ05U2062XDgydbUcETH1AoRQLNhigQ2KmDn1BG8sC3xfzu6JKg95Qt6YozdzFpxl1Npii/02m2LEWFt1RYjVA==}
+    engines: {node: '>=12.16'}
+
   '@tailwindcss/node@4.1.18':
     resolution: {integrity: sha512-DoR7U1P7iYhw16qJ49fgXUlry1t4CpXeErJHnQ44JgTSKMaZUdf17cfn5mHchfJ4KRBZRFA/Coo+MUF5+gOaCQ==}
 
@@ -816,6 +826,12 @@ packages:
 
   '@volar/typescript@2.4.27':
     resolution: {integrity: sha512-eWaYCcl/uAPInSK2Lze6IqVWaBu/itVqR5InXcHXFyles4zO++Mglt3oxdgj75BDcv1Knr9Y93nowS8U3wqhxg==}
+
+  '@vue-stripe/vue-stripe@5.3.0':
+    resolution: {integrity: sha512-I7N2gppeEAv82aWhQXv0pDaGnB4GIQpMakch8y1r04tyOeZLcyiIyOtl79ewQVuPILpWF1hKVb7nk+1hjouCnQ==}
+    peerDependencies:
+      '@stripe/stripe-js': ^7.5.0 || ^8.5.3
+      vue: ^2.6.0 || ^3.0.0
 
   '@vue/babel-helper-vue-transform-on@1.5.0':
     resolution: {integrity: sha512-0dAYkerNhhHutHZ34JtTl2czVQHUNWv6xEbkdF5W+Yrv5pCWsqjeORdOgbtW2I9gWlt+wBmVn+ttqN9ZxR5tzA==}
@@ -2383,6 +2399,8 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.55.1':
     optional: true
 
+  '@stripe/stripe-js@8.6.1': {}
+
   '@tailwindcss/node@4.1.18':
     dependencies:
       '@jridgewell/remapping': 2.3.5
@@ -2590,6 +2608,14 @@ snapshots:
       '@volar/language-core': 2.4.27
       path-browserify: 1.0.1
       vscode-uri: 3.1.0
+
+  '@vue-stripe/vue-stripe@5.3.0(@stripe/stripe-js@8.6.1)(vue@3.5.26(typescript@5.9.3))':
+    dependencies:
+      '@stripe/stripe-js': 8.6.1
+      vue: 3.5.26(typescript@5.9.3)
+      vue-demi: 0.14.10(vue@3.5.26(typescript@5.9.3))
+    transitivePeerDependencies:
+      - '@vue/composition-api'
 
   '@vue/babel-helper-vue-transform-on@1.5.0': {}
 

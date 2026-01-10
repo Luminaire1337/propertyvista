@@ -30,6 +30,7 @@ services:
       - PROPERTYVISTA_GOOGLE_CLOUD_KEY=${GOOGLE_CLOUD_KEY}
       - PROPERTYVISTA_FIRST_USER_EMAIL=${FIRST_USER_EMAIL}
       - PROPERTYVISTA_FIRST_USER_PASSWORD=${FIRST_USER_PASSWORD}
+      - PROPERTYVISTA_STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
     depends_on:
       database:
         condition: service_healthy
@@ -50,6 +51,7 @@ services:
     environment:
       - TZ=Europe/Warsaw
       - VITE_API_URL=http://localhost:8080
+      - VITE_STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
     depends_on:
       backend:
         condition: service_started # no healthcheck in dev
