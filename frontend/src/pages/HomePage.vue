@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PropertySearchForm from '@/components/PropertySearchForm.vue'
+import PropertySearchForm from '@/components/property/PropertySearchForm.vue'
 import { useRouter, type LocationQueryRaw } from 'vue-router'
 import type { SearchFilters } from '@/services/property'
 

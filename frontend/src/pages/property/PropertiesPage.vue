@@ -3,8 +3,8 @@ import { computed } from 'vue'
 import { useRoute, useRouter, type LocationQueryRaw } from 'vue-router'
 import usePropertyPage from '@/queries/usePropertyPage'
 import type { PropertyPaginationRequest, SearchFilters } from '@/services/property'
-import PropertySearchForm from '@/components/PropertySearchForm.vue'
-import PropertiesList from '@/components/PropertiesList.vue'
+import PropertySearchForm from '@/components/property/PropertySearchForm.vue'
+import PropertiesList from '@/components/property/PropertiesList.vue'
 
 const route = useRoute()
 const router = useRouter()

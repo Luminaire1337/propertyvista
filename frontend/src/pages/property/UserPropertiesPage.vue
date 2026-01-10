@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import useUserProperties from '@/queries/useUserProperties'
 import type { PropertyPaginationRequest } from '@/services/property'
-import PropertiesList from '@/components/PropertiesList.vue'
+import PropertiesList from '@/components/property/PropertiesList.vue'
 
 const route = useRoute()
 const router = useRouter()

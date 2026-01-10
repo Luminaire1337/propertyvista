@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useCreatePropertyMutation } from '@/mutations/property'
-import PropertyForm from '@/components/PropertyForm.vue'
+import PropertyForm from '@/components/property/PropertyForm.vue'
 import type { CreatePropertyRequest, UpdatePropertyRequest } from '@/services/property'
 
 const createPropertyMutation = useCreatePropertyMutation()

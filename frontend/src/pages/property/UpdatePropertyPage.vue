@@ -5,7 +5,7 @@ import {
   usePartiallyUpdatePropertyMutation,
   type PartialUpdatePropertyMutationParameters,
 } from '@/mutations/property'
-import PropertyForm from '@/components/PropertyForm.vue'
+import PropertyForm from '@/components/property/PropertyForm.vue'
 import type { CreatePropertyRequest, UpdatePropertyRequest } from '@/services/property'
 import usePropertyDetails from '@/queries/usePropertyDetails'
 import useCurrentUser from '@/queries/useCurrentUser'
