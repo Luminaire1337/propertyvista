@@ -1,5 +1,4 @@
-import {
-  PropertyService,
+import PropertyService, {
   type CreatePropertyRequest,
   type UpdatePropertyRequest,
 } from '@/services/property'

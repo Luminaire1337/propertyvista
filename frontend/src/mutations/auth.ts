@@ -1,5 +1,5 @@
 import AuthService, { type Auth, type LoginRequest } from '@/services/auth'
-import { UserService, type RegisterRequest } from '@/services/user'
+import UserService, { type RegisterRequest } from '@/services/user'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
 import { useRouter } from 'vue-router'

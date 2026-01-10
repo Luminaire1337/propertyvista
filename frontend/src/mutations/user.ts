@@ -1,5 +1,4 @@
-import {
-  UserService,
+import UserService, {
   type TokenRequest,
   type UpdateUserAvatarRequest,
   type UpdateUserEmailRequest,

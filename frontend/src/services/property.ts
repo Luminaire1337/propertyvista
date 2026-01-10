@@ -35,7 +35,7 @@ const preparePropertyFormData = (data: Record<string, unknown>) => {
   return formData
 }
 
-export abstract class PropertyService {
+export default abstract class PropertyService {
   static async getProperties(paginationData: PropertyPaginationRequest): Promise<PropertyPage> {
     const { data, error } = await client.GET('/properties', {
       params: {

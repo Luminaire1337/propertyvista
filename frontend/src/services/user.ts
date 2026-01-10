@@ -20,7 +20,7 @@ export type UpdateUserAvatarRequest = Omit<
   avatarImage: File
 }
 
-export abstract class UserService {
+export default abstract class UserService {
   static async register(userData: RegisterRequest): Promise<User> {
     const { data, error } = await client.POST('/users', { body: userData })
     if (error) throw new Error(normalizeError(error))

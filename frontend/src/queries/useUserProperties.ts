@@ -1,4 +1,4 @@
-import { PropertyService, type PropertyPaginationRequest } from '@/services/property'
+import PropertyService, { type PropertyPaginationRequest } from '@/services/property'
 import { useQuery } from '@tanstack/vue-query'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 
