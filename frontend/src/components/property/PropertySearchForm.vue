@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { MapPin, Search } from 'lucide-vue-next'
+import { Search } from 'lucide-vue-next'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import type { SearchFilters } from '@/services/property'
 
@@ -36,21 +36,16 @@ const handleKeyDown = (event: KeyboardEvent) => {
   <div class="w-full max-w-5xl mx-auto p-6 bg-white rounded shadow-lg">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
       <!-- City -->
-      <div class="relative">
+      <div>
         <label for="city" class="block text-sm font-medium text-gray-700 mb-1">Miasto</label>
-        <div class="relative">
-          <MapPin
-            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"
-          />
-          <input
-            id="city"
-            v-model="filters.city"
-            type="text"
-            placeholder="np. Warszawa"
-            class="w-full pl-10 pr-4 py-2 border rounded focus:outline-none focus:ring focus:border-green-300"
-            @keydown="handleKeyDown"
-          />
-        </div>
+        <input
+          id="city"
+          v-model="filters.city"
+          type="text"
+          placeholder="np. Warszawa"
+          class="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:border-green-300"
+          @keydown="handleKeyDown"
+        />
       </div>
 
       <!-- Min Price -->
