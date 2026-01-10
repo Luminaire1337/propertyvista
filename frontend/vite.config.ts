@@ -13,6 +13,12 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  // https://stackoverflow.com/a/77388953 THANK YOU SO MUCH!!!
+  server: {
+    watch: {
+      followSymlinks: false,
+    },
+  },
   envDir: '../',
   build: {
     rollupOptions: {
