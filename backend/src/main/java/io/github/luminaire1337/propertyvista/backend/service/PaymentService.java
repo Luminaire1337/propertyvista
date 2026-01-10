@@ -1,6 +1,9 @@
 package io.github.luminaire1337.propertyvista.backend.service;
 
+import com.stripe.exception.SignatureVerificationException;
+import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
+import com.stripe.net.Webhook;
 import com.stripe.param.PaymentIntentCreateParams;
 import io.github.luminaire1337.propertyvista.backend.entity.Payment;
 import io.github.luminaire1337.propertyvista.backend.entity.User;
@@ -9,6 +12,7 @@ import io.github.luminaire1337.propertyvista.backend.exception.BadRequestExcepti
 import io.github.luminaire1337.propertyvista.backend.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -20,6 +24,10 @@ import java.util.Map;
 public class PaymentService {
     private static final Integer PLN_PER_PROPERTY_POINT = 5;
     private final PaymentRepository paymentRepository;
+    private final UserService userService;
+
+    @Value("${PROPERTYVISTA_STRIPE_WEBHOOK_KEY}")
+    private String stripeWebhookKey;
 
     public Integer getCurrentRate() {
         return PLN_PER_PROPERTY_POINT;
@@ -40,6 +48,7 @@ public class PaymentService {
             Map<String, String> metadata = new HashMap<>();
             metadata.put("payment_id", payment.getId().toString());
             metadata.put("user_id", user.getId().toString());
+            metadata.put("property_points", propertyPoints.toString());
 
             PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
                     .setAmount(Math.round(amountInPLN * 100)) // Stripe expects amount in integer
@@ -62,11 +71,73 @@ public class PaymentService {
             return intent.getClientSecret();
         } catch (Exception e) {
             payment.setStatus(PaymentStatus.FAILED);
-            var msg = e.getMessage() != null ? e.getMessage() : "Unknown error";
-            payment.setFailureReason(msg.substring(0, Math.min(msg.length(), 1000)));
+
+            String message = e.getMessage();
+            if (message != null) {
+                payment.setFailureReason(message.substring(0, Math.min(message.length(), 1000)));
+            }
+
             paymentRepository.save(payment);
             log.error("Error while creating payment intent for payment {}: {}", payment.getId(), e.getMessage());
             throw new BadRequestException("Nie udało się utworzyć płatności");
+        }
+    }
+
+    public void handleWebhookStatus(Event event, PaymentStatus status) {
+        PaymentIntent intent = (PaymentIntent) event.getDataObjectDeserializer().getObject().orElseThrow(() ->
+                new BadRequestException("Nie można przetworzyć obiektu zdarzenia webhooka Stripe")
+        );
+        Payment payment = paymentRepository.findByStripePaymentIntentId(intent.getId())
+                .orElseThrow(() -> new BadRequestException("Nie znaleziono płatności dla podanego identyfikatora Payment Intent"));
+
+        payment.setStatus(status);
+
+        switch (status) {
+            case SUCCEEDED -> {
+                userService.giveUserPropertyPoints(
+                        payment.getUser(),
+                        Integer.parseInt(intent.getMetadata().get("property_points"))
+                );
+                log.info("Payment intent {} succeeded", intent.getId());
+            }
+            case FAILED -> {
+                String message = intent.getLastPaymentError() != null ?
+                        intent.getLastPaymentError().getMessage() : null;
+                if (message != null) {
+                    payment.setFailureReason(message.substring(0, Math.min(message.length(), 1000)));
+                }
+                log.info("Payment intent {} failed", intent.getId());
+            }
+            case CANCELED -> {
+                String message = intent.getCancellationReason();
+                if (message != null) {
+                    payment.setFailureReason(message.substring(0, Math.min(message.length(), 1000)));
+                }
+                log.info("Payment intent {} got canceled", intent.getId());
+            }
+            default -> log.warn("Payment intent {} got unknown status: {}", intent.getId(), status);
+        }
+
+        paymentRepository.save(payment);
+    }
+
+    public void handleWebhook(String payload, String sigHeader) {
+        Event event;
+
+        try {
+            event = Webhook.constructEvent(
+                    payload, sigHeader, stripeWebhookKey
+            );
+        } catch (SignatureVerificationException e) {
+            throw new BadRequestException("Nieprawidłowy podpis webhooka Stripe");
+        }
+
+        switch (event.getType()) {
+            case "payment_intent.succeeded" -> handleWebhookStatus(event, PaymentStatus.SUCCEEDED);
+            case "payment_intent.payment_failed" -> handleWebhookStatus(event, PaymentStatus.FAILED);
+            case "payment_intent.canceled" -> handleWebhookStatus(event, PaymentStatus.CANCELED);
+            default ->
+                    throw new BadRequestException("Nieobsługiwany typ zdarzenia webhooka Stripe: " + event.getType());
         }
     }
 }

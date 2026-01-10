@@ -71,4 +71,16 @@ public class PaymentController {
         String paymentIntentId = paymentService.createPaymentIntent(request.propertyPoints(), user);
         return ResponseEntity.status(HttpStatus.OK).body(new PaymentIntentResponse(paymentIntentId));
     }
+
+    @PostMapping("/webhook")
+    @Operation(
+            summary = "Handle Stripe webhook events",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Webhook event processed successfully")
+            }
+    )
+    public ResponseEntity<Void> handleStripeWebhook(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
+        paymentService.handleWebhook(payload, sigHeader);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

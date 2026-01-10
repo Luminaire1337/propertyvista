@@ -36,14 +36,8 @@ public class Payment {
     private PaymentStatus status;
 
     // Response details
-    @Column(name = "receipt_url", length = 1000)
-    private String receiptUrl;
-
     @Column(name = "failure_reason", length = 1000)
     private String failureReason;
-
-    @Column(name = "stripe_customer_id")
-    private String stripeCustomerId;
 
     // CreatedAt and UpdatedAt timestamps
     @Column(name = "created_at", nullable = false, updatable = false)

@@ -8,4 +8,6 @@ else
   url="http://localhost:8080/payments/webhook"
 fi
 
-stripe listen --forward-to "$url"
+stripe listen \
+  --events payment_intent.succeeded,payment_intent.payment_failed,payment_intent.canceled \
+  --forward-to "$url"

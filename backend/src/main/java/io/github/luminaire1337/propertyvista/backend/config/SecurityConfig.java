@@ -36,6 +36,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/properties").permitAll() // Public property listings
                         .requestMatchers(HttpMethod.GET, "/properties/me").authenticated() // User's own properties
                         .requestMatchers(HttpMethod.GET, "/properties/{slug}").permitAll() // Public property details
+                        .requestMatchers(HttpMethod.POST, "/payments/webhook").permitAll() // Payment webhooks
                         .requestMatchers("/admin/**").hasRole(UserRole.ADMIN.toString())
                         .anyRequest().authenticated()
                 )
