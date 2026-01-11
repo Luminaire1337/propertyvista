@@ -5,6 +5,7 @@ import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
 import com.stripe.net.Webhook;
 import com.stripe.param.PaymentIntentCreateParams;
+import io.github.luminaire1337.propertyvista.backend.dto.email.PaymentSucceededEmail;
 import io.github.luminaire1337.propertyvista.backend.entity.Payment;
 import io.github.luminaire1337.propertyvista.backend.entity.User;
 import io.github.luminaire1337.propertyvista.backend.entity.utility.PaymentStatus;
@@ -26,6 +27,7 @@ public class PaymentService {
     private static final double PLN_PER_PROPERTY_POINT = 5.00;
     private final PaymentRepository paymentRepository;
     private final UserService userService;
+    private final EmailService emailService;
 
     @Value("${PROPERTYVISTA_STRIPE_WEBHOOK_KEY}")
     private String stripeWebhookKey;
@@ -113,6 +115,7 @@ public class PaymentService {
                 }
 
                 userService.giveUserPropertyPoints(user, propertyPoints);
+                emailService.sendEmailAsync(new PaymentSucceededEmail(propertyPoints, user));
                 log.info("Payment intent {} succeeded", intent.getId());
             }
             case FAILED -> {
