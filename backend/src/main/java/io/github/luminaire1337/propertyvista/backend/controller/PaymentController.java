@@ -52,7 +52,7 @@ public class PaymentController {
             }
     )
     public ResponseEntity<PaymentRateResponse> getCurrentRate() {
-        Integer currentRate = paymentService.getCurrentRate();
+        var currentRate = paymentService.getCurrentRate();
         return ResponseEntity.status(HttpStatus.OK).body(new PaymentRateResponse(currentRate));
     }
 

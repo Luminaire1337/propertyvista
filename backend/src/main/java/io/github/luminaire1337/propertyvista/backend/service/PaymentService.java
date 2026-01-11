@@ -10,6 +10,7 @@ import io.github.luminaire1337.propertyvista.backend.entity.User;
 import io.github.luminaire1337.propertyvista.backend.entity.utility.PaymentStatus;
 import io.github.luminaire1337.propertyvista.backend.exception.BadRequestException;
 import io.github.luminaire1337.propertyvista.backend.repository.PaymentRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,19 +23,20 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Service
 public class PaymentService {
-    private static final Integer PLN_PER_PROPERTY_POINT = 5;
+    private static final double PLN_PER_PROPERTY_POINT = 5.00;
     private final PaymentRepository paymentRepository;
     private final UserService userService;
 
     @Value("${PROPERTYVISTA_STRIPE_WEBHOOK_KEY}")
     private String stripeWebhookKey;
 
-    public Integer getCurrentRate() {
+    public Double getCurrentRate() {
         return PLN_PER_PROPERTY_POINT;
     }
 
+    @Transactional
     public String createPaymentIntent(Integer propertyPoints, User user) {
-        double amountInPLN = (double) propertyPoints * PLN_PER_PROPERTY_POINT;
+        double amountInPLN = propertyPoints * PLN_PER_PROPERTY_POINT;
 
         // Let's create a payment record in our database
         Payment payment = Payment.builder()
@@ -83,6 +85,7 @@ public class PaymentService {
         }
     }
 
+    @Transactional
     public void handleWebhookStatus(Event event, PaymentStatus status) {
         PaymentIntent intent = (PaymentIntent) event.getDataObjectDeserializer().getObject().orElseThrow(() ->
                 new BadRequestException("Nie można przetworzyć obiektu zdarzenia webhooka Stripe")
@@ -94,10 +97,22 @@ public class PaymentService {
 
         switch (status) {
             case SUCCEEDED -> {
-                userService.giveUserPropertyPoints(
-                        payment.getUser(),
-                        Integer.parseInt(intent.getMetadata().get("property_points"))
-                );
+                User user = payment.getUser();
+                if (user == null) {
+                    throw new BadRequestException("Nie można znaleźć użytkownika powiązanego z tą płatnością (został usunięty?)");
+                }
+
+                String propertyPointsStr = intent.getMetadata().get("property_points");
+                if (propertyPointsStr == null) {
+                    throw new BadRequestException("Brak informacji o punktach nieruchomości w metadanych płatności");
+                }
+
+                int propertyPoints = Integer.parseInt(propertyPointsStr);
+                if (propertyPoints <= 0) {
+                    throw new BadRequestException("Nieprawidłowa liczba punktów nieruchomości w metadanych płatności");
+                }
+
+                userService.giveUserPropertyPoints(user, propertyPoints);
                 log.info("Payment intent {} succeeded", intent.getId());
             }
             case FAILED -> {
@@ -121,6 +136,7 @@ public class PaymentService {
         paymentRepository.save(payment);
     }
 
+    @Transactional
     public void handleWebhook(String payload, String sigHeader) {
         Event event;
 

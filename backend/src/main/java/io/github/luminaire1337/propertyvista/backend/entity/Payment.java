@@ -25,7 +25,7 @@ public class Payment {
     private String stripePaymentIntentId;
 
     @ManyToOne()
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(nullable = false)

@@ -57,6 +57,7 @@ public class User {
     @Column(nullable = false)
     private Integer propertyPoints;
 
+    // Unused relation here, to trigger PropertyImageListener on user deletion
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Property> properties;
 
