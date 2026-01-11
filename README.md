@@ -1,5 +1,13 @@
 # Property Vista
 
+## Prerequisites
+
+Before running the application, ensure you have the following installed:
+
+- **Unix-like host system** (Linux, macOS, or WSL) - required for bash scripts
+- **Docker** with **Docker Compose**
+- **Stripe CLI** - installed and logged into your Stripe account
+
 ## Getting Started
 
 ### Demo Mode
@@ -36,3 +44,7 @@ The following variables are defined in `.env.local`. You can override any of the
 | `STRIPE_WEBHOOK_KEY`     | Stripe webhook signing key                | Yes      | You must provide your own Stripe keys               |
 | `FIRST_USER_EMAIL`       | Initial admin user email                  | Yes      | Default: `admin@admin.com`                          |
 | `FIRST_USER_PASSWORD`    | Initial admin user password               | Yes      | Default: `Admin123#`                                |
+
+## License
+
+This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
