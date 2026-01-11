@@ -20,6 +20,15 @@ To start the application in demo mode:
 
 This will start both Docker Compose and Stripe webhook listener.
 
+Once running, the application will be available at:
+
+- **Website**: http://localhost
+- **API**: http://api.localhost
+- **Storage**: http://storage.localhost
+- **Mailpit** (email testing): http://localhost:8025
+- **Traefik Console**: http://localhost:8080
+- **Storage Management Panel**: http://localhost:9001
+
 ## Environment Variables
 
 The following variables are defined in `.env.local`. You can override any of these in a `.env` file, as Docker Compose loads `.env.local` first and then `.env`:
