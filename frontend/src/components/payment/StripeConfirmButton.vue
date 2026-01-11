@@ -15,7 +15,6 @@ const handleSubmit = async () => {
     confirmParams: {
       return_url: `${window.location.origin}/property-points/complete`,
     },
-    redirect: 'if_required',
   })
 
   if (error) {
