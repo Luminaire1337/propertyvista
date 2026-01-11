@@ -19,24 +19,24 @@ if (user && !isStale) invalidateCurrentUser.mutate()
     <div class="max-w-4xl w-full bg-white p-6 rounded shadow-md text-left">
       <h1 class="text-4xl font-bold mb-6 text-center">Ustawienia konta</h1>
       <TabGroup>
-        <TabList class="flex space-x-1 border-b border-gray-200 mb-6">
+        <TabList class="flex space-x-1 border-b border-gray-200 mb-6 overflow-x-auto">
           <Tab
-            class="px-4 py-2 text-sm font-medium rounded-t transition-colors ui-selected:bg-gray-200 ui-selected:text-gray-900 text-gray-700 hover:bg-gray-100"
+            class="px-3 sm:px-4 py-2 text-sm font-medium rounded-t transition-colors ui-selected:bg-gray-200 ui-selected:text-gray-900 text-gray-700 hover:bg-gray-100 whitespace-nowrap"
           >
             Informacje
           </Tab>
           <Tab
-            class="px-4 py-2 text-sm font-medium rounded-t transition-colors ui-selected:bg-gray-200 ui-selected:text-gray-900 text-gray-700 hover:bg-gray-100"
+            class="px-3 sm:px-4 py-2 text-sm font-medium rounded-t transition-colors ui-selected:bg-gray-200 ui-selected:text-gray-900 text-gray-700 hover:bg-gray-100 whitespace-nowrap"
           >
             Hasło
           </Tab>
           <Tab
-            class="px-4 py-2 text-sm font-medium rounded-t transition-colors ui-selected:bg-gray-200 ui-selected:text-gray-900 text-gray-700 hover:bg-gray-100"
+            class="px-3 sm:px-4 py-2 text-sm font-medium rounded-t transition-colors ui-selected:bg-gray-200 ui-selected:text-gray-900 text-gray-700 hover:bg-gray-100 whitespace-nowrap"
           >
             Awatar
           </Tab>
           <Tab
-            class="px-4 py-2 text-sm font-medium rounded-t transition-colors ui-selected:bg-gray-200 ui-selected:text-gray-900 text-gray-700 hover:bg-gray-100"
+            class="px-3 sm:px-4 py-2 text-sm font-medium rounded-t transition-colors ui-selected:bg-gray-200 ui-selected:text-gray-900 text-gray-700 hover:bg-gray-100 whitespace-nowrap"
           >
             Prywatność
           </Tab>
