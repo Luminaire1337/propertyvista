@@ -3,11 +3,18 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { CheckCircle, XCircle } from 'lucide-vue-next'
 import PrimaryButton from '@/components/PrimaryButton.vue'
+import { useInvalidateCurrentUserQuery } from '@/mutations/user'
 
 const route = useRoute()
 const redirectStatus = computed(() => route.query.redirect_status as string)
 
 const isSuccess = computed(() => redirectStatus.value === 'succeeded')
+
+// Invalidate current user profile to refetch updated property points
+const invalidateCurrentUser = useInvalidateCurrentUserQuery()
+if (isSuccess.value) {
+  invalidateCurrentUser.mutate()
+}
 </script>
 
 <template>
