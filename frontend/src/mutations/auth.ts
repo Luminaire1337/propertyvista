@@ -138,6 +138,10 @@ export const useLogoutMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['currentUser'] })
       queryClient.setQueryData(['currentUser'], null)
 
+      // Clear user properties cache
+      queryClient.invalidateQueries({ queryKey: ['userProperties'] })
+      queryClient.setQueryData(['userProperties'], null)
+
       toast.success('Pomyślnie wylogowano!')
       router.push({ name: 'home' })
     },
