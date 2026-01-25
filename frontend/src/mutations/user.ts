@@ -128,6 +128,7 @@ export const useInvalidateCurrentUserQuery = () => {
   return useMutation({
     mutationFn: async () => {
       await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+      await queryClient.setQueryData(['currentUser'], null)
     },
   })
 }
