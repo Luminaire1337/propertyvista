@@ -266,6 +266,11 @@ public class PropertyService {
             // Extend expiry date
             LocalDateTime newExpiryDate = property.getExpiryDate().plusDays(daysValid);
             property.setExpiryDate(newExpiryDate);
+
+            // If property was expired, publish it again
+            if (property.getStatus() == PropertyStatus.EXPIRED) {
+                property.setStatus(PropertyStatus.PUBLISHED);
+            }
         }
 
         // Handle images update
